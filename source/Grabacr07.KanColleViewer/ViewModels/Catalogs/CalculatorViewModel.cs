@@ -912,7 +912,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 				.Concat(
 					KanColleClient.Current.Master.SlotItems
 						.Select(x => x.Value)
-						.Where(x => x.IsNumerable)
+						.Where(x => x.IsNumerable && x.Id <= 500)
 						.OrderBy(x => x.IconType)
 						.ThenBy(x => x.Id)
 						.Select((x, i) => new SlotItemInfoViewModel(x.Id, x))

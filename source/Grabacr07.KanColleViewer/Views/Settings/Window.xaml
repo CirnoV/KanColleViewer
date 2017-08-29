@@ -61,6 +61,7 @@
 						  Content="제목 표시줄에 원정 진행도를 표시"
 						  IsChecked="{Binding Source={x:Static ms:KanColleSettings.AdmiralExpeditionBars}, Path=Value}" />
 
+				<!-- 일단 가림
 				<StackPanel Orientation="Horizontal"
 						Margin="0,0,0,10">
 					<TextBlock Text="체력 등의 막대가 100%일 때의 색상"
@@ -72,6 +73,7 @@
 										  Prompt=""
 										  MinWidth="140" />
 				</StackPanel>
+				-->
 			</StackPanel>
 
 			<Rectangle Margin="10,7,10,12"

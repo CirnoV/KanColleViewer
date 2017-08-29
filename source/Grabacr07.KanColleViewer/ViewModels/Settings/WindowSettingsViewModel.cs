@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +10,7 @@ using MetroTrilithon.Linq;
 using MetroTrilithon.Mvvm;
 using System.Windows;
 using Grabacr07.KanColleWrapper;
+using Color = System.Windows.Media.Color;
 
 namespace Grabacr07.KanColleViewer.ViewModels.Settings
 {
@@ -19,7 +20,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Settings
 
 		public IReadOnlyCollection<DisplayViewModel<ExitConfirmationType>> ExitConfirmationTypes { get; }
 		public IReadOnlyCollection<DisplayViewModel<ExitConfirmationType>> RefreshConfirmationTypes { get; }
-
+		public IReadOnlyCollection<DisplayViewModel<Color>> IndicatorColorList { get; }
 
 		public IReadOnlyCollection<DisplayViewModel<string>> TaskbarProgressFeatures { get; }
 
@@ -102,6 +103,11 @@ namespace Grabacr07.KanColleViewer.ViewModels.Settings
 				DisplayViewModel.Create(ExitConfirmationType.None,"확인하지않음"),
 				DisplayViewModel.Create(ExitConfirmationType.InSortieOnly, "출격중에만 확인"),
 				DisplayViewModel.Create(ExitConfirmationType.Always, "언제나 확인"),
+			};
+			this.IndicatorColorList = new List<DisplayViewModel<Color>>
+			{
+				DisplayViewModel.Create(Color.FromRgb(40, 160, 240), "푸른색 (#28A0F0)"),
+				DisplayViewModel.Create(Color.FromRgb(40, 144, 16), "진한 초록색 (#289010)"),
 			};
 			this.TaskbarProgressFeatures = MetroTrilithon.Linq.EnumerableEx
 				.Return(GeneralSettings.TaskbarProgressSource.ToDefaultDisplay("사용안함"))

@@ -20,5 +20,5 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition("http://schemes.grabacr.net/winfx/2015/kancolleviewer/converters", "Grabacr07.KanColleViewer.Converters")]
 [assembly: XmlnsDefinition("http://schemes.grabacr.net/winfx/2015/kancolleviewer/interactivity", "Grabacr07.KanColleViewer.Interactivity")]
 
-[assembly: AssemblyVersion("1.3.8")]
-[assembly: AssemblyInformationalVersion("1.3.8")]
+[assembly: AssemblyVersion("1.3.9")]
+[assembly: AssemblyInformationalVersion("1.3.9")]

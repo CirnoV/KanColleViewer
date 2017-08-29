@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Grabacr07.KanColleViewer.Views.Contents.StateIconIndicator"
+<UserControl x:Class="Grabacr07.KanColleViewer.Views.Contents.StateIconIndicator"
 			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -44,9 +44,6 @@
 					</DataTrigger>
 					<DataTrigger Binding="{Binding State.FlagshipIsRepairShip}" Value="True">
 						<Setter TargetName="Border" Property="Background" Value="#FFC88232" />
-					</DataTrigger>
-					<DataTrigger Binding="{Binding State.IsReady}" Value="True">
-						<Setter TargetName="Border" Property="Background" Value="#FF40C840" />
 					</DataTrigger>
 				</DataTemplate.Triggers>
 			</DataTemplate>

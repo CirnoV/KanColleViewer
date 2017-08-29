@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Grabacr07.KanColleWrapper;
 using Grabacr07.KanColleWrapper.Models;
 using MetroTrilithon.Serialization;
+using Color = System.Windows.Media.Color;
 
 namespace Grabacr07.KanColleViewer.Models.Settings
 {
@@ -284,6 +285,12 @@ namespace Grabacr07.KanColleViewer.Models.Settings
 		/// </summary>
 		public static SerializableProperty<bool> AdmiralExpeditionBars { get; }
 			= new SerializableProperty<bool>(GetKey(), Providers.Viewer, false);
+
+		/// <summary>
+		/// 인디케이터가 100% 일 때 표시할 색상을 결정합니다.
+		/// </summary>
+		public static SerializableProperty<Color> IndicatorColor { get; }
+			= new SerializableProperty<Color>(GetKey(), Providers.Viewer, Color.FromRgb(40, 160, 240));
 
 
 		#region instance members

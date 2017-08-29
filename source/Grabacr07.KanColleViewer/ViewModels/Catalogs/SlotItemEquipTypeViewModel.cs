@@ -1,4 +1,4 @@
-﻿using Grabacr07.KanColleWrapper.Models;
+using Grabacr07.KanColleWrapper.Models;
 using Livet;
 using System;
 using System.Collections.Generic;
@@ -121,6 +121,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 				{ SlotItemIconType.SubmarineEquipment, "잠수함장비" },
 				{ SlotItemIconType.SeaplaneFighter, "수상전투기" },
 				{ SlotItemIconType.LandBasedFighter, "육군전투기" },
+				{ SlotItemIconType.NightFighter, "야간전투기" },
 			};
 			IconAliasNamable = new Dictionary<SlotItemIconType, SlotItemIconType>
 			{

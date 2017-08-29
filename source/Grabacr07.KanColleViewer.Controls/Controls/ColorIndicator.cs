@@ -56,7 +56,7 @@ namespace Grabacr07.KanColleViewer.Controls
 			set { this.SetValue(FullColorProperty, value); }
 		}
 		public static readonly DependencyProperty FullColorProperty =
-			DependencyProperty.Register(nameof(FullColor), typeof(Color), typeof(ColorIndicator), new UIPropertyMetadata(Color.FromRgb(40, 160, 240)));
+			DependencyProperty.Register(nameof(FullColor), typeof(Color), typeof(ColorIndicator), new UIPropertyMetadata(Color.FromRgb(40, 144, 16)));
 		#endregion
 
 		private void ChangeColor(LimitedValue value)

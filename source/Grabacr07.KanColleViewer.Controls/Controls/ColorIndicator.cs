@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,7 +22,6 @@ namespace Grabacr07.KanColleViewer.Controls
 		}
 
 		#region LimitedValue 依存関係プロパティ
-
 		public LimitedValue LimitedValue
 		{
 			get { return (LimitedValue)this.GetValue(LimitedValueProperty); }
@@ -38,11 +37,9 @@ namespace Grabacr07.KanColleViewer.Controls
 
 			source.ChangeColor(value);
 		}
-
 		#endregion
 
 		#region Columns 종속성 프로퍼티
-
 		public int Columns
 		{
 			get { return (int)this.GetValue(ColumnsProperty); }
@@ -50,7 +47,16 @@ namespace Grabacr07.KanColleViewer.Controls
 		}
 		public static readonly DependencyProperty ColumnsProperty =
 			DependencyProperty.Register(nameof(Columns), typeof(int), typeof(ColorIndicator), new UIPropertyMetadata(4));
+		#endregion
 
+		#region FullColor 종속성 프로퍼티
+		public Color FullColor
+		{
+			get { return (Color)this.GetValue(FullColorProperty); }
+			set { this.SetValue(FullColorProperty, value); }
+		}
+		public static readonly DependencyProperty FullColorProperty =
+			DependencyProperty.Register(nameof(FullColor), typeof(Color), typeof(ColorIndicator), new UIPropertyMetadata(Color.FromRgb(40, 144, 16)));
 		#endregion
 
 		private void ChangeColor(LimitedValue value)
@@ -75,7 +81,9 @@ namespace Grabacr07.KanColleViewer.Controls
 			else if (percentage < 1.0) color = Color.FromRgb(64, 200, 32);
 
 			// 1 (100%)
-			else color = Color.FromRgb(40, 160, 240);
+			// else color = Color.FromRgb(40, 160, 240); // Blue one
+			// else color = Color.FromRgb(40, 144, 16); // Deep green one
+			else color = FullColor;
 
 			this.Foreground = new SolidColorBrush(color);
 		}

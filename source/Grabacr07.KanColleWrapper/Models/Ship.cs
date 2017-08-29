@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Grabacr07.KanColleWrapper.Internal;
@@ -451,9 +451,13 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// </summary>
 		public bool IsMaxModernized => this.Firepower.IsMax && this.Torpedo.IsMax && this.AA.IsMax && this.Armer.IsMax;
 
+		private readonly int[] DaihatsuEquipableShips = new int[] { 541, 500, 490, 487, 470, 464, 469, 435, 434, 352, 200, 468, 418, 199, 147, 488, 548 };
+		private readonly int[] DaihatsuUnequipableShips = new int[] { 491, 445 };
+
 		public bool DaihatsuEquipable =>
-			(new int[] { 541, 500, 490, 487, 470, 464, 469, 435, 434, 352, 200, 468, 418, 199, 147, 488 }.Contains(this.Info.Id)) ||
-			(!(new int[] { 491, 445 }.Contains(this.Info.Id)) && this.Info.ShipType.RawData.api_equip_type?._24 == 1);
+			(DaihatsuEquipableShips.Contains(this.Info.Id)) || // 리스트에 포함되어있거나
+			(!DaihatsuUnequipableShips.Contains(this.Info.Id) && this.Info.ShipType.RawData.api_equip_type?._24 == 1);
+			// 제외 리스트에 없으면서 장착 가능
 
 		/// <summary>
 		/// 現在のコンディション値を取得します。

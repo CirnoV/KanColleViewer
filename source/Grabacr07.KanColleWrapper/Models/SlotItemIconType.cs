@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -229,5 +229,10 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// 陸軍戦闘機
 		/// </summary>
 		LandBasedFighter = 44,
+
+		/// <summary>
+		/// 夜間戦闘機
+		/// </summary>
+		NightFighter = 45,
 	}
 }

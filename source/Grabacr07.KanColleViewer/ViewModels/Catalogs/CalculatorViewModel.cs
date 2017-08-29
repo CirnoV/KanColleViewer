@@ -1,4 +1,4 @@
-﻿using Grabacr07.KanColleViewer.Models;
+using Grabacr07.KanColleViewer.Models;
 using Grabacr07.KanColleWrapper;
 using Grabacr07.KanColleWrapper.Models;
 using Livet.EventListeners;
@@ -44,12 +44,15 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 		public string[] ResultRanks { get; } = new string[] { "S", "A", "B", "C", "D", "E" };
 		public IEnumerable<string> ResultList => this.ResultRanks.ToList();
 
-		public string[] LandBasedType { get; } = new string[] { "출격", "방공" };
-		public IEnumerable<string> LandBasedTypeList => this.LandBasedType.ToList();
+		public LBASActionTypeViewModel[] LandBasedType { get; } = new LBASActionTypeViewModel[]
+		{
+			new LBASActionTypeViewModel(LBASActionType.Attack, "출격"),
+			new LBASActionTypeViewModel(LBASActionType.Defence, "방공"),
+		};
+		public IEnumerable<LBASActionTypeViewModel> LandBasedTypeList => this.LandBasedType.ToList();
 
 
 		private readonly Subject<Unit> UpdateSourceShipList = new Subject<Unit>();
-		private readonly Subject<Unit> UpdateSourceSlotitemList = new Subject<Unit>();
 		private readonly Homeport homeport = KanColleClient.Current.Homeport;
 
 		#region TabItems 변경통지 프로퍼티
@@ -487,16 +490,16 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 		#endregion
 
 
-		#region LandBased_Slots 변경통지 프로퍼티
-		public ICollection<SlotItemViewModel> _LandBased_Slots;
-		public ICollection<SlotItemViewModel> LandBased_Slots
+		#region LBAS_Slots 변경통지 프로퍼티
+		public ICollection<SlotItemInfoViewModel> _LBAS_Slots;
+		public ICollection<SlotItemInfoViewModel> LBAS_Slots
 		{
-			get { return this._LandBased_Slots; }
+			get { return this._LBAS_Slots; }
 			private set
 			{
-				if (this._LandBased_Slots != value)
+				if (this._LBAS_Slots != value)
 				{
-					this._LandBased_Slots = value;
+					this._LBAS_Slots = value;
 					this.RaisePropertyChanged();
 				}
 			}
@@ -504,8 +507,8 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 		#endregion
 
 		#region SelectedLandBasedType 変更通知プロパティ
-		private string _SelectedLandBasedType;
-		public string SelectedLandBasedType
+		private LBASActionType _SelectedLandBasedType;
+		public LBASActionType SelectedLandBasedType
 		{
 			get { return this._SelectedLandBasedType; }
 			set
@@ -520,116 +523,220 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 		}
 		#endregion
 
-		#region LandBased_AirSuperiorityPotential 変更通知プロパティ
-		private double _LandBased_AirSuperiorityPotential;
-		public double LandBased_AirSuperiorityPotential
+		#region LBAS_AirSuperiorityPotential 変更通知プロパティ
+		private double _LBAS_AirSuperiorityPotential;
+		public double LBAS_AirSuperiorityPotential
 		{
-			get { return this._LandBased_AirSuperiorityPotential; }
+			get { return this._LBAS_AirSuperiorityPotential; }
 			set
 			{
-				if (this._LandBased_AirSuperiorityPotential != value)
+				if (this._LBAS_AirSuperiorityPotential != value)
 				{
-					this._LandBased_AirSuperiorityPotential = value;
+					this._LBAS_AirSuperiorityPotential = value;
 					this.RaisePropertyChanged();
-					this.RaisePropertyChanged(nameof(LandBased_AirSuperiorityPotentialText));
+					this.RaisePropertyChanged(nameof(LBAS_AirSuperiorityPotentialText));
 				}
 			}
 		}
 
-		public string LandBased_AirSuperiorityPotentialText => this.LandBased_AirSuperiorityPotential.ToString("0.#");
+		public string LBAS_AirSuperiorityPotentialText => this.LBAS_AirSuperiorityPotential.ToString("0.#");
 		#endregion
-		#region LandBased_AttackPower 変更通知プロパティ
-		private double _LandBased_AttackPower;
-		public double LandBased_AttackPower
+
+		#region LBAS_AttackPower 変更通知プロパティ
+		private double _LBAS_AttackPower;
+		public double LBAS_AttackPower
 		{
-			get { return this._LandBased_AttackPower; }
+			get { return this._LBAS_AttackPower; }
 			set
 			{
-				if (this._LandBased_AttackPower != value)
+				if (this._LBAS_AttackPower != value)
 				{
-					this._LandBased_AttackPower = value;
+					this._LBAS_AttackPower = value;
 					this.RaisePropertyChanged();
-					this.RaisePropertyChanged(nameof(LandBased_AttackPowerText));
+					this.RaisePropertyChanged(nameof(LBAS_AttackPowerText));
 				}
 			}
 		}
-
-		public string LandBased_AttackPowerText => this.LandBased_AttackPower.ToString("0.#");
+		public string LBAS_AttackPowerText => this.LBAS_AttackPower.ToString("0.#");
 		#endregion
-		#region LandBased_Distance 変更通知プロパティ
-		private int _LandBased_Distance;
-		public int LandBased_Distance
+		#region LBAS_AttackPower_vsLandBased 変更通知プロパティ
+		private double _LBAS_AttackPower_vsLandBased;
+		public double LBAS_AttackPower_vsLandBased
 		{
-			get { return this._LandBased_Distance; }
+			get { return this._LBAS_AttackPower_vsLandBased; }
 			set
 			{
-				if (this._LandBased_Distance != value)
+				if (this._LBAS_AttackPower_vsLandBased != value)
 				{
-					this._LandBased_Distance = value;
+					this._LBAS_AttackPower_vsLandBased = value;
+					this.RaisePropertyChanged();
+					this.RaisePropertyChanged(nameof(LBAS_AttackPower_vsLandBasedText));
+				}
+			}
+		}
+		public string LBAS_AttackPower_vsLandBasedText => this.LBAS_AttackPower_vsLandBased.ToString("0.#");
+		#endregion
+		#region LBAS_AttackPower_JetPhase 変更通知プロパティ
+		private double _LBAS_AttackPower_JetPhase;
+		public double LBAS_AttackPower_JetPhase
+		{
+			get { return this._LBAS_AttackPower_JetPhase; }
+			set
+			{
+				if (this._LBAS_AttackPower_JetPhase != value)
+				{
+					this._LBAS_AttackPower_JetPhase = value;
+					this.RaisePropertyChanged();
+					this.RaisePropertyChanged(nameof(LBAS_AttackPower_JetPhaseText));
+				}
+			}
+		}
+		public string LBAS_AttackPower_JetPhaseText => this.LBAS_AttackPower_JetPhase.ToString("0.#");
+		#endregion
+
+		#region LBAS_AttackPower_vsAbyssalAircraft 変更通知プロパティ
+		private double _LBAS_AttackPower_vsAbyssalAircraft;
+		public double LBAS_AttackPower_vsAbyssalAircraft
+		{
+			get { return this._LBAS_AttackPower_vsAbyssalAircraft; }
+			set
+			{
+				if (this._LBAS_AttackPower_vsAbyssalAircraft != value)
+				{
+					this._LBAS_AttackPower_vsAbyssalAircraft = value;
+					this.RaisePropertyChanged();
+					this.RaisePropertyChanged(nameof(LBAS_AttackPower_vsAbyssalAircraftText));
+				}
+			}
+		}
+		public string LBAS_AttackPower_vsAbyssalAircraftText => this.LBAS_AttackPower_vsAbyssalAircraft.ToString("0.#");
+		#endregion
+		#region LBAS_AttackPower_vsArtilleryImp 変更通知プロパティ
+		private double _LBAS_AttackPower_vsArtilleryImp;
+		public double LBAS_AttackPower_vsArtilleryImp
+		{
+			get { return this._LBAS_AttackPower_vsArtilleryImp; }
+			set
+			{
+				if (this._LBAS_AttackPower_vsArtilleryImp != value)
+				{
+					this._LBAS_AttackPower_vsArtilleryImp = value;
+					this.RaisePropertyChanged();
+					this.RaisePropertyChanged(nameof(LBAS_AttackPower_vsArtilleryImpText));
+				}
+			}
+		}
+		public string LBAS_AttackPower_vsArtilleryImpText => this.LBAS_AttackPower_vsArtilleryImp.ToString("0.#");
+		#endregion
+		#region LBAS_AttackPower_vsIsolatedIsland 変更通知プロパティ
+		private double _LBAS_AttackPower_vsIsolatedIsland;
+		public double LBAS_AttackPower_vsIsolatedIsland
+		{
+			get { return this._LBAS_AttackPower_vsIsolatedIsland; }
+			set
+			{
+				if (this._LBAS_AttackPower_vsIsolatedIsland != value)
+				{
+					this._LBAS_AttackPower_vsIsolatedIsland = value;
+					this.RaisePropertyChanged();
+					this.RaisePropertyChanged(nameof(LBAS_AttackPower_vsIsolatedIslandText));
+				}
+			}
+		}
+		public string LBAS_AttackPower_vsIsolatedIslandText => this.LBAS_AttackPower_vsIsolatedIsland.ToString("0.#");
+		#endregion
+		#region LBAS_AttackPower_vsSupplyDepot 変更通知プロパティ
+		private double _LBAS_AttackPower_vsSupplyDepot;
+		public double LBAS_AttackPower_vsSupplyDepot
+		{
+			get { return this._LBAS_AttackPower_vsSupplyDepot; }
+			set
+			{
+				if (this._LBAS_AttackPower_vsSupplyDepot != value)
+				{
+					this._LBAS_AttackPower_vsSupplyDepot = value;
+					this.RaisePropertyChanged();
+					this.RaisePropertyChanged(nameof(LBAS_AttackPower_vsSupplyDepotText));
+				}
+			}
+		}
+		public string LBAS_AttackPower_vsSupplyDepotText => this.LBAS_AttackPower_vsSupplyDepot.ToString("0.#");
+		#endregion
+
+		#region LBAS_Distance 変更通知プロパティ
+		private int _LBAS_Distance;
+		public int LBAS_Distance
+		{
+			get { return this._LBAS_Distance; }
+			set
+			{
+				if (this._LBAS_Distance != value)
+				{
+					this._LBAS_Distance = value;
 					this.RaisePropertyChanged();
 				}
 			}
 		}
 		#endregion
 
-		#region LandBased_Slot1 変更通知プロパティ
-		private SlotItemViewModel _LandBased_Slot1;
-		public SlotItemViewModel LandBased_Slot1
+		#region LBAS_Slot1 変更通知プロパティ
+		private SlotItemInfoViewModel _LBAS_Slot1;
+		public SlotItemInfoViewModel LBAS_Slot1
 		{
-			get { return this._LandBased_Slot1; }
+			get { return this._LBAS_Slot1; }
 			set
 			{
-				if (this._LandBased_Slot1 != value)
+				if (this._LBAS_Slot1 != value)
 				{
-					this._LandBased_Slot1 = value;
+					this._LBAS_Slot1 = value;
 					this.RaisePropertyChanged();
 					this.UpdateCalculator();
 				}
 			}
 		}
 		#endregion
-		#region LandBased_Slot2 変更通知プロパティ
-		private SlotItemViewModel _LandBased_Slot2;
-		public SlotItemViewModel LandBased_Slot2
+		#region LBAS_Slot2 変更通知プロパティ
+		private SlotItemInfoViewModel _LBAS_Slot2;
+		public SlotItemInfoViewModel LBAS_Slot2
 		{
-			get { return this._LandBased_Slot2; }
+			get { return this._LBAS_Slot2; }
 			set
 			{
-				if (this._LandBased_Slot2 != value)
+				if (this._LBAS_Slot2 != value)
 				{
-					this._LandBased_Slot2 = value;
+					this._LBAS_Slot2 = value;
 					this.RaisePropertyChanged();
 					this.UpdateCalculator();
 				}
 			}
 		}
 		#endregion
-		#region LandBased_Slot3 変更通知プロパティ
-		private SlotItemViewModel _LandBased_Slot3;
-		public SlotItemViewModel LandBased_Slot3
+		#region LBAS_Slot3 変更通知プロパティ
+		private SlotItemInfoViewModel _LBAS_Slot3;
+		public SlotItemInfoViewModel LBAS_Slot3
 		{
-			get { return this._LandBased_Slot3; }
+			get { return this._LBAS_Slot3; }
 			set
 			{
-				if (this._LandBased_Slot3 != value)
+				if (this._LBAS_Slot3 != value)
 				{
-					this._LandBased_Slot3 = value;
+					this._LBAS_Slot3 = value;
 					this.RaisePropertyChanged();
 					this.UpdateCalculator();
 				}
 			}
 		}
 		#endregion
-		#region LandBased_Slot4 変更通知プロパティ
-		private SlotItemViewModel _LandBased_Slot4;
-		public SlotItemViewModel LandBased_Slot4
+		#region LBAS_Slot4 変更通知プロパティ
+		private SlotItemInfoViewModel _LBAS_Slot4;
+		public SlotItemInfoViewModel LBAS_Slot4
 		{
-			get { return this._LandBased_Slot4; }
+			get { return this._LBAS_Slot4; }
 			set
 			{
-				if (this._LandBased_Slot4 != value)
+				if (this._LBAS_Slot4 != value)
 				{
-					this._LandBased_Slot4 = value;
+					this._LBAS_Slot4 = value;
 					this.RaisePropertyChanged();
 					this.UpdateCalculator();
 				}
@@ -637,6 +744,136 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 		}
 		#endregion
 
+		#region LBAS Level Values + Proficiency Values
+		public LevelValueViewModel[] LBAS_Levels { get; }
+		public ProficiencyValueViewModel[] LBAS_Proficiencies { get; }
+
+		private LevelValueViewModel[] LBAS_LevelValues { get; }
+			= new LevelValueViewModel[]
+			{
+				new LevelValueViewModel(0),
+				new LevelValueViewModel(0),
+				new LevelValueViewModel(0),
+				new LevelValueViewModel(0),
+			};
+		private ProficiencyValueViewModel[] LBAS_ProficiencyValues { get; }
+			= new ProficiencyValueViewModel[]
+			{
+				new ProficiencyValueViewModel(7),
+				new ProficiencyValueViewModel(7),
+				new ProficiencyValueViewModel(7),
+				new ProficiencyValueViewModel(7),
+			};
+
+		#region Levels
+		public LevelValueViewModel LBAS_Slot1_Level
+		{
+			get { return this.LBAS_LevelValues[0]; }
+			set
+			{
+				if (this.LBAS_LevelValues[0] != value)
+				{
+					this.LBAS_LevelValues[0] = value;
+					this.RaisePropertyChanged();
+					this.UpdateCalculator();
+				}
+			}
+		}
+		public LevelValueViewModel LBAS_Slot2_Level
+		{
+			get { return this.LBAS_LevelValues[1]; }
+			set
+			{
+				if (this.LBAS_LevelValues[1] != value)
+				{
+					this.LBAS_LevelValues[1] = value;
+					this.RaisePropertyChanged();
+					this.UpdateCalculator();
+				}
+			}
+		}
+		public LevelValueViewModel LBAS_Slot3_Level
+		{
+			get { return this.LBAS_LevelValues[2]; }
+			set
+			{
+				if (this.LBAS_LevelValues[2] != value)
+				{
+					this.LBAS_LevelValues[2] = value;
+					this.RaisePropertyChanged();
+					this.UpdateCalculator();
+				}
+			}
+		}
+		public LevelValueViewModel LBAS_Slot4_Level
+		{
+			get { return this.LBAS_LevelValues[3]; }
+			set
+			{
+				if (this.LBAS_LevelValues[3] != value)
+				{
+					this.LBAS_LevelValues[3] = value;
+					this.RaisePropertyChanged();
+					this.UpdateCalculator();
+				}
+			}
+		}
+		#endregion
+		#region Proficiencys
+		public ProficiencyValueViewModel LBAS_Slot1_Proficiency
+		{
+			get { return this.LBAS_ProficiencyValues[0]; }
+			set
+			{
+				if (this.LBAS_ProficiencyValues[0] != value)
+				{
+					this.LBAS_ProficiencyValues[0] = value;
+					this.RaisePropertyChanged();
+					this.UpdateCalculator();
+				}
+			}
+		}
+		public ProficiencyValueViewModel LBAS_Slot2_Proficiency
+		{
+			get { return this.LBAS_ProficiencyValues[1]; }
+			set
+			{
+				if (this.LBAS_ProficiencyValues[1] != value)
+				{
+					this.LBAS_ProficiencyValues[1] = value;
+					this.RaisePropertyChanged();
+					this.UpdateCalculator();
+				}
+			}
+		}
+		public ProficiencyValueViewModel LBAS_Slot3_Proficiency
+		{
+			get { return this.LBAS_ProficiencyValues[2]; }
+			set
+			{
+				if (this.LBAS_ProficiencyValues[2] != value)
+				{
+					this.LBAS_ProficiencyValues[2] = value;
+					this.RaisePropertyChanged();
+					this.UpdateCalculator();
+				}
+			}
+		}
+		public ProficiencyValueViewModel LBAS_Slot4_Proficiency
+		{
+			get { return this.LBAS_ProficiencyValues[3]; }
+			set
+			{
+				if (this.LBAS_ProficiencyValues[3] != value)
+				{
+					this.LBAS_ProficiencyValues[3] = value;
+					this.RaisePropertyChanged();
+					this.UpdateCalculator();
+				}
+			}
+		}
+		#endregion
+		#endregion
 
 		public CalculatorViewModel()
 		{
@@ -658,14 +895,6 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 				.Subscribe(_ => this.UpdateCalculator());
 			this.CompositeDisposable.Add(this.UpdateSourceShipList);
 
-			this.UpdateSourceSlotitemList
-				.Do(_ => this.Reloading++)
-				.Throttle(TimeSpan.FromMilliseconds(7.0))
-				.Do(_ => this.UpdateSlotItemList())
-				.Do(_ => this.Reloading--)
-				.Subscribe(_ => this.UpdateCalculator());
-			this.CompositeDisposable.Add(this.UpdateSourceShipList);
-
 			this.CompositeDisposable.Add(new PropertyChangedEventListener(this.homeport)
 			{
 				{ () => this.homeport.Organization, (_, __) => {
@@ -673,28 +902,51 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 					{
 						{ () => this.homeport.Organization.Ships, (sender, args) => this.RequestUpdateShipList() },
 					});
-				} },
-				{ () => this.homeport.Itemyard, (_, __) => {
-					this.CompositeDisposable.Add(new PropertyChangedEventListener(this.homeport.Itemyard)
-					{
-						{ () => this.homeport.Itemyard.SlotItems, (sender, args) => this.RequestUpdateSlotitemList() },
-					});
-				} },
+				} }
 			});
+			#endregion
+
+			#region LBAS slot list
+			this.LBAS_Slots =
+				new SlotItemInfoViewModel[] { new SlotItemInfoViewModel(0, null) }
+				.Concat(
+					KanColleClient.Current.Master.SlotItems
+						.Select(x => x.Value)
+						.Where(x => x.IsNumerable && x.Id <= 500)
+						.OrderBy(x => x.IconType)
+						.ThenBy(x => x.Id)
+						.Select((x, i) => new SlotItemInfoViewModel(x.Id, x))
+				)
+				.ToArray();
+
+			this.LBAS_Slot1 = LBAS_Slots.FirstOrDefault();
+			this.LBAS_Slot2 = LBAS_Slots.FirstOrDefault();
+			this.LBAS_Slot3 = LBAS_Slots.FirstOrDefault();
+			this.LBAS_Slot4 = LBAS_Slots.FirstOrDefault();
+			#endregion
+			#region LBAS level & proficiency list
+			LBAS_Levels = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }
+				.Select(x => new LevelValueViewModel(x))
+				.ToArray();
+			LBAS_Slot1_Level = LBAS_Slot2_Level = LBAS_Slot3_Level = LBAS_Slot4_Level
+				= LBAS_Levels.FirstOrDefault();
+
+			LBAS_Proficiencies = new int[] { 0, 1, 2, 3, 4, 5, 6, 7 }
+				.Select(x => new ProficiencyValueViewModel(x))
+				.ToArray();
+			LBAS_Slot1_Proficiency = LBAS_Slot2_Proficiency = LBAS_Slot3_Proficiency = LBAS_Slot4_Proficiency
+				= LBAS_Proficiencies.LastOrDefault();
 			#endregion
 
 			SelectedSea = SeaExpTable.Keys.FirstOrDefault();
 			SelectedResult = ResultRanks.FirstOrDefault();
 			SelectedExpResult = ResultRanks.FirstOrDefault();
 
-			SelectedLandBasedType = LandBasedType.FirstOrDefault();
+			SelectedLandBasedType = LandBasedType.FirstOrDefault().Value;
 
 			this.RequestUpdateShipList();
-			this.RequestUpdateSlotitemList();
 		}
-
 		public void RequestUpdateShipList() => this.UpdateSourceShipList.OnNext(Unit.Default);
-		public void RequestUpdateSlotitemList() => this.UpdateSourceSlotitemList.OnNext(Unit.Default);
 
 		/// <summary>
 		/// Update ship list for calculator
@@ -707,34 +959,6 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 				.ThenBy(x => x.Id)
 				.Select((x, i) => new ShipViewModel(i + 1, x, null))
 				.ToList();
-		}
-
-		/// <summary>
-		/// Update slotitem list for calculator
-		/// </summary>
-		private void UpdateSlotItemList()
-		{
-			var list = this.homeport.Itemyard.SlotItems.Values;
-
-			var items = new List<SlotItemViewModel>();
-			items.Add(new SlotItemViewModel(0, null));
-			items.AddRange(
-				list.Where(x => x.Info.IsNumerable)
-					.OrderBy(x => x.Info.IconType)
-					.ThenBy(x => x.Info.Id)
-					.Distinct(x => x.NameWithLevel)
-					.Select((x, i) => new SlotItemViewModel(x.Id, x))
-			);
-			this.LandBased_Slots = items;
-
-			if (this.LandBased_Slot1 == null || !this.LandBased_Slots.Contains(this.LandBased_Slot1))
-				this.LandBased_Slot1 = this.LandBased_Slots.FirstOrDefault();
-			if (this.LandBased_Slot2 == null || !this.LandBased_Slots.Contains(this.LandBased_Slot1))
-				this.LandBased_Slot2 = this.LandBased_Slots.FirstOrDefault();
-			if (this.LandBased_Slot3 == null || !this.LandBased_Slots.Contains(this.LandBased_Slot1))
-				this.LandBased_Slot3 = this.LandBased_Slots.FirstOrDefault();
-			if (this.LandBased_Slot4 == null || !this.LandBased_Slots.Contains(this.LandBased_Slot1))
-				this.LandBased_Slot4 = this.LandBased_Slots.FirstOrDefault();
 		}
 
 
@@ -866,7 +1090,52 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 		/// </summary>
 		private void CalculateLandBased()
 		{
-			Dictionary<int, int[]> distanceBonus = new Dictionary<int, int[]>()
+			var items = new SlotItemInfoViewModel[]
+				{
+					new SlotItemInfoViewModel(this.LBAS_Slot1, 0),
+					new SlotItemInfoViewModel(this.LBAS_Slot2, 1),
+					new SlotItemInfoViewModel(this.LBAS_Slot3, 2),
+					new SlotItemInfoViewModel(this.LBAS_Slot4, 3),
+				}
+				.Where(x => x.Display != null)
+				.ToArray();
+
+
+			LBAS_AttackPower = 0;
+			LBAS_AirSuperiorityPotential = 0;
+			LBAS_Distance = 0;
+			if (items.Count() == 0) return;
+
+			#region Calculate Distance
+			LBAS_Distance = LBASCalculateDistance(items);
+			#endregion
+
+			#region Attack Power Calc
+			LBAS_AttackPower
+				= LBASCaltulateDamage(LBASDamageType.SurfaceVessel, false, false, LBASEnemyType.Default, items);
+			LBAS_AttackPower_vsLandBased
+				= LBASCaltulateDamage(LBASDamageType.LandBased, false, false, LBASEnemyType.Default, items);
+			LBAS_AttackPower_JetPhase
+				= LBASCaltulateDamage(LBASDamageType.JetPowered, false, false, LBASEnemyType.Default, items);
+
+			LBAS_AttackPower_vsAbyssalAircraft
+				= LBASCaltulateDamage(LBASDamageType.SurfaceVessel, false, false, LBASEnemyType.AbyssalAircraftPrincess, items);
+			LBAS_AttackPower_vsArtilleryImp
+				= LBASCaltulateDamage(LBASDamageType.LandBased, false, false, LBASEnemyType.ArtilleryImp, items);
+			LBAS_AttackPower_vsIsolatedIsland
+				= LBASCaltulateDamage(LBASDamageType.LandBased, false, false, LBASEnemyType.IsolatedIslandPrincess, items);
+			LBAS_AttackPower_vsSupplyDepot
+				= LBASCaltulateDamage(LBASDamageType.LandBased, false, false, LBASEnemyType.SupplyDepotPrincess, items);
+			#endregion
+
+			#region AA Calc
+			LBAS_AirSuperiorityPotential = LBASCalculateAA(this.SelectedLandBasedType, items);
+			#endregion
+		}
+
+		private int LBASCalculateDistance(IEnumerable<SlotItemInfoViewModel> slotitems)
+		{
+			var distanceBonus = new Dictionary<int, int[]>()
 			{
 				{ 138, new int[] { 3, 3, 3, 3, 3, 3, 3, 3 } }, // 이식대정
 				{ 178, new int[] { 3, 3, 2, 2, 2, 2, 1, 1 } }, // 카탈리나
@@ -876,36 +1145,26 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 				{  59, new int[] { 2, 2, 2, 1, 1, 0, 0, 0 } }, // 영식수상관측기
 				{  61, new int[] { 2, 1, 1, 0, 0, 0, 0, 0 } }, // 2식함상정찰기
 			};
-			Dictionary<int, Proficiency> proficiencies = new Dictionary<int, Proficiency>()
+
+			int distance = slotitems.Min(x => x.Info.Distance);
+
+			if (slotitems.Any(x => distanceBonus.ContainsKey(x.Info.Id)))
 			{
-				{ 0, new Proficiency(  0,   9,  0,  0) },
-				{ 1, new Proficiency( 10,  24,  0,  1) },
-				{ 2, new Proficiency( 25,  39,  2,  2) },
-				{ 3, new Proficiency( 40,  54,  5,  3) },
-				{ 4, new Proficiency( 55,  69,  9,  4) },
-				{ 5, new Proficiency( 70,  84, 14,  5) },
-				{ 6, new Proficiency( 85,  99, 14,  7) },
-				{ 7, new Proficiency(100, 120, 22,  9) },
+				var dist = Math.Max(0, Math.Min(7, distance - 2));
+				distance += slotitems
+					.Where(x => distanceBonus.ContainsKey(x.Info.Id))
+					.Max(x => distanceBonus[x.Info.Id][dist]);
+			}
+
+			return distance;
+		}
+		private double LBASCaltulateDamage(LBASDamageType calcType, bool isCritical, bool isContacted, LBASEnemyType enemyType, IEnumerable<SlotItemInfoViewModel> slotitems)
+		{
+			var jet_powered = new SlotItemType[]
+			{
+				SlotItemType.噴式攻撃機,
+				SlotItemType.噴式戦闘爆撃機,
 			};
-			var def = AirSuperiorityCalculationOptions.Default;
-
-			var items = new SlotItemViewModel[]
-				{
-					this.LandBased_Slot1,
-					this.LandBased_Slot2,
-					this.LandBased_Slot3,
-					this.LandBased_Slot4
-				}
-				.Where(x => x.Display != null)
-				.Select(x => x.Display);
-
-
-			LandBased_AttackPower = 0;
-			LandBased_AirSuperiorityPotential = 0;
-			LandBased_Distance = 0;
-			if (items.Count() == 0) return;
-
-			#region Attack Power calculating
 			var attackers = new SlotItemType[]
 			{
 				SlotItemType.艦上攻撃機,
@@ -915,43 +1174,235 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 				SlotItemType.陸上攻撃機,
 				SlotItemType.水上爆撃機
 			};
-			var power_sum = items
-				.Where(x => attackers.Contains(x.Info.Type))
+			var items = slotitems.Where(x => attackers.Contains(x.Info.Type)).ToArray();
+
+			var typeMultiplier = new Func<SlotItemType, double>
+			(
+				type => (type == SlotItemType.艦上攻撃機 || type == SlotItemType.艦上爆撃機 || type == SlotItemType.水上爆撃機)
+					? 1.0
+					: type == SlotItemType.陸上攻撃機
+						? 0.8
+						: (type == SlotItemType.噴式戦闘爆撃機 || type == SlotItemType.噴式攻撃機)
+							? 0.7071
+							: 0
+			);
+			var proficiencyMultiplier = new Func<SlotItemType, int, double>
+			(
+				(type, proficiency) => type == SlotItemType.陸上攻撃機
+					? 1.0
+					: 1.0 + 0.2 * (proficiency / 7)
+			);
+			var calcCap = new Func<double, double, double>
+			(
+				(source, cap) =>
+					source <= cap
+						? source
+						: cap + Math.Sqrt(source - cap)
+			);
+
+			switch (calcType)
+			{
+				case LBASDamageType.SurfaceVessel:
+					return items
+						.Sum(item =>
+						{
+							var proficiency = LBAS_ProficiencyValues[item.Index].Value;
+							double damage = 0;
+
+							// 최종공격력 = [[기본공격력] x 크리티컬보정 x 숙련도보정] x 촉접보정 x 육공보정 x 육공특효
+							// 기본공격력 = 종별배율 x {(뇌격 or 폭격) x √(1.8 x 탑재량) + 25}
+							// [] 반올림
+							// 종별: 함공,함폭,수폭 = 1.0 / 육공 = 0.8 / 제트기 = 0.7071
+							// 숙련도 보정: 육공 = 1.0(숙련 무관) / 육공이외 = 1.0~1.2 (숙련변동)
+							// 육공 보정: 육공 = 1.8 / 이외 = 1.0
+
+							var isLBAS = (item.Info.Type == SlotItemType.陸上攻撃機);
+							var dmg_src = (item.Info.Type == SlotItemType.陸上攻撃機 || item.Info.Type == SlotItemType.艦上攻撃機)
+								? item.Info.Torpedo
+								: item.Info.Bomb;
+
+							var carries = 18; // 고정
+							var criticalMultiplier = isCritical ? 1.5 : 1.0;
+							var contactMultiplier = isContacted ? 1.0 : 1.0; // 촉접 함재기마다 다름. 어차피 안쓰니 패스
+							var LBAMultiplier = isLBAS ? 1.8 : 1.0;
+							var LBASpecialMultiplier = enemyType == LBASEnemyType.AbyssalAircraftPrincess
+								? 3.3 // 공모서희
+								: 1.0; // 해당 없음
+
+							damage = typeMultiplier(item.Info.Type) * (dmg_src * Math.Sqrt(1.8 * carries) + 25); // 기본 공격력
+							damage = Math.Floor(Math.Floor(damage) * criticalMultiplier * proficiencyMultiplier(item.Info.Type, proficiency))
+										* contactMultiplier * LBAMultiplier * LBASpecialMultiplier;
+
+							return damage;
+						});
+
+				case LBASDamageType.LandBased:
+					return items
+						.Sum(item =>
+						{
+							var proficiency = LBAS_ProficiencyValues[item.Index].Value;
+							double damage = 0;
+
+							// 최종공격력 = [[[<기본공격력 x 기지항공특효(포대/이도서희)> x 폭격특효(집적지) + 기지항공특효(집적지)]
+							//    x 폭격특효(포대/이도서희)] x 크리티컬 보정 x 숙련도 보정] x 촉접보정 x 육공보정
+							// 기본공격력 = 종별배율 x {(뇌격 or 폭격) x √(1.8 x 탑재량) + 25}
+
+							var isLBAS = (item.Info.Type == SlotItemType.陸上攻撃機);
+							var isBomber = (item.Info.Type == SlotItemType.艦上爆撃機) || isLBAS; // 함폭 or 육공. 수폭, 분폭 제외
+
+							var dmg_src = (item.Info.Type == SlotItemType.陸上攻撃機 || item.Info.Type == SlotItemType.艦上攻撃機)
+								? item.Info.Torpedo
+								: item.Info.Bomb;
+
+							var carries = 18; // 고정
+							var criticalMultiplier = isCritical ? 1.5 : 1.0;
+							var contactMultiplier = isContacted ? 1.0 : 1.0; // 촉접 함재기마다 다름. 어차피 안쓰니 패스
+							var LBAMultiplier = isLBAS ? 1.8 : 1.0;
+							var LBASpecialMultiplier = enemyType == LBASEnemyType.AbyssalAircraftPrincess
+								? 3.3 // 공모서희
+								: 1.0; // 해당 없음
+
+							// 포대소귀/이도서희 기지항공 특효 (곱셈)
+							var enemyBonus1 = enemyType == LBASEnemyType.ArtilleryImp
+								? 1.6
+								: enemyType == LBASEnemyType.IsolatedIslandPrincess
+									? 1.18
+									: 1;
+							// 집적지서희 기지항공 특효 (덧셈)
+							var enemyBonus2 = enemyType == LBASEnemyType.SupplyDepotPrincess
+								? 100
+								: 0;
+
+							// 포대소귀/이도서희 폭격 특효
+							var bombBonus1 = enemyType == LBASEnemyType.ArtilleryImp
+								? 1.55
+								: enemyType == LBASEnemyType.IsolatedIslandPrincess
+									? 1.7
+									: 1;
+							// 집적지서희 폭격 특효
+							var bombBonus2 = enemyType == LBASEnemyType.SupplyDepotPrincess
+								? 2.1
+								: 1.0;
+
+							if (!isBomber) // 폭격기가 아니면 폭격 특효 없음
+								bombBonus1 = bombBonus2 = 1;
+
+							damage = typeMultiplier(item.Info.Type) * (dmg_src * Math.Sqrt(1.8 * carries) + 25); // 기본 공격력
+							damage = Math.Floor(calcCap(damage * enemyBonus1, 150) * bombBonus1 + enemyBonus2);
+							damage = Math.Floor(damage * bombBonus2);
+							damage = Math.Floor(damage * criticalMultiplier * proficiencyMultiplier(item.Info.Type, proficiency));
+							damage *= contactMultiplier * LBAMultiplier;
+
+							return damage;
+						});
+
+				case LBASDamageType.JetPowered:
+					return items
+						.Where(x => jet_powered.Contains(x.Info.Type))
+						.Sum(item =>
+						{
+							double damage = 0;
+
+							var dmg_src = item.Info.Bomb;
+
+							var carries = 18; // 고정
+							var criticalMultiplier = isCritical ? 1.5 : 1.0;
+
+							damage = Math.Floor(dmg_src * Math.Sqrt(1.8 * carries) + 25);
+							damage = Math.Floor(damage * criticalMultiplier);
+
+							return damage;
+						});
+			}
+			return 0;
+		}
+		private double LBASCalculateAA(LBASActionType actionType, IEnumerable<SlotItemInfoViewModel> slotitems)
+		{
+			var proficiencies = new Dictionary<int, Proficiency>()
+			{
+				{ 0, new Proficiency(  0,   9,  0,  0) },
+				{ 1, new Proficiency( 10,  24,  0,  0) },
+				{ 2, new Proficiency( 25,  39,  2,  1) },
+				{ 3, new Proficiency( 40,  54,  5,  1) },
+				{ 4, new Proficiency( 55,  69,  9,  1) },
+				{ 5, new Proficiency( 70,  84, 14,  3) },
+				{ 6, new Proficiency( 85,  99, 14,  3) },
+				{ 7, new Proficiency(100, 120, 22,  6) },
+			};
+
+			var aa_sum = slotitems
 				.Sum(item =>
 				{
-					var proficiency = proficiencies[item.Proficiency];
-					double damage = 0;
+					var proficiencyData = proficiencies[LBAS_ProficiencyValues[item.Index].Value];
+					var level = LBAS_LevelValues[item.Index].Value;
 
-					if (item.Info.Type == SlotItemType.陸上攻撃機)
+					double aa = item.Info.AA;
+					double interception = item.Info.Evade;
+					double anti_bomber = item.Info.Hit;
+
+					if (item.Info.Type != SlotItemType.局地戦闘機)
 					{
-						damage = (item.Info.Torpedo + item.Info.Bomb) / 2; // P
-						damage *= Math.Sqrt(1.8 * 18); // root 1.8N
-						damage += 25;
-						damage = Math.Floor(damage * 0.8);
-						// Critical modifier skip
-						// Contact multiplier skip
+						interception = 0;
+						anti_bomber = 0;
 					}
-					else
+
+					var aa_level_able = new SlotItemType[]
+						{
+							SlotItemType.艦上戦闘機,
+							SlotItemType.水上戦闘機,
+							SlotItemType.噴式戦闘機,
+							SlotItemType.噴式戦闘爆撃機,
+							SlotItemType.局地戦闘機,
+						};
+					var aa_level_fighterbombers = new int[]
 					{
-						damage = (item.Info.Torpedo + item.Info.Bomb) / 2; // P
-						damage *= Math.Sqrt(1.8 * 18); // root 1.8N
-						damage += 25;
-						damage = Math.Floor(damage * 0.8);
-						// Critical modifier skip
-						// Contact multiplier skip
-						damage *= 1.8;
+						60, // 62형 폭전
+						219, // 63형 폭전
+						154, // 62형 폭전 (이와이)
+					};
+
+					if (aa_level_able.Contains(item.Info.Type))
+						aa += level * 0.2;
+					else if (aa_level_fighterbombers.Contains(item.Info.Id))
+						aa += level * 0.25;
+
+					double proficiency = (item.Info.Type == SlotItemType.水上爆撃機)
+						? proficiencyData.SeaplaneBomberBonus
+						: (item.Info.Type == SlotItemType.艦上戦闘機 || item.Info.Type == SlotItemType.水上戦闘機 || item.Info.Type == SlotItemType.局地戦闘機)
+							? proficiencyData.FighterBonus
+							: 0;
+					proficiency += Math.Sqrt(0.1 * proficiencyData.GetInternalValue(AirSuperiorityCalculationOptions.InternalProficiencyMaxValue));
+
+					/*
+					 * 출격 식 : [(대공 + 1.5 x 영격) x √(탑재량) + 숙련도보정]
+					 * 
+					 * 방공 식: [(중대 방공 합) x 정찰기보정]
+					 * 중대 방공: [(대공 + 영격 + 대폭 x 2) x √(탑재량) + 숙련도보정]
+					 * 
+					 * 숙련도 보정: (숙련도 값)+√12
+					 * ※ 12 = 내부 숙련도 (0~120) / 10, 항상 최대치로 가정
+					 */
+
+					switch (actionType)
+					{
+						case LBASActionType.Attack:
+							return Math.Floor((aa + 1.5 * interception) * Math.Sqrt(18) + proficiency);
+
+						case LBASActionType.Defence:
+							return Math.Floor((aa + interception + anti_bomber * 2) * Math.Sqrt(18) + proficiency);
+
+						default:
+							return 0;
 					}
-					return damage;
 				});
-			#endregion
 
 			#region Bonus rate calculate when Air Defence Mode
-			var bonusRate = 1.0;
-			if (this.SelectedLandBasedType == "방공")
+			if (actionType == LBASActionType.Defence)
 			{
-				if (items.Any(x => x.Info.Type == SlotItemType.艦上偵察機))
+				var bonusRate = 1.0;
+				if (slotitems.Any(x => x.Info.Type == SlotItemType.艦上偵察機)) // 함상정찰기
 				{
-					var viewrange = items
+					var viewrange = slotitems
 						.Where(x => x.Info.Type == SlotItemType.艦上偵察機)
 						.Max(x => x.Info.ViewRange);
 
@@ -962,10 +1413,12 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 					else
 						bonusRate = 1.3;
 				}
-				else if (items.Any(x => x.Info.Type == SlotItemType.水上偵察機))
+
+				// 수상정찰기 or 대형비행정
+				else if (slotitems.Any(x => x.Info.Type == SlotItemType.水上偵察機 || x.Info.Type == SlotItemType.大型飛行艇))
 				{
-					var viewrange = items
-						.Where(x => x.Info.Type == SlotItemType.水上偵察機)
+					var viewrange = slotitems
+						.Where(x => x.Info.Type == SlotItemType.水上偵察機 || x.Info.Type == SlotItemType.大型飛行艇)
 						.Max(x => x.Info.ViewRange);
 
 					if (viewrange <= 7)
@@ -975,82 +1428,28 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 					else
 						bonusRate = 1.16;
 				}
-			}
-			#endregion
-			#region AA calculating
-			var air_sum = items.Sum(item =>
-				{
-					var proficiency = proficiencies[item.Proficiency];
-					double aa = item.Info.AA;
-					double bonus = 0;
 
-					switch (item.Info.Type)
-					{
-						// 전투기
-						case SlotItemType.艦上戦闘機:
-						case SlotItemType.水上戦闘機:
-						case SlotItemType.噴式戦闘機:
-						case SlotItemType.局地戦闘機:
-							aa += item.Level * 0.2;
-							bonus = Math.Sqrt(proficiency.GetInternalValue(def) / 10.0)
-								+ proficiency.FighterBonus;
-							break;
-
-						// 공격기 (뇌격기, 폭격기)
-						case SlotItemType.艦上攻撃機:
-						case SlotItemType.艦上爆撃機:
-						case SlotItemType.噴式攻撃機:
-						case SlotItemType.噴式戦闘爆撃機:
-						case SlotItemType.陸上攻撃機:
-							bonus = Math.Sqrt(proficiency.GetInternalValue(def) / 10.0)
-								+ 0;
-							break;
-
-						// 수상폭격기
-						case SlotItemType.水上爆撃機:
-							bonus = Math.Sqrt(proficiency.GetInternalValue(def) / 10.0)
-								+ proficiency.SeaplaneBomberBonus;
-							break;
-
-						// 정찰기, 수상정찰기, (분식정찰기?)
-						// 본래는 제공치에 포함되지 않으나 기항대에는 포함되나?
-						// 다만 어차피 대공이 안붙어있음
-						default:
-							break;
-					}
-					bonus = Math.Min(22, bonus) + Math.Sqrt(12);
-
-					switch (this.SelectedLandBasedType)
-					{
-						case "출격":
-							if (item.Info.Type == SlotItemType.局地戦闘機)
-								aa += (int)(item.Info.Evade * 1.5);
-							break;
-						case "방공":
-							if (item.Info.Type == SlotItemType.局地戦闘機)
-								aa += item.Info.Hit * 2 +item.Info.Evade;
-							break;
-					}
-					return Math.Floor(Math.Sqrt(18) * aa) * bonusRate + Math.Floor(bonus);
-				});
-			#endregion
-
-			int distance = items.Min(x => x.Info.Distance);
-			#region Bonus Distance
-			if (items.Any(x => distanceBonus.ContainsKey(x.Info.Id)))
-			{
-				var dist = Math.Max(0, Math.Min(7, distance - 2));
-				distance += items
-					.Where(x => distanceBonus.ContainsKey(x.Info.Id))
-					.Max(x => distanceBonus[x.Info.Id][dist]);
+				aa_sum = Math.Floor(aa_sum * bonusRate);
 			}
 			#endregion
 
-			LandBased_AttackPower = power_sum;
-			LandBased_AirSuperiorityPotential = air_sum;
-			LandBased_Distance = distance;
+			return aa_sum;
 		}
 
+		private enum LBASDamageType
+		{
+			SurfaceVessel, // 수상함
+			LandBased, // 육상기지
+			JetPowered, // 분식
+		}
+		private enum LBASEnemyType
+		{
+			Default, // 해당 없음
+			AbyssalAircraftPrincess, // 공모서희
+			ArtilleryImp, // 포대소귀
+			IsolatedIslandPrincess, // 이도서희
+			SupplyDepotPrincess, // 집적지서희
+		}
 		private class Proficiency
 		{
 			private int internalMinValue { get; }
@@ -1079,14 +1478,62 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 		}
 	}
 
-	public class SlotItemViewModel : Livet.ViewModel
+	public enum LBASActionType
+	{
+		Attack, // 출격
+		Defence // 방공
+	}
+
+	public class SlotItemInfoViewModel : Livet.ViewModel
 	{
 		public int Key { get; }
-		public SlotItem Display { get; }
+		public SlotItemInfo Display { get; }
+		public int Index { get; }
 
-		public SlotItemViewModel(int Key, SlotItem Display)
+		public SlotItemInfo Info => this.Display;
+
+		public SlotItemInfoViewModel(int Key, SlotItemInfo Display, int Index = -1)
 		{
 			this.Key = Key;
+			this.Display = Display;
+			this.Index = Index;
+		}
+		public SlotItemInfoViewModel(SlotItemInfoViewModel origin, int Index = -1)
+			: this(origin.Key, origin.Display, Index == -1 ? origin.Index : Index)
+		{ }
+	}
+	public class LevelValueViewModel : Livet.ViewModel
+	{
+		public int Value { get; }
+		public LevelValueViewModel(int Value)
+		{
+			this.Value = Value < 0
+				? 0
+				: Value > 10
+					? 10
+					: Value;
+		}
+	}
+	public class ProficiencyValueViewModel : Livet.ViewModel
+	{
+		public int Value { get; }
+		public ProficiencyValueViewModel(int Value)
+		{
+			this.Value = Value < 0
+				? 0
+				: Value > 7
+					? 7
+					: Value;
+		}
+	}
+	public class LBASActionTypeViewModel  : Livet.ViewModel
+	{
+		public LBASActionType Value { get; }
+		public string Display { get; }
+
+		public LBASActionTypeViewModel(LBASActionType Action, string Display)
+		{
+			this.Value = Action;
 			this.Display = Display;
 		}
 	}

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,8 +27,6 @@ namespace Grabacr07.KanColleWrapper.Models.Raw
 		public int api_first_clear { get; set; }
 		public int[] api_get_flag { get; set; }
 		public kcsapi_battleresult_getship api_get_ship { get; set; }
-		public kcsapi_battleresult_getuseitem api_get_useitem { get; set; }
-		public kcsapi_battleresult_getuseitem api_get_slotitem { get; set; }
 		public int api_get_eventflag { get; set; }
 		public int api_get_exmap_rate { get; set; }
 		public int api_get_exmap_useitem_id { get; set; }

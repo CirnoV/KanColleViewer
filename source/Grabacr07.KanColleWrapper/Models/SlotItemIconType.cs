@@ -234,5 +234,10 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// 夜間戦闘機
 		/// </summary>
 		NightFighter = 45,
+
+		/// <summary>
+		/// 夜間攻撃機
+		/// </summary>
+		NightAttacker = 46,
 	}
 }

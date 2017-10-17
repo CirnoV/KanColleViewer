@@ -101,9 +101,8 @@
     <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="Nekoxy, Version=1.5.2.20, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nekoxy.1.5.2.20\lib\net45\Nekoxy.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Nekoxy, Version=1.5.3.21, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nekoxy.1.5.3.21\lib\net45\Nekoxy.dll</HintPath>
     </Reference>
     <Reference Include="StatefulModel">
       <HintPath>..\packages\StatefulModel.0.6.0\lib\portable-net45+win+wp80+MonoAndroid10+xamarinios10+MonoTouch10\StatefulModel.dll</HintPath>
@@ -149,8 +148,7 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="TrotiNet, Version=0.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nekoxy.1.5.2.20\lib\net45\TrotiNet.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Nekoxy.1.5.3.21\lib\net45\TrotiNet.dll</HintPath>
     </Reference>
     <Reference Include="Vannatech.CoreAudio">
       <HintPath>..\..\assemblies\Vannatech.CoreAudio.dll</HintPath>

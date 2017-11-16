@@ -22,9 +22,10 @@ namespace Grabacr07.KanColleViewer.Models
 			{
 				var TRName = Translations.GetExpeditionData("TR-Name", i);
 				var FlagLv = Translations.GetExpeditionData("FlagLv", i);
+				var DisplayID = Translations.GetExpeditionData("DisplayID", i);
 
 				if (TRName != string.Empty && FlagLv != string.Empty)
-					tempList.Add(i, string.Format("[{0}] {1}", i, TRName));
+					tempList.Add(i, string.Format("[{0}] {1}", DisplayID ?? i.ToString(), TRName));
 
 				if (tempList.Count == ListCount) break;
 			}

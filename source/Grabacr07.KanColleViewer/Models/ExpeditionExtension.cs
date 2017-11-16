@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,7 +31,12 @@ namespace Grabacr07.KanColleViewer.Models
 			ExpeditionList = tempList;
 		}
 
-		// 대성공 확률 계산
+		/// <summary>
+		/// 원정의 대성공 확률 계산
+		/// </summary>
+		/// <param name="Mission">원정 번호</param>
+		/// <param name="fleet">함대의 함선들</param>
+		/// <returns></returns>
 		public static float CheckGreateSuccessChance(int Mission, Ship[] fleet)
 		{
 			// 계산 기준: http://gall.dcinside.com/board/view/?id=kancolle&no=4514491
@@ -69,6 +74,12 @@ namespace Grabacr07.KanColleViewer.Models
 			}
 		}
 
+		/// <summary>
+		/// 원정의 드럼통 갯수 조건 만족 여부
+		/// </summary>
+		/// <param name="Mission">원정 번호</param>
+		/// <param name="fleet">함대의 함선들</param>
+		/// <returns></returns>
 		public static bool CheckDrumPossible(int Mission, Ship[] fleet)
 		{
 			int[] nDrumData = ExpeditionExtension.CheckRequireDrums(Mission);
@@ -83,6 +94,12 @@ namespace Grabacr07.KanColleViewer.Models
 				return true;
 			return false;
 		}
+
+		/// <summary>
+		/// 함대의 드럼통 장착 갯수
+		/// </summary>
+		/// <param name="fleet">함대의 함선들</param>
+		/// <returns>int[] { 드럼 갯수, 장착 함선 수 }</returns>
 		public static int[] CheckDrums(Ship[] fleet)
 		{
 			bool shipCheck = false;
@@ -107,6 +124,12 @@ namespace Grabacr07.KanColleViewer.Models
 
 			return new int[] { rTotalDrum, rHasDrumShip };
 		}
+
+		/// <summary>
+		/// 원정에서 요구하는 총 드럼 수와 장착 함선 수
+		/// </summary>
+		/// <param name="Mission">원정 번호</param>
+		/// <returns>int[] { 드럼 갯수, 장착 함선 수 }</returns>
 		public static int[] CheckRequireDrums(int Mission)
 		{
 			var NeedDrumRaw = KanColleClient.Current.Translations.GetExpeditionData("DrumCount", Mission);
@@ -119,6 +142,12 @@ namespace Grabacr07.KanColleViewer.Models
 
 			return new int[] { nTotalDrum, nHasDrumShip };
 		}
+
+		/// <summary>
+		/// 키라 상태 함선 수
+		/// </summary>
+		/// <param name="fleet">함대의 함선들</param>
+		/// <returns></returns>
 		public static int KiraShipsCount(Ship[] fleet)
 		{
 			return fleet.Where(x => x.ConditionType == ConditionType.Brilliant)

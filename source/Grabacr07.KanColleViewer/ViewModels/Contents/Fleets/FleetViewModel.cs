@@ -328,7 +328,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 			}
 		}
 
-		public List<int> ResultList { get; set; }
+		public Dictionary<int, string> ResultList { get; set; }
 		private Dictionary<int, int> ShipTypeTable { get; set; }
 
 		public FleetStateViewModel State { get; }
@@ -368,9 +368,10 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 				IsFirstFleet = Visibility.Visible;
 
 				this.ResultList = this.MakeResultList();
-				this.ExpeditionId = fleet.Expedition.IsInExecution
-					? fleet.Expedition.Id
-					: this.ResultList.FirstOrDefault();
+				this.ExpeditionId =
+					fleet.Expedition.IsInExecution
+						? fleet.Expedition.Id
+						: this.ResultList.FirstOrDefault().Key;
 			}
 			else IsFirstFleet = Visibility.Collapsed;
 
@@ -755,9 +756,9 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 
 			return templist;
 		}
-		private List<int> MakeResultList()
+		private Dictionary<int, string> MakeResultList()
 		{
-			List<int> temp = new List<int>();
+			var temp = new Dictionary<int, string>();
 
 			bool IsEnd = true;
 			int i = 1;
@@ -768,10 +769,14 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 			{
 				var TRName = KanColleClient.Current.Translations.GetExpeditionData("TR-Name", i);
 				var FlagLv = KanColleClient.Current.Translations.GetExpeditionData("FlagLv", i);
+				var DisplayID = KanColleClient.Current.Translations.GetExpeditionData("DisplayID", i);
 
 				i++;
-				if (TRName != string.Empty && FlagLv != string.Empty) temp.Add(i - 1);
-				if (temp.Count == ListCount) IsEnd = false;
+				if (TRName != string.Empty && FlagLv != string.Empty)
+					temp.Add(i - 1, string.IsNullOrEmpty(DisplayID) ? (i - 1).ToString() : DisplayID);
+
+				if (temp.Count == ListCount)
+					IsEnd = false;
 			}
 
 			return temp;

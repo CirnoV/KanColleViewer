@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Grabacr07.KanColleViewer.Views.Contents.Fleets"
+<UserControl x:Class="Grabacr07.KanColleViewer.Views.Contents.Fleets"
 			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
@@ -853,6 +853,8 @@
 										  VerticalAlignment="Center"
 										  Prompt=""
 										  SelectedValue="{Binding ExpeditionId, Mode=TwoWay}"
+										  SelectedValuePath="Key"
+										  DisplayMemberPath="Value"
 										  IsReadOnly="True"
 										  MinWidth="50"
 										  Grid.Column="2" Margin="0,0,3,0" />

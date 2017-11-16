@@ -25,7 +25,7 @@ namespace Grabacr07.KanColleViewer.Models
 				var DisplayID = Translations.GetExpeditionData("DisplayID", i);
 
 				if (TRName != string.Empty && FlagLv != string.Empty)
-					tempList.Add(i, string.Format("[{0}] {1}", DisplayID ?? i.ToString(), TRName));
+					tempList.Add(i, string.Format("[{0}] {1}", string.IsNullOrEmpty(DisplayID) ? i.ToString() : DisplayID, TRName));
 
 				if (tempList.Count == ListCount) break;
 			}

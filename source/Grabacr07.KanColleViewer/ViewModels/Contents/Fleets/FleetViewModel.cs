@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -328,7 +328,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 			}
 		}
 
-		public List<int> ResultList { get; set; }
+		public Dictionary<int, string> ResultList { get; set; }
 		private Dictionary<int, int> ShipTypeTable { get; set; }
 
 		public FleetStateViewModel State { get; }
@@ -368,9 +368,10 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 				IsFirstFleet = Visibility.Visible;
 
 				this.ResultList = this.MakeResultList();
-				this.ExpeditionId = fleet.Expedition.IsInExecution
-					? fleet.Expedition.Id
-					: this.ResultList.FirstOrDefault();
+				this.ExpeditionId =
+					fleet.Expedition.IsInExecution
+						? fleet.Expedition.Id
+						: this.ResultList.FirstOrDefault().Key;
 			}
 			else IsFirstFleet = Visibility.Collapsed;
 
@@ -497,14 +498,10 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 			var FLv = KanColleClient.Current.Translations.GetExpeditionData("FlagLv", Mission);
 			var TotalLevel = KanColleClient.Current.Translations.GetExpeditionData("TotalLv", Mission);
 			var FlagShipType = KanColleClient.Current.Translations.GetExpeditionData("FlagShipType", Mission);
-			StringBuilder strb = new StringBuilder();
 
 			if (KanColleClient.Current.Translations.GetExpeditionData("DrumCount", Mission) != string.Empty) Chk = this.DrumCount(Mission, fleet);
 
-			if (NeedShipRaw[0] == string.Empty) return false;
-			else strb.Append("총" + Convert.ToInt32(NeedShipRaw[0]) + "(");
-
-			if (fleet.Count() < Convert.ToInt32(NeedShipRaw[0])) Chk = false;
+			if (fleet.Length < Convert.ToInt32(NeedShipRaw[0])) Chk = false;
 
 			if (FLv != string.Empty && FLv != "-")
 			{
@@ -528,49 +525,202 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 				this.vFlagType = Visibility.Visible;
 			}
 
-			Dictionary<int, int> ExpeditionTable = new Dictionary<int, int>();
-
-			if (NeedShipRaw.Count() > 1)
+			var ExpeditionTable = new Dictionary<int, int>();
+			var strb = new StringBuilder();
+			if (NeedShipRaw[0] == string.Empty)
+				return false;
+			else
 			{
-				var Ships = NeedShipRaw[1].Split(',');
-				for (int i = 0; i < Ships.Count(); i++)
-				{
-					var shipInfo = Ships[i].Split('*');
-					if (shipInfo.Count() > 1)
-						ExpeditionTable.Add(Convert.ToInt32(shipInfo[0]), Convert.ToInt32(shipInfo[1]));
-				}
-				var list = ExpeditionTable.ToList();
-				for (int i = 0; i < ExpeditionTable.Count; i++)
-				{
-					if (i == 0)
-					{
-						strb.Append(KanColleClient.Current.Translations.GetTranslation("", TranslationType.ShipTypes, false, null, list[i].Key) + "×" + list[i].Value);
-					}
-					else strb.Append("・" + KanColleClient.Current.Translations.GetTranslation("", TranslationType.ShipTypes, false, null, list[i].Key) + "×" + list[i].Value);
-				}
-				strb.Append(")");
-				strb = strb.Replace("()", "");
-				this.ShipTypeString = strb.ToString();
-				if (this.ShipTypeString.Count() > 0) this.vNeed = Visibility.Visible;
+				strb.Append("총" + Convert.ToInt32(NeedShipRaw[0]) + "(");
 
-				for (int i = 0; i < ExpeditionTable.Count; i++)
+				if (NeedShipRaw.Length > 1)
 				{
-					var test = ExpeditionTable.ToList();
-					if (this.ShipTypeTable.ContainsKey(test[i].Key))
+					var Ships = NeedShipRaw[1].Split(',');
+
+					for (int i = 0; i < Ships.Length; i++)
 					{
-						var Count = this.ShipTypeTable[test[i].Key];
-						if (ExpeditionTable[test[i].Key] > this.ShipTypeTable[test[i].Key])
-							Chk = false;
+						var shipInfo = Ships[i].Split('*');
+						if (shipInfo.Length > 1)
+							ExpeditionTable.Add(Convert.ToInt32(shipInfo[0]), Convert.ToInt32(shipInfo[1]));
 					}
-					else Chk = false;
+					var list = ExpeditionTable.ToList();
+					for (int i = 0; i < ExpeditionTable.Count; i++)
+					{
+						if (i == 0)
+							strb.Append(KanColleClient.Current.Translations.GetTranslation("", TranslationType.ShipTypes, false, null, list[i].Key) + "×" + list[i].Value);
+						else
+							strb.Append("・" + KanColleClient.Current.Translations.GetTranslation("", TranslationType.ShipTypes, false, null, list[i].Key) + "×" + list[i].Value);
+					}
+					strb.Append(")");
+					strb = strb.Replace("()", "");
+					this.ShipTypeString = strb.ToString();
+					if (this.ShipTypeString.Length > 0) this.vNeed = Visibility.Visible;
 				}
+			}
+
+			var bChk = false;
+			try
+			{
+				var alters = GetAvailableAlternatives(fleet);
+				foreach (var alter in alters)
+					bChk |= CheckExpeditionTable(alter, ExpeditionTable);
+			}
+			catch { }
+
+			return (Chk & bChk);
+		}
+		private Dictionary<int, int>[] GetAvailableAlternatives(Ship[] ships)
+		{
+			var list = new List<Dictionary<int, int>>();
+			var bTable = new List<int[]>();
+
+			#region 모든 경우의 수를 찾는다
+			{
+				var eIndex = new int[] { -1, -1, -1, -1, -1 };
+				var cIndex = new int[eIndex.Length];
+
+				var loopCount = 1 << eIndex.Length;
+				int eCount;
+
+				for (int i = 0; i < loopCount; i++)
+				{
+					eCount = 0;
+					Array.Copy(eIndex, cIndex, eIndex.Length);
+
+					for (int c = 0; c < eIndex.Length; c++)
+					{
+						int mask = (1 << c);
+						if ((i & mask) == mask)
+						{
+							cIndex[eCount] = c;
+							eCount++;
+						}
+					}
+
+					int[] combies = new int[eCount];
+					for (var j = 0; j < eCount; j++)
+						combies[j] = 1 + j;
+
+					bTable.Add(
+						combies.Reverse().ToArray()
+					);
+				}
+			}
+			#endregion
+
+			var baseTypes = MakeShipTypeTable(ships);
+
+			foreach (var entity in bTable)
+			{
+				var curTypes = baseTypes.ToDictionary(x => x.Key, x => x.Value); // Clone perfectly
+
+				foreach (var item in entity)
+				{
+					switch (item)
+					{
+						case 1: // 해방함 2 -> 구축함 2
+							if (curTypes.ContainsKey(1) && curTypes[1] >= 2) {
+								curTypes[1] -= 2;
+								if (curTypes[1] == 0)
+									curTypes.Remove(1);
+
+								if (curTypes.ContainsKey(2))
+									curTypes[2] += 2;
+								else
+									curTypes.Add(2, 2);
+							}
+							break;
+
+						case 2: // 해방함 3 -> [구축함 2] / 경순양함 1 구축함 1
+							if (curTypes.ContainsKey(1) && curTypes[1] >= 3)
+							{
+								curTypes[1] -= 3;
+								if (curTypes[1] == 0)
+									curTypes.Remove(1);
+
+								if (curTypes.ContainsKey(2))
+									curTypes[2] += 2;
+								else
+									curTypes.Add(2, 2);
+							}
+							break;
+
+						case 3: // 해방함 3 -> 구축함 2 / [경순양함 1 구축함 1]
+							if (curTypes.ContainsKey(1) && curTypes[1] >= 3)
+							{
+								curTypes[1] -= 3;
+								if (curTypes[1] == 0)
+									curTypes.Remove(1);
+
+								if (curTypes.ContainsKey(2))
+									curTypes[2] += 1;
+								else
+									curTypes.Add(2, 1);
+
+								if (curTypes.ContainsKey(3))
+									curTypes[3] += 1;
+								else
+									curTypes.Add(3, 1);
+							}
+							break;
+
+						case 4: // 타이요/타이요改/타이요改2 -> 경순양함 1
+							if (ships.Any(x => new int[] { 380, 526, 529 }.Contains(x.Info.Id)))
+							{
+								curTypes[7] -= 1;
+								if (curTypes[7] == 0)
+									curTypes.Remove(7);
+
+								if (curTypes.ContainsKey(3))
+									curTypes[3] += 1;
+								else
+									curTypes.Add(3, 1);
+							}
+							break;
+
+						case 5: // 연습순양함 -> 경순양함 1 (해방함 >= 2)
+							if ((curTypes.ContainsKey(1) && curTypes[1] >= 2) && curTypes.ContainsKey(21))
+							{
+								curTypes[21] -= 1;
+								if (curTypes[21] == 0)
+									curTypes.Remove(21);
+
+								if (curTypes.ContainsKey(3))
+									curTypes[3] += 1;
+								else
+									curTypes.Add(3, 1);
+							}
+							break;
+					}
+				}
+
+				list.Add(curTypes);
+			}
+			return list.Distinct().ToArray();
+		}
+		private bool CheckExpeditionTable(Dictionary<int, int> ShipTypeTable, Dictionary<int, int> ExpeditionTable)
+		{
+			var Chk = true;
+			var list = ExpeditionTable.ToList();
+
+			foreach(var item in list)
+			{
+				if (ShipTypeTable.ContainsKey(item.Key))
+				{
+					var Count = ShipTypeTable[item.Key];
+					if (ExpeditionTable[item.Key] > ShipTypeTable[item.Key])
+						Chk = false;
+				}
+				else Chk = false;
 			}
 			return Chk;
 		}
+
+
 		#region Make & Replace List
 		private Dictionary<int, int> MakeShipTypeTable(Ship[] source)
 		{
-			if (source.Count() <= 0) return new Dictionary<int, int>();
+			if (source.Length <= 0) return new Dictionary<int, int>();
 
 			var rawList = source.Select(x => x.Info.ShipType.Id);
 			return rawList.Distinct()
@@ -606,9 +756,9 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 
 			return templist;
 		}
-		private List<int> MakeResultList()
+		private Dictionary<int, string> MakeResultList()
 		{
-			List<int> temp = new List<int>();
+			var temp = new Dictionary<int, string>();
 
 			bool IsEnd = true;
 			int i = 1;
@@ -619,10 +769,14 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 			{
 				var TRName = KanColleClient.Current.Translations.GetExpeditionData("TR-Name", i);
 				var FlagLv = KanColleClient.Current.Translations.GetExpeditionData("FlagLv", i);
+				var DisplayID = KanColleClient.Current.Translations.GetExpeditionData("DisplayID", i);
 
 				i++;
-				if (TRName != string.Empty && FlagLv != string.Empty) temp.Add(i - 1);
-				if (temp.Count == ListCount) IsEnd = false;
+				if (TRName != string.Empty && FlagLv != string.Empty)
+					temp.Add(i - 1, string.IsNullOrEmpty(DisplayID) ? (i - 1).ToString() : DisplayID);
+
+				if (temp.Count == ListCount)
+					IsEnd = false;
 			}
 
 			return temp;

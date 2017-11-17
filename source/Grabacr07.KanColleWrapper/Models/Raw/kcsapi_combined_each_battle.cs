@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,10 +13,14 @@ namespace Grabacr07.KanColleWrapper.Models.Raw
 		public int[] api_ship_ke_combined { get; set; }
 		public int[] api_ship_lv { get; set; }
 		public int[] api_ship_lv_combined { get; set; }
-		public int[] api_nowhps { get; set; }
-		public int[] api_maxhps { get; set; }
-		public int[] api_nowhps_combined { get; set; }
-		public int[] api_maxhps_combined { get; set; }
+		public int[] api_f_nowhps { get; set; }
+		public int[] api_f_maxhps { get; set; }
+		public int[] api_e_nowhps { get; set; }
+		public int[] api_e_maxhps { get; set; }
+		public int[] api_f_nowhps_combined { get; set; }
+		public int[] api_f_maxhps_combined { get; set; }
+		public int[] api_e_nowhps_combined { get; set; }
+		public int[] api_e_maxhps_combined { get; set; }
 		public int api_midnight_flag { get; set; }
 		public int[][] api_eSlot { get; set; }
 		public int[][] api_eSlot_combined { get; set; }

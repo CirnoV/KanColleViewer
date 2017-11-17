@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,17 +38,22 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 			if (damages == null) throw new ArgumentNullException();
 
 			var arr = damages.ToArray();
+			var dat = new int[6];
+			for (var i = 0; i < arr.Length; i++)
+				dat[i] = arr[i];
+			/*
 			if (arr.Length != 6)
 				throw new ArgumentException("艦隊ダメージ配列の長さは6である必要があります。");
+			*/
 
 			return new FleetDamages
 			{
-				Ship1 = arr[0],
-				Ship2 = arr[1],
-				Ship3 = arr[2],
-				Ship4 = arr[3],
-				Ship5 = arr[4],
-				Ship6 = arr[5]
+				Ship1 = dat[0],
+				Ship2 = dat[1],
+				Ship3 = dat[2],
+				Ship4 = dat[3],
+				Ship5 = dat[4],
+				Ship6 = dat[5]
 			};
 		}
 	}

@@ -1,5 +1,5 @@
 ﻿제독업무도 바빠！ (KanColleViewer)
---
+---
 
 [![Build status (master)](https://img.shields.io/appveyor/ci/Grabacr07/KanColleViewer.svg?style=flat-square)](https://ci.appveyor.com/project/Grabacr07/kancolleviewer)
 [![Release](https://img.shields.io/github/release/CirnoV/KanColleViewer.svg?style=flat-square)](https://github.com/CirnoV/KanColleViewer/releases/latest)

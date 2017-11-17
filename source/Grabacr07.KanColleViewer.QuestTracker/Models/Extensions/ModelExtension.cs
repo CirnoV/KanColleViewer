@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,7 +32,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Extensions
 
 		#region 포격전
 		public static FleetDamages GetEnemyDamages(this kcsapi_data_hougeki hougeki)
-			=> hougeki?.api_damage?.GetEnemyDamages(hougeki.api_df_list)
+			=> hougeki?.api_damage?.GetEnemyDamages(hougeki.api_df_list, hougeki.api_at_eflag)
 				?? defaultValue;
 
 		public static FleetDamages GetEachFirstEnemyDamages(this kcsapi_data_hougeki hougeki)
@@ -45,7 +45,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Extensions
 
 		#region 야전
 		public static FleetDamages GetEnemyDamages(this kcsapi_data_midnight_hougeki hougeki)
-			=> hougeki?.api_damage?.GetEnemyDamages(hougeki.api_df_list)
+			=> hougeki?.api_damage?.GetEnemyDamages(hougeki.api_df_list, hougeki.api_at_eflag)
 				?? defaultValue;
 		#endregion
 
@@ -98,44 +98,45 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Extensions
 		#endregion
 
 
-		public static IEnumerable<T> GetFriendData<T>(this IEnumerable<T> source, int origin = 1)
+		public static IEnumerable<T> GetFriendData<T>(this IEnumerable<T> source, int origin = 0)
 			=> source.Skip(origin).Take(6);
 
-		public static IEnumerable<T> GetEnemyData<T>(this IEnumerable<T> source, int origin = 1)
+		public static IEnumerable<T> GetEnemyData<T>(this IEnumerable<T> source, int origin = 0)
 			=> source.Skip(origin + 6).Take(6);
 
-		public static IEnumerable<T> GetEachFriendData<T>(this IEnumerable<T> source, int origin = 1)
+		public static IEnumerable<T> GetEachFriendData<T>(this IEnumerable<T> source, int origin = 0)
 			=> source.Skip(origin).Take(6);
 
-		public static IEnumerable<T> GetEachEnemyData<T>(this IEnumerable<T> source, int origin = 1)
+		public static IEnumerable<T> GetEachEnemyData<T>(this IEnumerable<T> source, int origin = 0)
 			=> source.Skip(origin + 12).Take(6);
 
 
 		public static FleetDamages GetDamages(this decimal[] damages)
 			=> damages
-				.GetFriendData()
+				.GetFriendData() //敵味方共通
 				.Select(Convert.ToInt32)
 				.ToArray()
-				.ToFleetDamages();
-
-		public static FleetDamages GetEnemyDamages(this object[] damages, object[] df_list)
-			=> damages
-				.ToIntArray()
-				.ToSortedDamages(df_list.ToIntArray())
-				.GetEnemyData(0)
 				.ToFleetDamages();
 
 		public static FleetDamages GetEachDamages(this decimal[] damages, bool IsSecond = false)
 			=> damages
-				.GetFriendData(IsSecond ? 7 : 1)
+				.GetFriendData(IsSecond ? 6 : 0) //敵味方共通
 				.Select(Convert.ToInt32)
 				.ToArray()
 				.ToFleetDamages();
 
+		public static FleetDamages GetEnemyDamages(this object[] damages, object[] df_list, int[] eflag)
+			=> damages
+				// .ToIntArray()
+				.ToIntArray2()
+				.ToSortedDamages(df_list.ToIntArray2(), eflag, 0) // 적군이 쏘는게 아니라 아군이 쏘는거니까 0
+																  // .GetEnemyData(0)
+				.ToFleetDamages();
+
 		public static FleetDamages GetEachEnemyDamages(this object[] damages, object[] df_list, int[] at_eflag, bool IsSecond = false)
 			=> damages
-				.ToSortedDamages(df_list, at_eflag)
-				.GetEachEnemyData(IsSecond ? 6 : 0)
+				.ToIntArray2()
+				.ToSortedDamages(df_list.ToIntArray2(), at_eflag, 0)
 				.ToFleetDamages();
 
 		private static int[] ToIntArray(this object[] damages)
@@ -145,45 +146,38 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Extensions
 				.SelectMany(x => x.Select(Convert.ToInt32))
 				.ToArray();
 
-		private static int[] ToSortedDamages(this int[] damages, int[] dfList)
+		private static int[][] ToIntArray2(this object[] damages)
+			=> damages
+				.Where(x => x is Array)
+				.Select(x => ((Array)x).Cast<object>())
+				.Select(x => x.Select(Convert.ToInt32).ToArray())
+				.ToArray();
+
+		/// <summary>
+		/// フラット化したapi_damageとapi_df_listを元に
+		/// 自軍6隻＋敵軍6隻の長さ12のダメージ合計配列を作成
+		/// </summary>
+		/// <param name="damages">api_damage</param>
+		/// <param name="dfList">api_df_list</param>
+		/// <returns></returns>
+		private static int[] ToSortedDamages(this int[][] damages, int[][] dfList, int[] _eflag, int target)
 		{
-			var zip = damages.Zip(dfList, (da, df) => new { df, da });
-			var ret = new int[12];
+			var zip = damages
+				.Zip(
+					dfList,
+					(_da, _df)
+						=> _da.Zip(
+							_df,
+							(da, df) => new { df, da }
+						)
+				)
+				.Zip(_eflag, (data, eflag) => new { data, eflag });
 
-			foreach (var d in zip.Where(d => 0 < d.df))
-				ret[d.df - 1] += d.da;
+			var ret = new int[6];
+			foreach (var da in zip.Where(x => x.eflag == target))
+				foreach (var d in da.data)
+					ret[d.df] += d.da;
 
-			return ret;
-		}
-
-		private static int[] ToSortedDamages(this object[] damages, object[] dfList, int[] at_eflag)
-		{
-			var zip = damages.Zip(dfList, (da, df) => new { df, da })
-				.Zip(at_eflag, (dl, ef) => new { ef, dl.df, dl.da });
-
-			var ret = new int[24];
-			foreach (var d in zip.Where(d => d.ef == 1)) // Friend -> Enemy (ME)
-			{
-				if (d.df is Array)
-				{
-					var o = (d.df as object[]).Select(Convert.ToInt32).ToArray();
-					for (var i = 0; i < o.Length; i++)
-						ret[o[i] - 1] += (d.da as object[]).Select(Convert.ToInt32).ToArray()[i];
-				}
-				else
-					ret[(int)d.df - 1] += (int)d.da;
-			}
-			foreach (var d in zip.Where(d => d.ef == 0)) // Enemy -> Friend (ME)
-			{
-				if (d.df is Array)
-				{
-					var o = (d.df as object[]).Select(Convert.ToInt32).ToArray();
-					for (var i = 0; i < o.Length; i++)
-						ret[o[i] + 12 - 1] += (d.da as object[]).Select(Convert.ToInt32).ToArray()[i];
-				}
-				else
-					ret[(int)d.df + 12 - 1] += (int)d.da;
-			}
 			return ret;
 		}
 	}

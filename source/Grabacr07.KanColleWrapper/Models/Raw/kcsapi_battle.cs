@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,14 +9,14 @@ namespace Grabacr07.KanColleWrapper.Models.Raw
 	// ReSharper disable InconsistentNaming
 	public class kcsapi_battle
 	{
-		public int api_dock_id { get; set; }
+		public int api_deck_id { get; set; }
 	}
 	// ReSharper restore InconsistentNaming
 
 
 	//public class Api_Data
 	//{
-	//	public int api_dock_id { get; set; }
+	//	public int api_deck_id { get; set; }
 	//	public int[] api_ship_ke { get; set; }
 	//	public int[] api_ship_lv { get; set; }
 	//	public int[] api_nowhps { get; set; }

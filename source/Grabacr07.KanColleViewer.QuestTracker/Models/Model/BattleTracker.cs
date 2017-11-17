@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,8 +34,8 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 		{
 			ResetEnemy(data.api_ship_ke);
 
-			UpdateEnemyMaxHP(data.api_maxhps);
-			UpdateEnemyNowHP(data.api_nowhps);
+			UpdateEnemyMaxHP(data.api_e_maxhps);
+			UpdateEnemyNowHP(data.api_e_nowhps);
 
 			CalcEnemyDamages(
 				data.api_air_base_injection.GetEnemyDamages(),          // AirBase Jet
@@ -52,7 +52,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 		}
 		public void BattleProcess(kcsapi_battle_midnight_battle data) // 야전
 		{
-			UpdateEnemyNowHP(data.api_nowhps);
+			UpdateEnemyNowHP(data.api_e_nowhps);
 
 			CalcEnemyDamages(data.api_hougeki.GetEnemyDamages());
 		}
@@ -60,8 +60,8 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 		{
 			ResetEnemy(data.api_ship_ke);
 
-			UpdateEnemyMaxHP(data.api_maxhps);
-			UpdateEnemyNowHP(data.api_nowhps);
+			UpdateEnemyMaxHP(data.api_e_maxhps);
+			UpdateEnemyNowHP(data.api_e_nowhps);
 
 			CalcEnemyDamages(data.api_hougeki.GetEnemyDamages());
 		}
@@ -69,8 +69,8 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 		{
 			ResetEnemy(data.api_ship_ke);
 
-			UpdateEnemyMaxHP(data.api_maxhps);
-			UpdateEnemyNowHP(data.api_nowhps);
+			UpdateEnemyMaxHP(data.api_e_maxhps);
+			UpdateEnemyNowHP(data.api_e_nowhps);
 
 			CalcEnemyDamages(
 				data.api_air_base_injection.GetEnemyDamages(),  // AirBase Jet
@@ -86,8 +86,8 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 		{
 			ResetEnemy(data.api_ship_ke);
 
-			UpdateEnemyMaxHP(data.api_maxhps);
-			UpdateEnemyNowHP(data.api_nowhps);
+			UpdateEnemyMaxHP(data.api_e_maxhps);
+			UpdateEnemyNowHP(data.api_e_nowhps);
 
 			CalcEnemyDamages(
 				data.api_air_base_injection.GetEnemyDamages(),          // AirBase Jet
@@ -107,8 +107,8 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 		{
 			ResetEnemy(data.api_ship_ke);
 
-			UpdateEnemyMaxHP(data.api_maxhps);
-			UpdateEnemyNowHP(data.api_nowhps);
+			UpdateEnemyMaxHP(data.api_e_maxhps);
+			UpdateEnemyNowHP(data.api_e_nowhps);
 
 			CalcEnemyDamages(
 				data.api_air_base_injection.GetEnemyDamages(),          // AirBase Jet
@@ -122,7 +122,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 		}
 		public void BattleProcess(kcsapi_combined_battle_midnight_battle data) // 연합함대 야전
 		{
-			UpdateEnemyNowHP(data.api_nowhps);
+			UpdateEnemyNowHP(data.api_e_nowhps);
 
 			CalcEnemyDamages(data.api_hougeki.GetEnemyDamages());
 		}
@@ -131,8 +131,8 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 		{
 			ResetEnemy(data.api_ship_ke, data.api_ship_ke_combined);
 
-			UpdateEnemyMaxHP(data.api_maxhps, data.api_maxhps_combined);
-			UpdateEnemyNowHP(data.api_nowhps, data.api_nowhps_combined);
+			UpdateEnemyMaxHP(data.api_e_maxhps, data.api_e_maxhps_combined);
+			UpdateEnemyNowHP(data.api_e_nowhps, data.api_e_nowhps_combined);
 
 			#region 연합vs연합
 			if (isCombined)
@@ -197,7 +197,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 		}
 		public void BattleProcess(kcsapi_combined_each_midnight_battle data) // vs심해연합 야전
 		{
-			UpdateEnemyNowHP(data.api_nowhps, data.api_nowhps_combined);
+			UpdateEnemyNowHP(data.api_e_nowhps, data.api_e_nowhps_combined);
 
 			if (data.api_active_deck[1] == 1)
 				CalcEnemyDamages(data.api_hougeki.GetEnemyDamages());
@@ -218,11 +218,6 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 				new TrackerEnemyShip(), new TrackerEnemyShip(), new TrackerEnemyShip()
 			};
 
-			api_ship_ke = new int[6]
-			{
-				api_ship_ke[1], api_ship_ke[2], api_ship_ke[3],
-				api_ship_ke[4], api_ship_ke[5], api_ship_ke[6]
-			};
 			for (var i = 0; i < api_ship_ke.Length; i++)
 			{
 				var id = api_ship_ke[i];
@@ -232,11 +227,6 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 
 			if (api_ship_ke2 != null)
 			{
-				api_ship_ke2 = new int[6]
-				{
-					api_ship_ke2[1], api_ship_ke2[2], api_ship_ke2[3],
-					api_ship_ke2[4], api_ship_ke2[5], api_ship_ke2[6]
-				};
 				for (var i = 0; i < api_ship_ke2.Length; i++)
 				{
 					var id = api_ship_ke2[i];
@@ -248,11 +238,6 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 
 		public void UpdateEnemyMaxHP(int[] api_maxhps, int[] api_maxhps2 = null)
 		{
-			api_maxhps = new int[6]
-			{
-				api_maxhps[7], api_maxhps[8], api_maxhps[9],
-				api_maxhps[10], api_maxhps[11], api_maxhps[12]
-			};
 			for (var i = 0; i < api_maxhps.Length; i++)
 			{
 				var hp = api_maxhps[i] == -1 ? int.MaxValue : api_maxhps[i];
@@ -261,11 +246,6 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 
 			if (api_maxhps2 != null)
 			{
-				api_maxhps2 = new int[6]
-				{
-					api_maxhps2[7], api_maxhps2[8], api_maxhps2[9],
-					api_maxhps2[10], api_maxhps2[11], api_maxhps2[12]
-				};
 				for (var i = 0; i < api_maxhps2.Length; i++)
 				{
 					var hp = api_maxhps2[i] == -1 ? int.MaxValue : api_maxhps2[i];
@@ -275,11 +255,6 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 		}
 		public void UpdateEnemyNowHP(int[] api_nowhps, int[] api_nowhps2 = null)
 		{
-			api_nowhps = new int[6]
-			{
-				api_nowhps[7], api_nowhps[8], api_nowhps[9],
-				api_nowhps[10], api_nowhps[11], api_nowhps[12]
-			};
 			for (var i = 0; i < api_nowhps.Length; i++)
 			{
 				var hp = api_nowhps[i] == -1 ? int.MaxValue : api_nowhps[i];
@@ -288,11 +263,6 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 
 			if (api_nowhps2 != null)
 			{
-				api_nowhps2 = new int[6]
-				{
-					api_nowhps2[7], api_nowhps2[8], api_nowhps2[9],
-					api_nowhps2[10], api_nowhps2[11], api_nowhps2[12]
-				};
 				for (var i = 0; i < api_nowhps2.Length; i++)
 				{
 					var hp = api_nowhps2[i] == -1 ? int.MaxValue : api_nowhps2[i];

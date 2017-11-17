@@ -501,30 +501,6 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 
 			if (KanColleClient.Current.Translations.GetExpeditionData("DrumCount", Mission) != string.Empty) Chk = this.DrumCount(Mission, fleet);
 
-			if (fleet.Length < Convert.ToInt32(NeedShipRaw[0])) Chk = false;
-
-			if (FLv != string.Empty && FLv != "-")
-			{
-				int lv = Convert.ToInt32(FLv);
-				if (fleet[0] != null && fleet[0].Level < lv) Chk = false;
-				this.FlagLv = ("Lv" + lv);
-				this.vFlag = Visibility.Visible;
-			}
-			if (TotalLevel != string.Empty)
-			{
-				int totallv = Convert.ToInt32(TotalLevel);
-				if (fleet.Sum(x => x.Level) < totallv) Chk = false;
-				this.TotalLv = ("Lv" + totallv);
-				this.vTotal = Visibility.Visible;
-			}
-			if (FlagShipType != string.Empty)
-			{
-				int flagship = Convert.ToInt32(FlagShipType);
-				if (fleet[0].Info.ShipType.Id != flagship) Chk = false;
-				this.FlagType = (KanColleClient.Current.Translations.GetTranslation("", TranslationType.ShipTypes, false, null, flagship));
-				this.vFlagType = Visibility.Visible;
-			}
-
 			var ExpeditionTable = new Dictionary<int, int>();
 			var strb = new StringBuilder();
 			if (NeedShipRaw[0] == string.Empty)
@@ -556,6 +532,30 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 					this.ShipTypeString = strb.ToString();
 					if (this.ShipTypeString.Length > 0) this.vNeed = Visibility.Visible;
 				}
+			}
+
+			if (fleet.Length < Convert.ToInt32(NeedShipRaw[0])) Chk = false;
+
+			if (FLv != string.Empty && FLv != "-")
+			{
+				int lv = Convert.ToInt32(FLv);
+				if (fleet[0] != null && fleet[0].Level < lv) Chk = false;
+				this.FlagLv = ("Lv" + lv);
+				this.vFlag = Visibility.Visible;
+			}
+			if (TotalLevel != string.Empty)
+			{
+				int totallv = Convert.ToInt32(TotalLevel);
+				if (fleet.Sum(x => x.Level) < totallv) Chk = false;
+				this.TotalLv = ("Lv" + totallv);
+				this.vTotal = Visibility.Visible;
+			}
+			if (FlagShipType != string.Empty)
+			{
+				int flagship = Convert.ToInt32(FlagShipType);
+				if (fleet[0].Info.ShipType.Id != flagship) Chk = false;
+				this.FlagType = (KanColleClient.Current.Translations.GetTranslation("", TranslationType.ShipTypes, false, null, flagship));
+				this.vFlagType = Visibility.Visible;
 			}
 
 			var bChk = false;

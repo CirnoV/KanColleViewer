@@ -1,4 +1,4 @@
-﻿using Grabacr07.KanColleWrapper.Models;
+using Grabacr07.KanColleWrapper.Models;
 using Grabacr07.KanColleWrapper.Models.Raw;
 using System;
 using System.Collections.Generic;
@@ -428,7 +428,7 @@ namespace Grabacr07.KanColleWrapper
 							OperationsXML.Add(new XElement("Operations"));
 						}
 
-						kcsapi_battleresult OperationsData = RawData as kcsapi_battleresult;
+						kcsapi_battle_result OperationsData = RawData as kcsapi_battle_result;
 
 						if (OperationsData == null)
 							return;

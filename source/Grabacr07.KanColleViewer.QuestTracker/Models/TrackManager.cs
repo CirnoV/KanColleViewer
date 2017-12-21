@@ -80,6 +80,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 			var proxy = KanColleClient.Current.Proxy;
 			var MapInfo = new TrackerMapInfo();
 
+			battleCalculator = new BattleCalculator();
 			slotitemTracker = new SlotItemTracker(homeport, proxy);
 
 			// 편성 변경
@@ -374,15 +375,25 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 			if (api_e_maxhps_combined != null)
 				this.EnemySecond.Ships.SetValues(api_e_maxhps_combined, (s, v) => s.MaxHP = v);
 		}
+		private void UpdateBefHP(int[] api_f_nowhps, int[] api_e_nowhps, int[] api_f_nowhps_combined = null, int[] api_e_nowhps_combined = null)
+		{
+			this.AliasFirst.Ships.SetValues(api_f_nowhps, (s, v) => s.BeforeNowHP = v);
+			if (api_f_nowhps_combined != null)
+				this.AliasSecond.Ships.SetValues(api_f_nowhps_combined, (s, v) => s.BeforeNowHP = v);
+
+			this.EnemyFirst.Ships.SetValues(api_e_nowhps, (s, v) => s.BeforeNowHP = v);
+			if (api_e_nowhps_combined != null)
+				this.EnemySecond.Ships.SetValues(api_e_nowhps_combined, (s, v) => s.BeforeNowHP = v);
+		}
 		private void UpdateNowHP(int[] api_f_nowhps, int[] api_e_nowhps, int[] api_f_nowhps_combined = null, int[] api_e_nowhps_combined = null)
 		{
-			this.AliasFirst.Ships.SetValues(api_f_nowhps, (s, v) => s.NowHP = s.BeforeNowHP = v);
+			this.AliasFirst.Ships.SetValues(api_f_nowhps, (s, v) => s.NowHP = v);
 			if (api_f_nowhps_combined != null)
-				this.AliasSecond.Ships.SetValues(api_f_nowhps_combined, (s, v) => s.NowHP = s.BeforeNowHP = v);
+				this.AliasSecond.Ships.SetValues(api_f_nowhps_combined, (s, v) => s.NowHP = v);
 
-			this.EnemyFirst.Ships.SetValues(api_e_nowhps, (s, v) => s.NowHP = s.BeforeNowHP = v);
+			this.EnemyFirst.Ships.SetValues(api_e_nowhps, (s, v) => s.NowHP = v);
 			if (api_e_nowhps_combined != null)
-				this.EnemySecond.Ships.SetValues(api_e_nowhps_combined, (s, v) => s.NowHP = s.BeforeNowHP = v);
+				this.EnemySecond.Ships.SetValues(api_e_nowhps_combined, (s, v) => s.NowHP = v);
 		}
 
 		private void Update(kcsapi_sortie_battle data, ApiTypes apiType)
@@ -395,6 +406,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 
 			// 체력 갱신
 			this.UpdateMaxHP(data.api_f_maxhps, data.api_e_maxhps);
+			this.UpdateBefHP(data.api_f_nowhps, data.api_e_nowhps);
 			this.UpdateNowHP(data.api_f_nowhps, data.api_e_nowhps);
 
 			// 전투 계산
@@ -416,6 +428,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 
 				// 체력 갱신
 				this.UpdateMaxHP(data.api_f_maxhps, data.api_e_maxhps);
+				this.UpdateBefHP(data.api_f_nowhps, data.api_e_nowhps);
 			}
 
 			// 체력 갱신
@@ -438,6 +451,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 
 			// 체력 갱신
 			this.UpdateMaxHP(data.api_f_maxhps, data.api_e_maxhps);
+			this.UpdateBefHP(data.api_f_nowhps, data.api_e_nowhps);
 			this.UpdateNowHP(data.api_f_nowhps, data.api_e_nowhps);
 
 			// 전투 계산
@@ -456,6 +470,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 
 			// 체력 갱신
 			this.UpdateMaxHP(data.api_f_maxhps, data.api_e_maxhps, data.api_f_maxhps_combined);
+			this.UpdateBefHP(data.api_f_nowhps, data.api_e_nowhps, data.api_f_nowhps_combined);
 			this.UpdateNowHP(data.api_f_nowhps, data.api_e_nowhps, data.api_f_nowhps_combined);
 
 			// 전투 계산
@@ -473,6 +488,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 
 			// 체력 갱신
 			this.UpdateMaxHP(data.api_f_maxhps, data.api_e_maxhps, data.api_f_maxhps_combined, data.api_e_maxhps_combined);
+			this.UpdateBefHP(data.api_f_nowhps, data.api_e_nowhps, data.api_f_nowhps_combined, data.api_e_nowhps_combined);
 			this.UpdateNowHP(data.api_f_nowhps, data.api_e_nowhps, data.api_f_nowhps_combined, data.api_e_nowhps_combined);
 
 			// 전투 계산
@@ -490,6 +506,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 
 			// 체력 갱신
 			this.UpdateMaxHP(data.api_f_maxhps, data.api_e_maxhps, data.api_f_maxhps_combined);
+			this.UpdateBefHP(data.api_f_nowhps, data.api_e_nowhps, data.api_f_nowhps_combined);
 			this.UpdateNowHP(data.api_f_nowhps, data.api_e_nowhps, data.api_f_nowhps_combined);
 
 			// 전투 계산
@@ -510,6 +527,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 
 				// 체력 갱신
 				this.UpdateMaxHP(data.api_f_maxhps, data.api_e_maxhps, data.api_f_maxhps_combined);
+				this.UpdateBefHP(data.api_f_nowhps, data.api_e_nowhps, data.api_f_nowhps_combined);
 			}
 
 			// 체력 갱신
@@ -542,6 +560,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 
 			// 체력 갱신
 			this.UpdateMaxHP(data.api_f_maxhps, data.api_e_maxhps, data.api_f_maxhps_combined, data.api_e_maxhps_combined);
+			this.UpdateBefHP(data.api_f_nowhps, data.api_e_nowhps, data.api_f_nowhps_combined, data.api_e_nowhps_combined);
 			this.UpdateNowHP(data.api_f_nowhps, data.api_e_nowhps, data.api_f_nowhps_combined, data.api_e_nowhps_combined);
 
 			// 전투 계산

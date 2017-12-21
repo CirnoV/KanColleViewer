@@ -353,9 +353,9 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 			public int TotalDamaged => this.DamageList.Where(x => !x.IsDealt).Sum(x => x.Damage);
 
 			/// <summary>
-			/// 총 받은 데미지 (최대 체력만큼만)
+			/// 체력 변동 수치
 			/// </summary>
-			public int TotalDamagedAdjusted => Math.Min(this.TotalDamaged, this.Source?.MaxHP ?? int.MaxValue);
+			public int HPChangedValue => (this.Source?.BeforeNowHP - Math.Max(0, this.Source?.NowHP ?? 0)) ?? 0;
 
 			/// <summary>
 			/// 총 준 데미지
@@ -1290,13 +1290,13 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 						// 적군이 공격 (아군이 맞음)
 						else
 						{
-							ShipBattleInfo _from = (enemy_deck == 1) ? EnemySecondShips[from - 6] : EnemyFirstShips[from];
+							ShipBattleInfo _from = (enemy_deck != 1) ? EnemySecondShips[from - 6] : EnemyFirstShips[from];
 							_from?.Dealt(target_dmg[j], phase, DamageTypeFromSP(type));
 
 							if (IsCombined && target_idx >= 6)
-								AliasFirstShips[target_idx]?.Damaged(target_dmg[j], phase, _from, DamageTypeFromSP(type));
-							else
 								AliasSecondShips[target_idx - 6]?.Damaged(target_dmg[j], phase, _from, DamageTypeFromSP(type));
+							else
+								AliasFirstShips[target_idx]?.Damaged(target_dmg[j], phase, _from, DamageTypeFromSP(type));
 						}
 					}
 				}
@@ -1304,7 +1304,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 		}
 
 		/// <summary>
-		/// 개막 뇌격전, 선제 개막 뇌격 관련 계산
+		/// 개막 뇌격전, 폐막 뇌격 관련 계산
 		/// </summary>
 		private void UpdateTorpedo(kcsapi_battle_raigeki data, BattlePhase phase)
 		{
@@ -1320,30 +1320,26 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 				var idx = frai[i];
 				if (idx < 0) continue;
 
-				if (IsEnemyCombined && idx >= 6)
-					EnemySecondShips[idx - 6]?.Damaged(fydam[i], phase, null, DamageType.Normal);
-				else
-					EnemyFirstShips[idx]?.Damaged(fydam[i], phase, null, DamageType.Normal);
+				var _from = (IsCombined && i >= 6 ? AliasSecondShips[i - 6] : AliasFirstShips[i]);
+				_from?.Dealt(fydam[i], phase, DamageType.Normal);
 
-				if (IsCombined && i >= 6)
-					AliasSecondShips[i - 6]?.Dealt(fydam[i], phase, DamageType.Normal);
+				if (IsEnemyCombined && idx >= 6)
+					EnemySecondShips[idx - 6]?.Damaged(fydam[i], phase, _from, DamageType.Normal);
 				else
-					AliasFirstShips[i]?.Dealt(fydam[i], phase, DamageType.Normal);
+					EnemyFirstShips[idx]?.Damaged(fydam[i], phase, _from, DamageType.Normal);
 			}
 			for (int i = 0; i < erai.Length; i++)
 			{
 				var idx = erai[i];
 				if (idx < 0) continue;
 
-				if (IsCombined && idx >= 6)
-					AliasSecondShips[idx - 6]?.Damaged(eydam[i], phase, null, DamageType.Normal);
-				else
-					AliasFirstShips[idx]?.Damaged(eydam[i], phase, null, DamageType.Normal);
+				var _from = (IsEnemyCombined && i >= 6 ? EnemySecondShips[i - 6] : EnemyFirstShips[i]);
+				_from?.Dealt(fydam[i], phase, DamageType.Normal);
 
-				if (IsEnemyCombined && i >= 6)
-					EnemySecondShips[i - 6]?.Dealt(eydam[i], phase, DamageType.Normal);
+				if (IsCombined && idx >= 6)
+					AliasSecondShips[idx - 6]?.Damaged(eydam[i], phase, _from, DamageType.Normal);
 				else
-					EnemyFirstShips[i]?.Dealt(eydam[i], phase, DamageType.Normal);
+					AliasFirstShips[idx]?.Damaged(eydam[i], phase, _from, DamageType.Normal);
 			}
 		}
 

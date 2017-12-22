@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -52,7 +52,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 			get { return this._SelectedFleet; }
 			set
 			{
-				if (_SelectedFleet == value) return; // 같아서 문제?
+				// if (_SelectedFleet == value) return; // 같아서 문제?
 
 				if (this.SelectedFleet != null)
 					this.SelectedFleet.IsSelected = false;
@@ -209,10 +209,6 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 
 			if (!this.Fleets2.Any(x => x == this.SelectedFleet))
 				this.SelectedFleet = this.Fleets2.FirstOrDefault();
-
-			// 연합 함대 해제 혹은 설정인 경우 메모리 정리...
-			if (KanColleClient.Current.Homeport.Organization.Combined || prevCombined)
-				GCWorker.GCRequest(-1, GCWorker.GCType.GCAll);
 
 			prevCombined = KanColleClient.Current.Homeport.Organization.Combined;
 		}

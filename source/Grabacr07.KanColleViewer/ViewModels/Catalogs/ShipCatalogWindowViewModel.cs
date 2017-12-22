@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
@@ -179,26 +179,31 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 		{
 			return Observable.Start(() =>
 			{
-				var list = this.homeport.Organization.Ships
-					.Select(kvp => kvp.Value)
-					.Where(x => this.ShipTypes.Where(t => t.IsSelected).Any(t => x.Info.ShipType.Id == t.Id))
-					.Where(this.ShipLevelFilter.Predicate)
-					.Where(this.ShipLockFilter.Predicate)
-					.Where(this.ShipSpeedFilter.Predicate)
-					.Where(this.ShipModernizeFilter.Predicate)
-					.Where(this.ShipRemodelingFilter.Predicate)
-					.Where(this.ShipExpeditionFilter.Predicate)
-					.Where(this.ShipSallyAreaFilter.Predicate)
-					.Where(this.ShipNameSearchFilter.Predicate)
-					.Where(this.ShipDamagedFilter.Predicate)
-					.Where(this.ShipConditionFilter.Predicate)
-					.Where(this.ShipExSlotFilter.Predicate)
-					.Where(this.ShipFleetFilter.Predicate)
-					.Where(this.DaihatsueFilter.Predicate);
+				try
+				{
+					var list = this.homeport.Organization.Ships
+						.Select(kvp => kvp.Value)
+						.Where(x => this.ShipTypes.Where(t => t.IsSelected).Any(t => x.Info.ShipType.Id == t.Id))
+						.Where(this.ShipLevelFilter.Predicate)
+						.Where(this.ShipLockFilter.Predicate)
+						.Where(this.ShipSpeedFilter.Predicate)
+						.Where(this.ShipModernizeFilter.Predicate)
+						.Where(this.ShipRemodelingFilter.Predicate)
+						.Where(this.ShipExpeditionFilter.Predicate)
+						.Where(this.ShipSallyAreaFilter.Predicate)
+						.Where(this.ShipNameSearchFilter.Predicate)
+						.Where(this.ShipDamagedFilter.Predicate)
+						.Where(this.ShipConditionFilter.Predicate)
+						.Where(this.ShipExSlotFilter.Predicate)
+						.Where(this.ShipFleetFilter.Predicate)
+						.Where(this.DaihatsueFilter.Predicate)
+						.ToArray();
 
-				this.Ships = this.SortWorker.Sort(list)
-					.Select((x, i) => new ShipViewModel(i + 1, x, areas.FirstOrDefault(y => y.Area == x.SallyArea)))
-					.ToList();
+					this.Ships = this.SortWorker.Sort(list)
+						.Select((x, i) => new ShipViewModel(i + 1, x, areas.FirstOrDefault(y => y.Area == x.SallyArea)))
+						.ToList();
+				}
+				catch { }
 			});
 		}
 

@@ -63,20 +63,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\ApiTypes.cs" />
     <Compile Include="Models\EventArgs\BaseEventArgs.cs" />
     <Compile Include="Models\EventArgs\BattleResultEventArgs.cs" />
     <Compile Include="Models\EventArgs\DestroyItemEventArgs.cs" />
+    <Compile Include="Models\EventArgs\DestroyShipEventArgs.cs" />
     <Compile Include="Models\EventArgs\MissionResultEventArgs.cs" />
-    <Compile Include="Models\EventArgs\PracticeResultArgs.cs" />
     <Compile Include="Models\Extensions\BasicExtension.cs" />
-    <Compile Include="Models\Extensions\ModelExtension.cs" />
+    <Compile Include="Models\FleetData.cs" />
+    <Compile Include="Models\FleetType.cs" />
+    <Compile Include="Models\Formation.cs" />
     <Compile Include="Models\ITracker.cs" />
-    <Compile Include="Models\Model\BattleTracker.cs" />
-    <Compile Include="Models\Model\FleetDamages.cs" />
+    <Compile Include="Models\Model\BattleCalcaultor.cs" />
     <Compile Include="Models\Model\IdProgressPair.cs" />
     <Compile Include="Models\Model\QuestProgressType.cs" />
+    <Compile Include="Models\ShipData.cs" />
+    <Compile Include="Models\ShipSlotData.cs" />
+    <Compile Include="Models\SlotitemCategoryType.cs" />
     <Compile Include="Models\Model\StorageData.cs" />
-    <Compile Include="Models\Model\TrackerEnemyShip.cs" />
     <Compile Include="Models\Model\TrackerMapInfo.cs" />
     <Compile Include="Models\NoOverUnderTracker.cs" />
     <Compile Include="Models\NoSerializeTracker.cs" />

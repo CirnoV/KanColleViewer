@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,8 +34,8 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 
 				count = count.Add(
 						args.EnemyShips
-							.Where(x => x.Type == 7 || x.Type == 11 || x.Type == 18)
-							.Where(x => x.MaxHp != int.MaxValue && x.NowHp <= 0)
+							.Where(x => x.Source.ShipType == 7 || x.Source.ShipType == 11 || x.Source.ShipType == 18)
+							.Where(x => x.Source.MaxHP != int.MaxValue && x.Source.NowHP <= 0)
 							.Count()
 					).Max(max_count);
 

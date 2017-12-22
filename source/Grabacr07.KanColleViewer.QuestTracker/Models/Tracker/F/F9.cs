@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,7 +32,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 			{
 				if (!IsTracking) return;
 
-				count = count.Add(1).Max(max_count);
+				count = count.Add(args.shipList.Length).Max(max_count);
 
 				ProcessChanged?.Invoke(this, emptyEventArgs);
 			};

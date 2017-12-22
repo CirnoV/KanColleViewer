@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +16,13 @@ namespace Grabacr07.KanColleWrapper.Models.Raw
 		public kcsapi_basic api_basic { get; set; }
 		public int api_combined_flag { get; set; }
 		//public Api_Log[] api_log { get; set; }
+		public kcsapi_event_object api_event_object { get; set; }
+	}
+
+	public class kcsapi_event_object
+	{
+		public int api_m_flag { get; set; }
+		public int api_m_flag2 { get; set; }
 	}
 
 	//public class Api_Basic

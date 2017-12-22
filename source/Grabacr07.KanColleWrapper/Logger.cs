@@ -1,4 +1,4 @@
-﻿using Grabacr07.KanColleWrapper.Models;
+using Grabacr07.KanColleWrapper.Models;
 using Grabacr07.KanColleWrapper.Models.Raw;
 using Livet;
 using Nekoxy;
@@ -94,8 +94,8 @@ namespace Grabacr07.KanColleWrapper
 				proxy.api_req_map_start.TryParse<start_next>().Subscribe(x => MapStartNext(x.Data, x.Request["api_deck_id"]));
 				proxy.api_req_map_next.TryParse<start_next>().Subscribe(x => MapStartNext(x.Data));
 
-				proxy.api_req_sortie_battleresult.TryParse<kcsapi_battleresult>().Subscribe(x => this.BattleResult(x.Data));
-				proxy.api_req_combined_battle_battleresult.TryParse<kcsapi_battleresult>().Subscribe(x => this.BattleResult(x.Data));
+				proxy.api_req_sortie_battleresult.TryParse<kcsapi_battle_result>().Subscribe(x => this.BattleResult(x.Data));
+				proxy.api_req_combined_battle_battleresult.TryParse<kcsapi_battle_result>().Subscribe(x => this.BattleResult(x.Data));
 
 				// ちょっと考えなおす
 				proxy.api_req_kousyou_createitem.TryParse<kcsapi_createitem>().Subscribe(x => this.CreateItem(x.Data, x.Request));
@@ -237,7 +237,7 @@ namespace Grabacr07.KanColleWrapper
 			return (w == 5 || e) && (Convert.ToBoolean(n) == bossSupport);
 		}
 
-		private void BattleResult(kcsapi_battleresult br)
+		private void BattleResult(kcsapi_battle_result br)
 		{
 			string ShipName = "";
 			string MapType = "";

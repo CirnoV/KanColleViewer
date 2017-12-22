@@ -400,6 +400,7 @@ namespace Grabacr07.KanColleWrapper.Models
 			this.PartEncounterPercent = partPercent;
 			this.FirstEncounter = ships.Sum(s => s.CalcFirstEncounterPercent());
 
+			/*
 			{
 				if (ships.All(x => x.Speed == ShipSpeed.Fastest)) // 최속으로만 구성
 					this.Speed = FleetSpeed.Fastest;
@@ -418,6 +419,15 @@ namespace Grabacr07.KanColleWrapper.Models
 					this.Speed = FleetSpeed.Hybrid_Low; // 저속 포함 구성
 			}
 			// this.Speed = new FleetSpeed(Array.ConvertAll(ships, x => x.Speed));
+			*/
+			if (ships.Any(x => x.Speed == ShipSpeed.Slow)) // 저속 포함
+				this.Speed = FleetSpeed.Low;
+			else if (ships.All(x => x.Speed == ShipSpeed.Fast)) // 고속 포함
+				this.Speed = FleetSpeed.Fast;
+			else if (ships.All(x => x.Speed == ShipSpeed.Faster)) // 고속+ 포함
+				this.Speed = FleetSpeed.Faster;
+			else // 최속만
+				this.Speed = FleetSpeed.Fastest;
 
 			var logic = ViewRangeCalcLogic.Get(KanColleClient.Current.Settings.ViewRangeCalcType);
 			this.ViewRange = logic.Calc(this.source);

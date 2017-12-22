@@ -82,12 +82,13 @@ namespace Grabacr07.KanColleWrapper.Models
 			{
 				TimeSpan? Remaining = new TimeSpan(0, 0, 0, 0, (int)this.TimeToRepair.TotalMilliseconds);
 				return Remaining.HasValue
-			? string.Format("{0:D2}:{1}",
-				(int)Remaining.Value.TotalHours,
-				Remaining.Value.ToString(@"mm\:ss"))
-			: "--:--:--";
+					? string.Format("{0:D2}:{1}",
+						(int)Remaining.Value.TotalHours,
+						Remaining.Value.ToString(@"mm\:ss"))
+					: "--:--:--";
 			}
 		}
+
 		/// <summary>
 		/// 艦娘の種類に基づく情報を取得します。
 		/// </summary>

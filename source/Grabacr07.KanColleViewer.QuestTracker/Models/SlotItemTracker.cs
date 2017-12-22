@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,7 +15,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 	public class SlotItemTracker
 	{
 		internal event EventHandler<BaseEventArgs> CreateItemEvent;
-		internal event EventHandler<DestroyItemEventArgs> DestoryItemEvent;
+		internal event EventHandler<DestroyItemEventArgs> DestroyItemEvent;
 
 		private readonly Homeport homeport;
 
@@ -72,7 +72,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 
 			try
 			{
-				DestoryItemEvent?.Invoke(this, new DestroyItemEventArgs(data.Request, data.Data));
+				DestroyItemEvent?.Invoke(this, new DestroyItemEventArgs(data.Request, data.Data));
 
 				foreach (var x in data.Request["api_slotitem_ids"].Split(',').Select(int.Parse))
 					this.SlotItems.Remove(x);

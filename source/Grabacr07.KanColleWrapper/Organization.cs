@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
@@ -404,13 +404,20 @@ namespace Grabacr07.KanColleWrapper
 		{
 			try
 			{
-				var ship = this.Ships[int.Parse(svd.Request["api_ship_id"])];
-				if (ship != null)
-				{
-					this.homeport.Itemyard.RemoveFromShip(ship);
+				var ships = svd.Request["api_ship_id"]
+					.Split(',')
+					.Select(x => int.Parse(x));
 
-					this.Ships.Remove(ship);
-					this.RaiseShipsChanged();
+				foreach (var ship_idx in ships)
+				{
+					var ship = this.Ships[ship_idx];
+					if (ship != null)
+					{
+						this.homeport.Itemyard.RemoveFromShip(ship);
+
+						this.Ships.Remove(ship);
+						this.RaiseShipsChanged();
+					}
 				}
 			}
 			catch (Exception ex)
@@ -436,7 +443,7 @@ namespace Grabacr07.KanColleWrapper
 			int[] towOfferedShipIds = null;
 
 			proxy.api_req_combined_battle_battleresult
-				.TryParse<kcsapi_combined_battle_battleresult>()
+				.TryParse<kcsapi_battle_result>()
 				.Where(x => x.Data.api_escape != null)
 				.Select(x => x.Data)
 				.Subscribe(x =>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,7 +33,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 			{
 				if (!IsTracking) return;
 
-				if ("敵主力部隊" == args.EnemyName) // 1-2 보스전
+				if ("敵主力艦隊" == args.EnemyName) // 1-2 보스전
 				{
 					if ("SAB".Contains(args.Rank)) // 보스전 승리
 						count = count.Add(1).Max(max_count);

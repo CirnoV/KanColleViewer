@@ -507,8 +507,14 @@
 													<DataTrigger Binding="{Binding FitValueString}" Value="">
 														<Setter Property="Visibility" Value="Collapsed" />
 													</DataTrigger>
+													<DataTrigger Binding="{Binding FitValue}" Value="-5">
+														<Setter Property="Foreground" Value="#ffa50a0a" />
+													</DataTrigger>
+													<DataTrigger Binding="{Binding FitValue}" Value="-4">
+														<Setter Property="Foreground" Value="#ffa50a0a" />
+													</DataTrigger>
 													<DataTrigger Binding="{Binding FitValue}" Value="-3">
-															<Setter Property="Foreground" Value="#ffa50a0a" />
+														<Setter Property="Foreground" Value="#ffa50a0a" />
 													</DataTrigger>
 													<DataTrigger Binding="{Binding FitValue}" Value="-2">
 														<Setter Property="Foreground" Value="#ffa50a0a" />
@@ -523,6 +529,12 @@
 														<Setter Property="Foreground" Value="#ff62b5f5" />
 													</DataTrigger>
 													<DataTrigger Binding="{Binding FitValue}" Value="3">
+														<Setter Property="Foreground" Value="#ff62b5f5" />
+													</DataTrigger>
+													<DataTrigger Binding="{Binding FitValue}" Value="4">
+														<Setter Property="Foreground" Value="#ff62b5f5" />
+													</DataTrigger>
+													<DataTrigger Binding="{Binding FitValue}" Value="5">
 														<Setter Property="Foreground" Value="#ff62b5f5" />
 													</DataTrigger>
 												</Style.Triggers>
@@ -577,23 +589,35 @@
 										<Setter TargetName="ItemProficiencyBlock" Property="Visibility" Value="Collapsed" />
 									</DataTrigger>
 
+									<DataTrigger Binding="{Binding FitValue}" Value="-5">
+										<Setter TargetName="Elements" Property="Background" Value="#52a50a0a" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding FitValue}" Value="-4">
+										<Setter TargetName="Elements" Property="Background" Value="#41a50a0a" />
+									</DataTrigger>
 									<DataTrigger Binding="{Binding FitValue}" Value="-3">
-										<Setter TargetName="Elements" Property="Background" Value="#48a50a0a" />
+										<Setter TargetName="Elements" Property="Background" Value="#31a50a0a" />
 									</DataTrigger>
 									<DataTrigger Binding="{Binding FitValue}" Value="-2">
-										<Setter TargetName="Elements" Property="Background" Value="#44cc3b06" />
+										<Setter TargetName="Elements" Property="Background" Value="#21a50a0a" />
 									</DataTrigger>
 									<DataTrigger Binding="{Binding FitValue}" Value="-1">
-										<Setter TargetName="Elements" Property="Background" Value="#22ffda21" />
+										<Setter TargetName="Elements" Property="Background" Value="#10a50a0a" />
 									</DataTrigger>
 									<DataTrigger Binding="{Binding FitValue}" Value="1">
-										<Setter TargetName="Elements" Property="Background" Value="#3D575dab" />
+										<Setter TargetName="Elements" Property="Background" Value="#1057ab7b" />
 									</DataTrigger>
 									<DataTrigger Binding="{Binding FitValue}" Value="2">
-										<Setter TargetName="Elements" Property="Background" Value="#525787ab" />
+										<Setter TargetName="Elements" Property="Background" Value="#2157ab7b" />
 									</DataTrigger>
 									<DataTrigger Binding="{Binding FitValue}" Value="3">
-										<Setter TargetName="Elements" Property="Background" Value="#5857ab7b" />
+										<Setter TargetName="Elements" Property="Background" Value="#3157ab7b" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding FitValue}" Value="4">
+										<Setter TargetName="Elements" Property="Background" Value="#4157ab7b" />
+									</DataTrigger>
+									<DataTrigger Binding="{Binding FitValue}" Value="5">
+										<Setter TargetName="Elements" Property="Background" Value="#5257ab7b" />
 									</DataTrigger>
 								</DataTemplate.Triggers>
 							</DataTemplate>

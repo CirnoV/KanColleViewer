@@ -452,7 +452,7 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// </summary>
 		public bool IsMaxModernized => this.Firepower.IsMax && this.Torpedo.IsMax && this.AA.IsMax && this.Armer.IsMax;
 
-		private readonly int[] DaihatsuEquipableShips = new int[] { 541, 500, 490, 487, 470, 464, 469, 435, 434, 352, 200, 468, 418, 199, 147, 488, 548 };
+		private readonly int[] DaihatsuEquipableShips = new int[] { 490, 463, 548, 464, 470, 469, 435, 489, 498, 434, 199, 418, 147, 200, 487, 547, 478, 488, 541 };
 		private readonly int[] DaihatsuUnequipableShips = new int[] { 491, 445 };
 
 		public bool DaihatsuEquipable =>
@@ -518,7 +518,7 @@ namespace Grabacr07.KanColleWrapper.Models
 
 		// 선제대잠 가능 여부
 		public bool OpeningASW
-			=> this.Info.Id == 141 ? true // 이스즈改2
+			=> (this.Info.Id == 141 || this.Info.Id == 478) ? true // 이스즈改2 or 타츠타改2
 				: this.Info.ShipType.Id == 1 ? SumASW >= 60 // 해방함
 				: this.Info.ShipType.Id == 7 && this.Speed == ShipSpeed.Slow ? SumASW >= 65 // 저속 경공모
 				: SumASW >= 100;

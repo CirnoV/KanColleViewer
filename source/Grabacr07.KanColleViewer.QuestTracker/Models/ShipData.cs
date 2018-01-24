@@ -96,6 +96,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 			this.Id = info.Id;
 			this.Name = info.Name;
 			this.ShipSpeed = info?.Speed ?? ShipSpeed.Immovable;
+			this.ShipType = info?.ShipType?.Id ?? 0;
 		}
 	}
 }

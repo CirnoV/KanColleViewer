@@ -958,12 +958,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 			if (damages != null)
 			{
 				for (int i = 0; i < damages.Length; i++)
-				{
-					if (i < 6)
-						EnemyFirstShips[i]?.Damaged(damages[i], phase, null, DamageType.Normal);
-					else
-						EnemySecondShips[i - 6]?.Damaged(damages[i], phase, null, DamageType.Normal);
-				}
+					EnemyFirstShips[i]?.Damaged(damages[i], phase, null, DamageType.Normal);
 			}
 			if (damages_combined != null)
 			{

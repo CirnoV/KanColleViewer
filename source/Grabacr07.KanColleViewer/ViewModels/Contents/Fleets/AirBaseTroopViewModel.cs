@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -40,6 +40,8 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 			}
 		}
 		#endregion
+
+		public int Id => -1;
 
 		public Visibility IsFirstFleet => Visibility.Collapsed;
 		public bool IsNotFleet => true;

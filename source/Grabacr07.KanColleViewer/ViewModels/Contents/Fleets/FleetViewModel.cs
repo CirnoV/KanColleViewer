@@ -315,7 +315,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 		#endregion
 
 		// AirBaseTroopViewModel 과의 호환
-		public bool IsNotFleet => true;
+		public bool IsNotFleet => false;
 
 		/// <summary>
 		/// 艦隊に所属している艦娘のコレクションを取得します。

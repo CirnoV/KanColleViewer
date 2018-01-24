@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
@@ -10,6 +10,7 @@ using System.Runtime.Serialization.Json;
 using System.Threading;
 using Livet.EventListeners;
 using MetroTrilithon.Mvvm;
+using Codeplex.Data;
 
 using Grabacr07.KanColleViewer.Models;
 
@@ -67,20 +68,51 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 						var json = await response.Content.ReadAsStringAsync();
 						var lines = json.Split(new char[] { '\r', '\n' }).Where(x => x.Length > 0);
 
-						List<ships_nedb> infoList = new List<ships_nedb>();
+						var infoList = new List<ships_nedb>();
 
 						foreach (var line in lines)
 						{
 							var bytes = Encoding.UTF8.GetBytes(line);
-
-							DataContractJsonSerializerSettings settings = new DataContractJsonSerializerSettings();
-							settings.UseSimpleDictionaryFormat = true;
-
-							var serializer = new DataContractJsonSerializer(typeof(ships_nedb), settings);
 							using (var stream = new MemoryStream(bytes))
 							{
-								var rawResult = serializer.ReadObject(stream) as ships_nedb;
-								infoList.Add(rawResult);
+								dynamic rawResult = DynamicJson.Parse(stream);
+
+								var _slot = rawResult.slot;
+								var __slot = new List<int>();
+								foreach(var _ in _slot)
+									if (_ != null)
+										__slot.Add((int)_);
+
+								var equiplist = new List<ships_nedb_equip>();
+								if (rawResult.equip.GetType() != typeof(string))
+								{
+									foreach (var _ in rawResult.equip)
+									{
+										if (_ == null || _.GetType() == typeof(string))
+											equiplist.Add(null);
+										else if (_.GetType() == typeof(double))
+											equiplist.Add(new ships_nedb_equip { id = (int)_, star = 0 });
+										else
+											equiplist.Add(new ships_nedb_equip { id = (int)_.id, star = (int)_.star });
+									}
+								}
+
+								infoList.Add(new ships_nedb
+								{
+									id = (int)rawResult.id,
+									no = (int)rawResult.no,
+									slot = __slot.ToArray(),
+									stat = new ships_nedb_stat
+									{
+										asw = (int)rawResult.stat.asw,
+										asw_max = (int)rawResult.stat.asw_max,
+										evasion = (int)rawResult.stat.evasion,
+										evasion_max = (int)rawResult.stat.evasion_max,
+										los = (int)rawResult.stat.los,
+										los_max = (int)rawResult.stat.los_max
+									},
+									equip = equiplist.ToArray()
+								});
 							}
 						}
 
@@ -148,7 +180,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 				if (this._SelectedShip != value)
 				{
 					this._SelectedShip = value;
-					this._SelectedShip.Update();
+					this._SelectedShip?.Update();
 					this.RaisePropertyChanged();
 				}
 			}
@@ -488,9 +520,9 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 					if (info == null)
 					{
 						while (list.Count < slotCount)
-							list.Add(new SlotInfo(null, true, this.Ship?.Slots?[list.Count] ?? -1));
+							list.Add(new SlotInfo(null, true, this.Ship?.Slots?[list.Count] ?? -1, 0));
 
-						while (list.Count < 4) list.Add(new SlotInfo(null, false, 0));
+						while (list.Count < 4) list.Add(new SlotInfo(null, false, 0, 0));
 						return list;
 					}
 
@@ -500,14 +532,14 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 						{
 							var master = KanColleClient.Current.Master;
 							var item = master.SlotItems.FirstOrDefault(y => y.Value.Id == x).Value;
-							if (item == null) return new SlotInfo(SlotItemInfo.Dummy, true, info.carrys[z]);
+							if (item == null) return new SlotInfo(SlotItemInfo.Dummy, true, info.carrys[z],  0);
 
-							return new SlotInfo(item, true, info.carrys[z]);
+							return new SlotInfo(item, true, info.carrys[z], 0);
 						})
 						.ToList();
 
 					while (list.Count < slotCount)
-						list.Add(new SlotInfo(SlotItemInfo.Dummy, true, info.carrys[list.Count]));
+						list.Add(new SlotInfo(SlotItemInfo.Dummy, true, info.carrys[list.Count], 0));
 				}
 				else
 				{
@@ -515,36 +547,32 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 					if (info == null)
 					{
 						while (list.Count < slotCount)
-							list.Add(new SlotInfo(null, true, this.Ship?.Slots?[list.Count] ?? -1));
+							list.Add(new SlotInfo(null, true, this.Ship?.Slots?[list.Count] ?? -1, 0));
 
-						while (list.Count < 4) list.Add(new SlotInfo(null, false, 0));
+						while (list.Count < 4) list.Add(new SlotInfo(null, false, 0, 0));
 						return list;
 					}
 
 					list = info.equip
-						.Where(x =>
-						{
-							int id;
-							if (x == null || x.Length == 0) return false;
-							return int.TryParse(x, out id);
-						})
+						.Where(x => x != null)
 						.Select((x, z) =>
 						{
-							int id;
-							if (!int.TryParse(x, out id)) return new SlotInfo(SlotItemInfo.Dummy, true, this.Ship?.Slots[z] ?? -1);
+							int id = x.id;
+							if (id <= 0) return new SlotInfo(SlotItemInfo.Dummy, true, this.Ship?.Slots[z] ?? -1, 0);
+
 							var master = KanColleClient.Current.Master;
 							var item = master.SlotItems.FirstOrDefault(y => y.Value.Id == id).Value;
-							if (item == null) return new SlotInfo(SlotItemInfo.Dummy, true, this.Ship?.Slots[z] ?? -1);
+							if (item == null) return new SlotInfo(SlotItemInfo.Dummy, true, this.Ship?.Slots[z] ?? -1, 0);
 
-							return new SlotInfo(item, true, this.Ship?.Slots[z] ?? -1);
+							return new SlotInfo(item, true, this.Ship?.Slots[z] ?? -1, x.star);
 						})
 						.ToList();
 
 					while (list.Count < slotCount)
-						list.Add(new SlotInfo(SlotItemInfo.Dummy, true, this.Ship?.Slots[list.Count] ?? -1));
+						list.Add(new SlotInfo(SlotItemInfo.Dummy, true, this.Ship?.Slots[list.Count] ?? -1, 0));
 				}
 
-				while (list.Count < 4) list.Add(new SlotInfo(null, false, 0));
+				while (list.Count < 4) list.Add(new SlotInfo(null, false, 0, 0));
 				return list;
 			}
 		}
@@ -690,12 +718,14 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 		public SlotItemInfo Info { get; set; }
 		public bool Available { get; set; }
 		public int Carry { get; set; }
+		public int Star { get; set; }
 
-		public SlotInfo(SlotItemInfo Info, bool Available, int Carry)
+		public SlotInfo(SlotItemInfo Info, bool Available, int Carry, int Star)
 		{
 			this.Info = Info;
 			this.Available = Available;
 			this.Carry = Carry;
+			this.Star = Star;
 		}
 	}
 	public class UpgradeInfo
@@ -928,7 +958,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 
 		public ships_nedb_stat stat { get; set; }
 		public int[] slot { get; set; }
-		public string[] equip { get; set; }
+		public ships_nedb_equip[] equip { get; set; }
 	}
 	public class ships_nedb_stat
 	{
@@ -940,6 +970,11 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 
 		public int los { get; set; }
 		public int los_max { get; set; }
+	}
+	public class ships_nedb_equip
+	{
+		public int id { get; set; }
+		public int star { get; set; }
 	}
 	public class ships_abyssal_info
 	{

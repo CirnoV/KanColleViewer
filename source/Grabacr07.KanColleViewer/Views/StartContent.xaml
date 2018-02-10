@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Grabacr07.KanColleViewer.Views.StartContent"
+<UserControl x:Class="Grabacr07.KanColleViewer.Views.StartContent"
 			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
@@ -201,25 +201,31 @@
 							</metro2:HyperlinkEx>
 						</TextBlock>
 						<TextBlock FontFamily="Segoe UI">
-								<Run Text="Developer" />
-								<Run Text="(Korean)"
-									 FontSize="10" />
-								<Run Text=":" />
-								<metro2:HyperlinkEx Uri="http://kaster.egloos.com">
-									<Run Text="Kaster" />
-								</metro2:HyperlinkEx>
-								<metro2:HyperlinkEx Uri="http://swaytwig.com">
-									<Run Text="WolfgangKurz" />
-								</metro2:HyperlinkEx>
-								<metro2:HyperlinkEx Uri="http://kcvkr.tistory.com">
-									<Run Text="Cirno V" />
-								</metro2:HyperlinkEx>
-                                    <metro2:HyperlinkEx Uri="https://github.com/DaeWha">
-									<Run Text="DaeWha" />
-								</metro2:HyperlinkEx>
-							<metro2:HyperlinkEx Uri="https://github.com/FreyYa">
-								<Run Text="FreyYa" />
-							</metro2:HyperlinkEx>
+							<Run Text="Developer" />
+							<Run Text="(Korean)"
+								 FontSize="10" />
+							<Run Text=":" />
+							<InlineUIContainer BaselineAlignment="Top">
+								<TextBlock>
+									<metro2:HyperlinkEx Uri="http://kaster.egloos.com">
+										<Run Text="Kaster" />
+									</metro2:HyperlinkEx>
+									<metro2:HyperlinkEx Uri="http://swaytwig.com">
+										<Run Text="WolfgangKurz" />
+									</metro2:HyperlinkEx>
+									<LineBreak />
+
+									<metro2:HyperlinkEx Uri="http://kcvkr.tistory.com">
+										<Run Text="Cirno V" />
+									</metro2:HyperlinkEx>
+										<metro2:HyperlinkEx Uri="https://github.com/DaeWha">
+										<Run Text="DaeWha" />
+									</metro2:HyperlinkEx>
+									<metro2:HyperlinkEx Uri="https://github.com/FreyYa">
+										<Run Text="FreyYa" />
+									</metro2:HyperlinkEx>
+								</TextBlock>
+							</InlineUIContainer>
 						</TextBlock>
 						<TextBlock FontFamily="Segoe UI">
 								<Run Text="Localization" />

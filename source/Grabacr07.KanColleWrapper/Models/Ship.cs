@@ -74,6 +74,15 @@ namespace Grabacr07.KanColleWrapper.Models
 					?.api_catapult_count > 0;
 			}
 		}
+		public bool NeedReport
+		{
+			get
+			{
+				return KanColleClient.Current.Master.RawData.api_mst_shipupgrade
+					.FirstOrDefault(x => x.api_current_ship_id == this.Info.Id)
+					?.api_report_count > 0;
+			}
+		}
 
 		public string LvName => "[Lv." + this.Level + "]  " + this.Info.Name;
 		public string RepairTimeString

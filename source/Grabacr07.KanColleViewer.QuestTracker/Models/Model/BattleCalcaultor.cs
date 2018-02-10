@@ -994,6 +994,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 					for (int j = 0; j < target.Length; j++)
 					{
 						var target_idx = target[j];
+						if (target_idx < 0) continue;
 
 						// 아군이 공격 (적군이 맞음)
 						if (eflag == 0)
@@ -1042,6 +1043,8 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 					{
 						int target_idx = target[j];
 						int damage_value = (int)target_dmg[j];
+
+						if (target_idx < 0) continue;
 
 						if (combinedType == CombinedType.Default)
 						{
@@ -1168,6 +1171,8 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 						int target_idx = target[j];
 						int damage_value = (int)target_dmg[j];
 
+						if (target_idx < 0) continue;
+
 						if (combinedPhase == EachCombinedPhase.FirstPhase)
 						{
 							// 아군이 공격 (적군이 맞음)
@@ -1269,6 +1274,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 					for (int j = 0; j < target.Length; j++)
 					{
 						var target_idx = target[j];
+						if (target_idx < 0) continue;
 
 						// 아군이 공격 (적군이 맞음)
 						if (eflag == 0)

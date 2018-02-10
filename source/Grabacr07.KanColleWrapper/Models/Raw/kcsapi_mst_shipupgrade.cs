@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +19,7 @@ namespace Grabacr07.KanColleWrapper.Models.Raw
 
 		public int api_drawing_count { get; set; }
 		public int api_catapult_count { get; set; }
+		public int api_report_count { get; set; }
 
 		public int api_sortno { get; set; }
 	}

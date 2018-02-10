@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -121,10 +121,24 @@ namespace Grabacr07.KanColleWrapper.Models
 		{
 			public override AirSuperiorityCalculationOptions Options => AirSuperiorityCalculationOptions.Attacker;
 
+			protected override double GetAirSuperiority(SlotItem slotItem, int onslot)
+			{
+				switch (slotItem.Info.Id)
+				{
+					case 60:
+					case 154:
+					case 219:
+						// 装備改修による対空値加算 (★ x 0.25)
+						return (slotItem.Info.AA + slotItem.Level * 0.25) * Math.Sqrt(onslot);
+					default:
+						return base.GetAirSuperiority(slotItem, onslot);
+				}
+			}
+
 			protected override double GetProficiencyBonus(SlotItem slotItem, AirSuperiorityCalculationOptions options)
 			{
 				var proficiency = slotItem.GetProficiency();
-				return Math.Sqrt(proficiency.GetInternalValue(options) / 10.0);
+				return Math.Sqrt(proficiency.GetInternalValue(options) / 10.0) + proficiency.BomberBonus;
 			}
 		}
 
@@ -159,13 +173,15 @@ namespace Grabacr07.KanColleWrapper.Models
 
 			public int FighterBonus { get; }
 			public int SeaplaneBomberBonus { get; }
+			public int BomberBonus { get; }
 
-			public Proficiency(int internalMin, int internalMax, int fighterBonus, int seaplaneBomberBonus)
+			public Proficiency(int internalMin, int internalMax, int fighterBonus, int seaplaneBomberBonus, int bomberBonus)
 			{
 				this.internalMinValue = internalMin;
 				this.internalMaxValue = internalMax;
 				this.FighterBonus = fighterBonus;
 				this.SeaplaneBomberBonus = seaplaneBomberBonus;
+				this.BomberBonus = bomberBonus;
 			}
 
 			/// <summary>
@@ -181,14 +197,14 @@ namespace Grabacr07.KanColleWrapper.Models
 
 		private static readonly Dictionary<int, Proficiency> proficiencies = new Dictionary<int, Proficiency>()
 		{
-			{ 0, new Proficiency(0, 9, 0, 0) },
-			{ 1, new Proficiency(10, 24, 0, 0) },
-			{ 2, new Proficiency(25, 39, 2, 1) },
-			{ 3, new Proficiency(40, 54, 5, 1) },
-			{ 4, new Proficiency(55, 69, 9, 1) },
-			{ 5, new Proficiency(70, 84, 14, 3) },
-			{ 6, new Proficiency(85, 99, 14, 3) },
-			{ 7, new Proficiency(100, 120, 22, 6) },
+			{ 0, new Proficiency(0, 9, 0, 0, 0) },
+			{ 1, new Proficiency(10, 24, 1, 1, 1) },
+			{ 2, new Proficiency(25, 39, 3, 2, 1) },
+			{ 3, new Proficiency(40, 54, 7, 3, 2) },
+			{ 4, new Proficiency(55, 69, 11, 3, 2) },
+			{ 5, new Proficiency(70, 84, 16, 6, 2) },
+			{ 6, new Proficiency(85, 99, 16, 5, 2) },
+			{ 7, new Proficiency(100, 120, 25, 9, 3) },
 		};
 
 		private static Proficiency GetProficiency(this SlotItem slotItem) => proficiencies[Math.Max(Math.Min(slotItem.Proficiency, 7), 0)];

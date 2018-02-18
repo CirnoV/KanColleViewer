@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +15,8 @@ namespace Grabacr07.KanColleWrapper.Models
 		public bool IsAirplane => this.Item.Info.Type.IsNumerable();
 
 		public int FitValue => this.CalculateFit();
+		public int FitValueColor => Math.Min(5, Math.Max(-5, this.FitValue)); // -5 ~ +5
+
 		public string FitValueString
 		{
 			get

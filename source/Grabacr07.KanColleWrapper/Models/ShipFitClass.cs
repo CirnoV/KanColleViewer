@@ -1193,6 +1193,31 @@ namespace Grabacr07.KanColleWrapper.Models
 						new ShipFitData(245, 0, 0, 0),
 						new ShipFitData(246, 0, 0, 0)
 				}
+			}, {
+				546,
+				new ShipFitData[] {
+					new ShipFitData(7, 0, 0, 0),
+						new ShipFitData(8, 0, 0, 0),
+						new ShipFitData(9, 0, 0, 0),
+						new ShipFitData(76, 0, 0, 0),
+						new ShipFitData(103, 0, 0, 0),
+						new ShipFitData(104, 0, 0, 0),
+						new ShipFitData(105, 0, 0, 0),
+						new ShipFitData(114, 0, 0, 0),
+						new ShipFitData(117, 0, 0, 0),
+						new ShipFitData(128, 0, 0, 0),
+						new ShipFitData(133, 0, 0, 0),
+						new ShipFitData(137, 0, 0, 0),
+						new ShipFitData(161, 0, 0, 0),
+						new ShipFitData(183, 0, 0, 0),
+						new ShipFitData(190, 0, 0, 0),
+						new ShipFitData(192, 0, 0, 0),
+						new ShipFitData(231, 0, 0, 0),
+						new ShipFitData(232, 0, 0, 0),
+						new ShipFitData(236, 0, 0, 0),
+						new ShipFitData(245, 0, 0, 0),
+						new ShipFitData(246, 0, 0, 0)
+				}
 			}
 		};
 		#endregion

@@ -1,3 +1,5 @@
+//#define LOG_TRANSLATION
+
 using Grabacr07.KanColleWrapper.Models;
 using Grabacr07.KanColleWrapper.Models.Raw;
 using System;
@@ -293,7 +295,7 @@ namespace Grabacr07.KanColleWrapper
 
 					foreach (XElement el in FoundTranslation)
 					{
-#if DEBUG
+#if DEBUG && LOG_TRANSLATION
 						if (ID >= 0 && el.Element("ID") != null && Convert.ToInt32(el.Element("ID").Value) == ID)
 							Debug.WriteLine(string.Format("Translation: {0,-20} {1,-20} {2}", JPString, el.Element(TRChildElement).Value, ID));
 #endif
@@ -307,7 +309,7 @@ namespace Grabacr07.KanColleWrapper
 					}
 				}
 
-#if DEBUG
+#if DEBUG && LOG_TRANSLATION
 				Debug.WriteLine(string.Format("Can't find Translation: {0,-20} {1}", JPString, ID));
 #endif
 			}

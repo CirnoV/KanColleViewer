@@ -484,7 +484,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 		private void Update(kcsapi_combined_battle_each data, ApiTypes apiType)
 		{
 			// 적, 아군 함대 정보 갱신
-			this.UpdateFleets(data.api_deck_id, data, data.api_formation);
+			this.UpdateFleetsCombinedEnemy(data.api_deck_id, data, data.api_formation);
 
 			// 체력 갱신
 			this.UpdateMaxHP(data.api_f_maxhps, data.api_e_maxhps, data.api_f_maxhps_combined, data.api_e_maxhps_combined);
@@ -544,9 +544,6 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 		}
 		private void Update(kcsapi_combined_battle_midnight_ec data, ApiTypes apiType)
 		{
-			// 적, 아군 함대 정보 갱신
-			this.UpdateFleetsCombinedEnemy(data.api_deck_id, data);
-
 			// 체력 갱신
 			this.UpdateNowHP(data.api_f_nowhps, data.api_e_nowhps, data.api_f_nowhps_combined, data.api_e_nowhps_combined);
 

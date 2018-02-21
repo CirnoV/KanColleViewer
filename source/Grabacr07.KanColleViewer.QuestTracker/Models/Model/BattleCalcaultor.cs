@@ -790,6 +790,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 				?.Index ?? 0;
 
 			this.MVP_Second = this.AliasSecondShips
+				?.Where(x => x != null)
 				?.OrderByDescending(x => x.TotalDealt)
 				?.FirstOrDefault()
 				?.Index ?? 0;

@@ -1,4 +1,4 @@
-//#define LOG_TRANSLATION
+#define LOG_TRANSLATION
 
 using Grabacr07.KanColleWrapper.Models;
 using Grabacr07.KanColleWrapper.Models.Raw;

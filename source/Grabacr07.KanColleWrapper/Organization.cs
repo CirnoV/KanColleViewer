@@ -442,6 +442,15 @@ namespace Grabacr07.KanColleWrapper
 			int[] evacuationOfferedShipIds = null;
 			int[] towOfferedShipIds = null;
 
+			proxy.api_req_sortie_battleresult
+				.TryParse<kcsapi_battle_result>()
+				.Where(x => x.Data.api_escape != null)
+				.Select(x => x.Data)
+				.Subscribe(x =>
+				{
+					var ships = this.CombinedFleet.Fleets.SelectMany(f => f.Ships).ToArray();
+					evacuationOfferedShipIds = x.api_escape.api_escape_idx.Select(idx => ships[idx - 1].Id).ToArray();
+				});
 			proxy.api_req_combined_battle_battleresult
 				.TryParse<kcsapi_battle_result>()
 				.Where(x => x.Data.api_escape != null)
@@ -464,6 +473,16 @@ namespace Grabacr07.KanColleWrapper
 					{
 						this.evacuatedShipsIds.Add(evacuationOfferedShipIds[0]);
 						this.towShipIds.Add(towOfferedShipIds[0]);
+					}
+				});
+			proxy.api_req_sortie_goback_port
+				.Subscribe(_ =>
+				{
+					if (KanColleClient.Current.IsInSortie
+						&& evacuationOfferedShipIds != null
+						&& evacuationOfferedShipIds.Length >= 1)
+					{
+						this.evacuatedShipsIds.Add(evacuationOfferedShipIds[0]);
 					}
 				});
 			proxy.api_get_member_ship_deck

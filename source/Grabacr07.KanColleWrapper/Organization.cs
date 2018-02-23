@@ -448,7 +448,7 @@ namespace Grabacr07.KanColleWrapper
 				.Select(x => x.Data)
 				.Subscribe(x =>
 				{
-					var ships = this.CombinedFleet.Fleets.SelectMany(f => f.Ships).ToArray();
+					var ships = this.Fleets.Where(f => f.Value.IsInSortie).SelectMany(f => f.Value.Ships).ToArray();
 					evacuationOfferedShipIds = x.api_escape.api_escape_idx.Select(idx => ships[idx - 1].Id).ToArray();
 				});
 			proxy.api_req_combined_battle_battleresult

@@ -552,12 +552,12 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 		/// <summary>
 		/// 아군 연합함대 여부
 		/// </summary>
-		private bool IsCombined => this.AliasSecondShips?.Length > 0;
+		public bool IsCombined => this.AliasSecondShips?.Length > 0;
 
 		/// <summary>
 		/// 적군 연합함대 여부
 		/// </summary>
-		private bool IsEnemyCombined => this.EnemySecondShips?.Length > 0;
+		public bool IsEnemyCombined => this.EnemySecondShips?.Length > 0;
 
 		/// <summary>
 		/// 아군 1함대 MVP
@@ -1336,7 +1336,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Model
 				if (idx < 0) continue;
 
 				var _from = (IsEnemyCombined && i >= 6 ? EnemySecondShips[i - 6] : EnemyFirstShips[i]);
-				_from?.Dealt(fydam[i], phase, DamageType.Normal);
+				_from?.Dealt(eydam[i], phase, DamageType.Normal);
 
 				if (IsCombined && idx >= 6)
 					AliasSecondShips[idx - 6]?.Damaged(eydam[i], phase, _from, DamageType.Normal);

@@ -522,8 +522,18 @@ namespace Grabacr07.KanColleWrapper.Models
 
 		#endregion
 
-		public int SlotsASW => this.Slots.Sum(x => x.Item.Info.ASW) + (this.ExSlot?.Item.Info.ASW ?? 0);
+		public int SlotsASW => this.EquippedItems.Sum(x => x.Item.Info.ASW);
 		public int SumASW => this.ASW.Current + this.SlotsASW;
+
+		public int SumFirepower => this.Firepower.Current + this.EquippedItems.Sum(x => x.Item.Info.Firepower);
+		public int SumTorpedo => this.Torpedo.Current + this.EquippedItems.Sum(x => x.Item.Info.Torpedo);
+		public int SumAA => this.AA.Current + this.EquippedItems.Sum(x => x.Item.Info.AA);
+		public int SumLOS => this.ViewRange + this.EquippedItems.Sum(x => x.Item.Info.ViewRange);
+		public int SumArmor => this.Armer.Current + this.EquippedItems.Sum(x => x.Item.Info.Armer);
+		public int SumEvade => this.RawData.api_kaihi[0] + this.EquippedItems.Sum(x => x.Item.Info.Evade);
+		public int SumCarry => this.Slots.Sum(x => x.Maximum);
+
+		public int Range => this.Info.RawData.api_leng;
 
 		// 선제대잠 가능 여부
 		public bool OpeningASW

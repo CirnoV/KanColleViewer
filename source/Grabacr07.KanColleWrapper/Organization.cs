@@ -408,17 +408,20 @@ namespace Grabacr07.KanColleWrapper
 					.Split(',')
 					.Select(x => int.Parse(x));
 
+				var slot_dest = svd.Request["api_slot_dest_flag"] != "0";
+
 				foreach (var ship_idx in ships)
 				{
 					var ship = this.Ships[ship_idx];
 					if (ship != null)
 					{
-						this.homeport.Itemyard.RemoveFromShip(ship);
+						if (slot_dest)
+							this.homeport.Itemyard.RemoveFromShip(ship);
 
 						this.Ships.Remove(ship);
-						this.RaiseShipsChanged();
 					}
 				}
+				this.RaiseShipsChanged();
 			}
 			catch (Exception ex)
 			{

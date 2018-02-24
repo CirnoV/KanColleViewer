@@ -1,4 +1,4 @@
-﻿using Grabacr07.KanColleViewer.Models;
+using Grabacr07.KanColleViewer.Models;
 using Grabacr07.KanColleWrapper;
 using Livet.EventListeners;
 using MetroTrilithon.Mvvm;
@@ -95,7 +95,8 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 					.Select(kvp => kvp.Value)
 					.Where(this.ShipDamagedFilter.Predicate)
 					.Where(x => x.TimeToRepair != TimeSpan.Zero)
-					.Where(x => !x.Situation.HasFlag(KanColleWrapper.Models.ShipSituation.Repair));
+					.Where(x => !x.Situation.HasFlag(KanColleWrapper.Models.ShipSituation.Repair))
+					.ToArray();
 
 				this.Ships = this.SortWorker.Sort(list)
 					.Select((x, i) => new ShipViewModel(i + 1, x, null))

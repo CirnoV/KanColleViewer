@@ -91,13 +91,228 @@
 							 FontSize="22"
 							 Style="{DynamicResource EmphaticTextElementStyleKey}" />
 						<TextBlock.ToolTip>
-							<TextBlock Margin="0,-2,0,0"> 
- 								<Run Text="{Binding Ship.Info.Name, Mode=OneWay}" 
-									 Style="{DynamicResource EmphaticTextElementStyleKey}" 
-									 FontSize="22"/>
-								<Run Text="{Binding Ship.Info.JPName,Mode=OneWay}"
-									 FontSize="15"/>
-							</TextBlock>
+							<Grid Margin="0,-2,0,0">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" SharedSizeGroup="NameTooltipCol1" />
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" SharedSizeGroup="NameTooltipCol2" />
+								</Grid.ColumnDefinitions>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+								</Grid.RowDefinitions>
+
+								<TextBlock Grid.Column="0"
+										   Grid.Row="0"
+										   Margin="0,0,0,10">
+ 									<Run Text="{Binding Ship.Info.Name, Mode=OneWay}" 
+										 Style="{DynamicResource EmphaticTextElementStyleKey}" 
+										 FontSize="22"/>
+									<Run Text="{Binding Ship.Info.JPName,Mode=OneWay}"
+										 FontSize="15"/>
+								</TextBlock>
+
+								<TextBlock Grid.Column="0"
+										   Grid.Row="1"
+										   Margin="0,2,5,0"
+										   FontSize="15"
+										   Text="내구" />
+								<TextBlock Grid.Column="1"
+										   Grid.Row="1"
+										   Margin="0,2,5,0"
+										   Style="{DynamicResource EmphaticTextStyleKey}"
+										   FontSize="15"
+										   TextAlignment="Right"
+										   Text="{Binding Ship.HP.Maximum, Mode=OneWay}" />
+								<TextBlock Grid.Column="2"
+										   Grid.Row="1"
+										   Margin="10,2,5,0"
+										   FontSize="15"
+										   Text="화력" />
+								<TextBlock Grid.Column="3"
+										   Grid.Row="1"
+										   Margin="0,2,5,0"
+										   Style="{DynamicResource EmphaticTextStyleKey}"
+										   FontSize="15"
+										   TextAlignment="Right"
+										   Text="{Binding Ship.SumFirepower, Mode=OneWay}" />
+
+								<TextBlock Grid.Column="0"
+										   Grid.Row="2"
+										   Margin="0,2,5,0"
+										   FontSize="15"
+										   Text="장갑" />
+								<TextBlock Grid.Column="1"
+										   Grid.Row="2"
+										   Margin="0,2,5,0"
+										   Style="{DynamicResource EmphaticTextStyleKey}"
+										   FontSize="15"
+										   TextAlignment="Right"
+										   Text="{Binding Ship.SumArmor, Mode=OneWay}" />
+								<TextBlock Grid.Column="2"
+										   Grid.Row="2"
+										   Margin="10,2,5,0"
+										   FontSize="15"
+										   Text="뇌장" />
+								<TextBlock Grid.Column="3"
+										   Grid.Row="2"
+										   Margin="0,2,5,0"
+										   Style="{DynamicResource EmphaticTextStyleKey}"
+										   FontSize="15"
+										   TextAlignment="Right"
+										   Text="{Binding Ship.SumTorpedo, Mode=OneWay}" />
+
+								<TextBlock Grid.Column="0"
+										   Grid.Row="3"
+										   Margin="0,2,5,0"
+										   FontSize="15"
+										   Text="회피" />
+								<TextBlock Grid.Column="1"
+										   Grid.Row="3"
+										   Margin="0,2,5,0"
+										   Style="{DynamicResource EmphaticTextStyleKey}"
+										   FontSize="15"
+										   TextAlignment="Right"
+										   Text="{Binding Ship.SumEvade, Mode=OneWay}" />
+								<TextBlock Grid.Column="2"
+										   Grid.Row="3"
+										   Margin="10,2,5,0"
+										   FontSize="15"
+										   Text="대공" />
+								<TextBlock Grid.Column="3"
+										   Grid.Row="3"
+										   Margin="0,2,5,0"
+										   Style="{DynamicResource EmphaticTextStyleKey}"
+										   FontSize="15"
+										   TextAlignment="Right"
+										   Text="{Binding Ship.SumAA, Mode=OneWay}" />
+
+								<TextBlock Grid.Column="0"
+										   Grid.Row="4"
+										   Margin="0,2,5,0"
+										   FontSize="15"
+										   Text="탑재" />
+								<TextBlock Grid.Column="1"
+										   Grid.Row="4"
+										   Margin="0,2,5,0"
+										   Style="{DynamicResource EmphaticTextStyleKey}"
+										   FontSize="15"
+										   TextAlignment="Right"
+										   Text="{Binding Ship.SumCarry, Mode=OneWay}" />
+								<TextBlock Grid.Column="2"
+										   Grid.Row="4"
+										   Margin="10,2,5,0"
+										   FontSize="15"
+										   Text="대잠" />
+								<TextBlock Grid.Column="3"
+										   Grid.Row="4"
+										   Margin="0,2,5,0"
+										   Style="{DynamicResource EmphaticTextStyleKey}"
+										   FontSize="15"
+										   TextAlignment="Right"
+										   Text="{Binding Ship.SumASW, Mode=OneWay}" />
+
+								<TextBlock Grid.Column="0"
+										   Grid.Row="5"
+										   Margin="0,2,5,0"
+										   FontSize="15"
+										   Text="속력" />
+								<TextBlock Grid.Column="1"
+										   Grid.Row="5"
+										   Margin="0,2,5,0"
+										   Style="{DynamicResource EmphaticTextStyleKey}"
+										   FontSize="15"
+										   TextAlignment="Center">
+									<Run>
+										<Run.Style>
+											<Style TargetType="{x:Type Run}">
+												<Setter Property="Text" Value="???" />
+												<Style.Triggers>
+													<DataTrigger Binding="{Binding Ship.Speed, Mode=OneWay}" Value="Immovable">
+														<Setter Property="Text" Value="기지" />
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Ship.Speed, Mode=OneWay}" Value="Slow">
+														<Setter Property="Text" Value="저속" />
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Ship.Speed, Mode=OneWay}" Value="Fast">
+														<Setter Property="Text" Value="고속" />
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Ship.Speed, Mode=OneWay}" Value="Faster">
+														<Setter Property="Text" Value="고속+" />
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Ship.Speed, Mode=OneWay}" Value="Fatest">
+														<Setter Property="Text" Value="초고속" />
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</Run.Style>
+									</Run>
+								</TextBlock>
+								<TextBlock Grid.Column="2"
+										   Grid.Row="5"
+										   Margin="10,2,5,0"
+										   FontSize="15"
+										   Text="색적" />
+								<TextBlock Grid.Column="3"
+										   Grid.Row="5"
+										   Margin="0,2,5,0"
+										   Style="{DynamicResource EmphaticTextStyleKey}"
+										   FontSize="15"
+										   TextAlignment="Right"
+										   Text="{Binding Ship.SumLOS, Mode=OneWay}" />
+
+								<TextBlock Grid.Column="0"
+										   Grid.Row="6"
+										   Margin="0,2,5,0"
+										   FontSize="15"
+										   Text="사거리" />
+								<TextBlock Grid.Column="1"
+										   Grid.Row="6"
+										   Margin="0,2,5,0"
+										   Style="{DynamicResource EmphaticTextStyleKey}"
+										   FontSize="15"
+										   TextAlignment="Center">
+									<Run>
+										<Run.Style>
+											<Style TargetType="{x:Type Run}">
+												<Setter Property="Text" Value="???" />
+												<Style.Triggers>
+													<DataTrigger Binding="{Binding Ship.Range, Mode=OneWay}" Value="1">
+														<Setter Property="Text" Value="단" />
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Ship.Range, Mode=OneWay}" Value="2">
+														<Setter Property="Text" Value="중" />
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Ship.Range, Mode=OneWay}" Value="3">
+														<Setter Property="Text" Value="장" />
+													</DataTrigger>
+													<DataTrigger Binding="{Binding Ship.Range, Mode=OneWay}" Value="4">
+														<Setter Property="Text" Value="초장" />
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</Run.Style>
+									</Run>
+								</TextBlock>
+								<TextBlock Grid.Column="2"
+										   Grid.Row="6"
+										   Margin="10,2,5,0"
+										   FontSize="15"
+										   Text="운" />
+								<TextBlock Grid.Column="3"
+										   Grid.Row="6"
+										   Margin="0,2,5,0"
+										   Style="{DynamicResource EmphaticTextStyleKey}"
+										   FontSize="15"
+										   TextAlignment="Right"
+										   Text="{Binding Ship.Luck.Current, Mode=OneWay}" />
+							</Grid>
 						</TextBlock.ToolTip> 
 					</TextBlock>
 

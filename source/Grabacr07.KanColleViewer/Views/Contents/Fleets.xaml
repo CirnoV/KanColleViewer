@@ -110,6 +110,7 @@
 
 								<TextBlock Grid.Column="0"
 										   Grid.Row="0"
+										   Grid.ColumnSpan="4"
 										   Margin="0,0,0,10">
  									<Run Text="{Binding Ship.Info.Name, Mode=OneWay}" 
 										 Style="{DynamicResource EmphaticTextElementStyleKey}" 

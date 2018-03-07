@@ -174,7 +174,12 @@
     <Compile Include="Models\Tracker\B\Bm\Bm5.cs" />
     <Compile Include="Models\Tracker\B\Bm\Bm6.cs" />
     <Compile Include="Models\Tracker\B\Bm\Bm7.cs" />
-    <Compile Include="Models\Tracker\B\Bq1.cs" />
+    <Compile Include="Models\Tracker\B\Bq\Bq1.cs" />
+    <Compile Include="Models\Tracker\B\Bq\Bq2.cs" />
+    <Compile Include="Models\Tracker\B\Bq\Bq3.cs" />
+    <Compile Include="Models\Tracker\B\Bq\Bq4.cs" />
+    <Compile Include="Models\Tracker\B\Bq\Bq5.cs" />
+    <Compile Include="Models\Tracker\B\Bq\Bq6.cs" />
     <Compile Include="Models\Tracker\B\Bw\Bw1.cs" />
     <Compile Include="Models\Tracker\B\Bw\Bw10.cs" />
     <Compile Include="Models\Tracker\B\Bw\Bw2.cs" />

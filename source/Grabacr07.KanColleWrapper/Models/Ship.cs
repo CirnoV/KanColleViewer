@@ -699,7 +699,13 @@ namespace Grabacr07.KanColleWrapper.Models
 
 			if (abyssalCombined)
 			{
-				if (fleetId == 2) return -5;
+				if (fleetId == 2)
+				{
+					if (type == CombinedFleetType.None)
+						return 5;
+					else
+						return -5;
+				}
 
 				switch (type)
 				{
@@ -711,6 +717,9 @@ namespace Grabacr07.KanColleWrapper.Models
 
 					case CombinedFleetType.TransportEscort:
 						return -5;
+
+					default:
+						return 5;
 				}
 			}
 			else

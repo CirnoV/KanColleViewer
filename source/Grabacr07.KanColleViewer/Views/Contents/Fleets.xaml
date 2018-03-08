@@ -86,7 +86,8 @@
 					<TextBlock Grid.Column="2"
 							   Grid.Row="0"
 							   Grid.RowSpan="2"
-							   Margin="4,0,10,0">
+							   Margin="4,0,10,0"
+							   ToolTipService.ShowDuration="600000">
 						<Run Text="{Binding Ship.Info.Name, Mode=OneWay}"
 							 FontSize="22"
 							 Style="{DynamicResource EmphaticTextElementStyleKey}" />
@@ -97,6 +98,9 @@
 									<ColumnDefinition Width="Auto" SharedSizeGroup="NameTooltipCol1" />
 									<ColumnDefinition Width="Auto" />
 									<ColumnDefinition Width="Auto" SharedSizeGroup="NameTooltipCol2" />
+
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
 								</Grid.ColumnDefinitions>
 								<Grid.RowDefinitions>
 									<RowDefinition Height="Auto" />
@@ -106,6 +110,7 @@
 									<RowDefinition Height="Auto" />
 									<RowDefinition Height="Auto" />
 									<RowDefinition Height="Auto" />
+									<RowDefinition Height="*" />
 								</Grid.RowDefinitions>
 
 								<TextBlock Grid.Column="0"
@@ -122,113 +127,113 @@
 								<TextBlock Grid.Column="0"
 										   Grid.Row="1"
 										   Margin="0,2,5,0"
-										   FontSize="15"
+										   FontSize="12"
 										   Text="내구" />
 								<TextBlock Grid.Column="1"
 										   Grid.Row="1"
 										   Margin="0,2,5,0"
 										   Style="{DynamicResource EmphaticTextStyleKey}"
-										   FontSize="15"
+										   FontSize="12"
 										   TextAlignment="Right"
 										   Text="{Binding Ship.HP.Maximum, Mode=OneWay}" />
 								<TextBlock Grid.Column="2"
 										   Grid.Row="1"
 										   Margin="10,2,5,0"
-										   FontSize="15"
+										   FontSize="12"
 										   Text="화력" />
 								<TextBlock Grid.Column="3"
 										   Grid.Row="1"
 										   Margin="0,2,5,0"
 										   Style="{DynamicResource EmphaticTextStyleKey}"
-										   FontSize="15"
+										   FontSize="12"
 										   TextAlignment="Right"
 										   Text="{Binding Ship.SumFirepower, Mode=OneWay}" />
 
 								<TextBlock Grid.Column="0"
 										   Grid.Row="2"
 										   Margin="0,2,5,0"
-										   FontSize="15"
+										   FontSize="12"
 										   Text="장갑" />
 								<TextBlock Grid.Column="1"
 										   Grid.Row="2"
 										   Margin="0,2,5,0"
 										   Style="{DynamicResource EmphaticTextStyleKey}"
-										   FontSize="15"
+										   FontSize="12"
 										   TextAlignment="Right"
 										   Text="{Binding Ship.SumArmor, Mode=OneWay}" />
 								<TextBlock Grid.Column="2"
 										   Grid.Row="2"
 										   Margin="10,2,5,0"
-										   FontSize="15"
+										   FontSize="12"
 										   Text="뇌장" />
 								<TextBlock Grid.Column="3"
 										   Grid.Row="2"
 										   Margin="0,2,5,0"
 										   Style="{DynamicResource EmphaticTextStyleKey}"
-										   FontSize="15"
+										   FontSize="12"
 										   TextAlignment="Right"
 										   Text="{Binding Ship.SumTorpedo, Mode=OneWay}" />
 
 								<TextBlock Grid.Column="0"
 										   Grid.Row="3"
 										   Margin="0,2,5,0"
-										   FontSize="15"
+										   FontSize="12"
 										   Text="회피" />
 								<TextBlock Grid.Column="1"
 										   Grid.Row="3"
 										   Margin="0,2,5,0"
 										   Style="{DynamicResource EmphaticTextStyleKey}"
-										   FontSize="15"
+										   FontSize="12"
 										   TextAlignment="Right"
 										   Text="{Binding Ship.SumEvade, Mode=OneWay}" />
 								<TextBlock Grid.Column="2"
 										   Grid.Row="3"
 										   Margin="10,2,5,0"
-										   FontSize="15"
+										   FontSize="12"
 										   Text="대공" />
 								<TextBlock Grid.Column="3"
 										   Grid.Row="3"
 										   Margin="0,2,5,0"
 										   Style="{DynamicResource EmphaticTextStyleKey}"
-										   FontSize="15"
+										   FontSize="12"
 										   TextAlignment="Right"
 										   Text="{Binding Ship.SumAA, Mode=OneWay}" />
 
 								<TextBlock Grid.Column="0"
 										   Grid.Row="4"
 										   Margin="0,2,5,0"
-										   FontSize="15"
+										   FontSize="12"
 										   Text="탑재" />
 								<TextBlock Grid.Column="1"
 										   Grid.Row="4"
 										   Margin="0,2,5,0"
 										   Style="{DynamicResource EmphaticTextStyleKey}"
-										   FontSize="15"
+										   FontSize="12"
 										   TextAlignment="Right"
 										   Text="{Binding Ship.SumCarry, Mode=OneWay}" />
 								<TextBlock Grid.Column="2"
 										   Grid.Row="4"
 										   Margin="10,2,5,0"
-										   FontSize="15"
+										   FontSize="12"
 										   Text="대잠" />
 								<TextBlock Grid.Column="3"
 										   Grid.Row="4"
 										   Margin="0,2,5,0"
 										   Style="{DynamicResource EmphaticTextStyleKey}"
-										   FontSize="15"
+										   FontSize="12"
 										   TextAlignment="Right"
 										   Text="{Binding Ship.SumASW, Mode=OneWay}" />
 
 								<TextBlock Grid.Column="0"
 										   Grid.Row="5"
 										   Margin="0,2,5,0"
-										   FontSize="15"
+										   FontSize="12"
 										   Text="속력" />
 								<TextBlock Grid.Column="1"
 										   Grid.Row="5"
 										   Margin="0,2,5,0"
 										   Style="{DynamicResource EmphaticTextStyleKey}"
-										   FontSize="15"
+										   FontSize="12"
 										   TextAlignment="Center">
 									<Run>
 										<Run.Style>
@@ -258,26 +263,26 @@
 								<TextBlock Grid.Column="2"
 										   Grid.Row="5"
 										   Margin="10,2,5,0"
-										   FontSize="15"
+										   FontSize="12"
 										   Text="색적" />
 								<TextBlock Grid.Column="3"
 										   Grid.Row="5"
 										   Margin="0,2,5,0"
 										   Style="{DynamicResource EmphaticTextStyleKey}"
-										   FontSize="15"
+										   FontSize="12"
 										   TextAlignment="Right"
 										   Text="{Binding Ship.SumLOS, Mode=OneWay}" />
 
 								<TextBlock Grid.Column="0"
 										   Grid.Row="6"
 										   Margin="0,2,5,0"
-										   FontSize="15"
+										   FontSize="12"
 										   Text="사거리" />
 								<TextBlock Grid.Column="1"
 										   Grid.Row="6"
 										   Margin="0,2,5,0"
 										   Style="{DynamicResource EmphaticTextStyleKey}"
-										   FontSize="15"
+										   FontSize="12"
 										   TextAlignment="Center">
 									<Run>
 										<Run.Style>
@@ -304,15 +309,275 @@
 								<TextBlock Grid.Column="2"
 										   Grid.Row="6"
 										   Margin="10,2,5,0"
-										   FontSize="15"
+										   FontSize="12"
 										   Text="운" />
 								<TextBlock Grid.Column="3"
 										   Grid.Row="6"
 										   Margin="0,2,5,0"
 										   Style="{DynamicResource EmphaticTextStyleKey}"
-										   FontSize="15"
+										   FontSize="12"
 										   TextAlignment="Right"
 										   Text="{Binding Ship.Luck.Current, Mode=OneWay}" />
+
+								<Rectangle Grid.Column="4"
+										   Grid.Row="1"
+										   Grid.RowSpan="7"
+										   Width="1"
+										   Margin="4,3"
+										   Style="{DynamicResource SeparatorRectangleStyleKey}" />
+
+								<Grid Grid.Column="5"
+									  Grid.Row="1"
+									  Grid.RowSpan="7"
+									  Margin="5,0,0,0">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" SharedSizeGroup="NameTooltipCapCol1" />
+										<ColumnDefinition Width="Auto" SharedSizeGroup="NameTooltipCapCol2" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
+									<Grid.RowDefinitions>
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+
+										<RowDefinition Height="Auto" />
+									</Grid.RowDefinitions>
+
+									<TextBlock Margin="0,2,5,0"
+											   Grid.Column="0"
+											   Grid.Row="0"
+											   Grid.ColumnSpan="2"
+											   FontSize="12"
+											   Text="적이 통상함대일 때" />
+									<TextBlock Margin="10,2,5,0"
+											   Grid.Column="0"
+											   Grid.Row="1"
+											   FontSize="12"
+											   Text="주간 화력:" />
+									<TextBlock Margin="10,2,5,0"
+											   Grid.Column="0"
+											   Grid.Row="2"
+											   FontSize="12"
+											   Text="야전 화력:" />
+
+									<TextBlock Margin="0,2,5,0"
+											   Grid.Column="1"
+											   Grid.Row="1"
+											   Foreground="{DynamicResource ActiveForegroundBrushKey}"
+											   TextAlignment="Left"
+											   FontSize="12">
+										<Run Text="{Binding Ship.DmgCap_Day, Mode=OneWay}">
+											<Run.Style>
+												<Style TargetType="Run">
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding Ship.DmgCap_DayOver, Mode=OneWay}" Value="True">
+															<Setter Property="Foreground" Value="Gold" />
+															<Setter Property="FontWeight" Value="Bold" />
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Run.Style>
+										</Run>
+										<Run Text="/"
+											 FontSize="11"
+											 Foreground="{DynamicResource ForegroundBrushKey}" />
+										<Run Text="{Binding Ship.DmgCap_Day_HeadOn, Mode=OneWay}">
+											<Run.Style>
+												<Style TargetType="Run">
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding Ship.DmgCap_Day_HeadOnOver, Mode=OneWay}" Value="True">
+															<Setter Property="Foreground" Value="Gold" />
+															<Setter Property="FontWeight" Value="Bold" />
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Run.Style>
+										</Run>
+									</TextBlock>
+									<TextBlock Margin="0,2,5,0"
+											   Grid.Column="1"
+											   Grid.Row="2"
+											   Foreground="{DynamicResource ActiveForegroundBrushKey}"
+											   TextAlignment="Left"
+											   FontSize="12">
+										<Run Text="{Binding Ship.DmgCap_Night, Mode=OneWay}">
+											<Run.Style>
+												<Style TargetType="Run">
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding Ship.DmgCap_NightOver, Mode=OneWay}" Value="True">
+															<Setter Property="Foreground" Value="Gold" />
+															<Setter Property="FontWeight" Value="Bold" />
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Run.Style>
+										</Run>
+										<Run Text="/"
+											 FontSize="11"
+											 Foreground="{DynamicResource ForegroundBrushKey}" />
+										<Run Text="{Binding Ship.DmgCap_Night_HeadOn, Mode=OneWay}">
+											<Run.Style>
+												<Style TargetType="Run">
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding Ship.DmgCap_Night_HeadOnOver, Mode=OneWay}" Value="True">
+															<Setter Property="Foreground" Value="Gold" />
+															<Setter Property="FontWeight" Value="Bold" />
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Run.Style>
+										</Run>
+									</TextBlock>
+
+									<TextBlock Margin="0,10,5,0"
+											   Grid.Column="0"
+											   Grid.Row="3"
+											   Grid.ColumnSpan="2"
+											   FontSize="12"
+											   Text="적이 연합함대일 때" />
+									<TextBlock Margin="10,2,5,0"
+											   Grid.Column="0"
+											   Grid.Row="4"
+											   FontSize="12"
+											   Text="주간 화력:" />
+									<TextBlock Margin="10,2,5,0"
+											   Grid.Column="0"
+											   Grid.Row="5"
+											   FontSize="12"
+											   Text="야전 화력:" />
+
+									<TextBlock Margin="0,2,5,0"
+											   Grid.Column="1"
+											   Grid.Row="4"
+											   Foreground="{DynamicResource ActiveForegroundBrushKey}"
+											   TextAlignment="Left"
+											   FontSize="12">
+										<Run Text="{Binding Ship.DmgCap_Combined_Day, Mode=OneWay}">
+											<Run.Style>
+												<Style TargetType="Run">
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding Ship.DmgCap_Combined_DayOver, Mode=OneWay}" Value="True">
+															<Setter Property="Foreground" Value="Gold" />
+															<Setter Property="FontWeight" Value="Bold" />
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Run.Style>
+										</Run>
+										<Run Text="/"
+											 FontSize="11"
+											 Foreground="{DynamicResource ForegroundBrushKey}" />
+										<Run Text="{Binding Ship.DmgCap_Combined_Day_HeadOn, Mode=OneWay}">
+											<Run.Style>
+												<Style TargetType="Run">
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding Ship.DmgCap_Combined_Day_HeadOnOver, Mode=OneWay}" Value="True">
+															<Setter Property="Foreground" Value="Gold" />
+															<Setter Property="FontWeight" Value="Bold" />
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Run.Style>
+										</Run>
+									</TextBlock>
+									<TextBlock Margin="0,2,5,0"
+											   Grid.Column="1"
+											   Grid.Row="5"
+											   Foreground="{DynamicResource ActiveForegroundBrushKey}"
+											   TextAlignment="Left"
+											   FontSize="12">
+										<Run Text="{Binding Ship.DmgCap_Combined_Night, Mode=OneWay}">
+											<Run.Style>
+												<Style TargetType="Run">
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding Ship.DmgCap_Combined_NightOver, Mode=OneWay}" Value="True">
+															<Setter Property="Foreground" Value="Gold" />
+															<Setter Property="FontWeight" Value="Bold" />
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Run.Style>
+										</Run>
+										<Run Text="/"
+											 FontSize="11"
+											 Foreground="{DynamicResource ForegroundBrushKey}" />
+										<Run Text="{Binding Ship.DmgCap_Combined_Night_HeadOn, Mode=OneWay}">
+											<Run.Style>
+												<Style TargetType="Run">
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding Ship.DmgCap_Combined_Night_HeadOnOver, Mode=OneWay}" Value="True">
+															<Setter Property="Foreground" Value="Gold" />
+															<Setter Property="FontWeight" Value="Bold" />
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Run.Style>
+										</Run>
+									</TextBlock>
+
+
+									<TextBlock Margin="0,10,5,0"
+											   Grid.Column="0"
+											   Grid.Row="6"
+											   Grid.ColumnSpan="2"
+											   FontSize="12"
+											   Text="지원함대로 사용할 때" />
+									<TextBlock Margin="10,2,5,0"
+											   Grid.Column="0"
+											   Grid.Row="7"
+											   FontSize="12"
+											   Text="화력:" />
+
+									<TextBlock Margin="0,2,5,0"
+											   Grid.Column="1"
+											   Grid.Row="7"
+											   Foreground="{DynamicResource ActiveForegroundBrushKey}"
+											   TextAlignment="Left"
+											   FontSize="12">
+										<Run Text="{Binding Ship.DmgCap_Support, Mode=OneWay}">
+											<Run.Style>
+												<Style TargetType="Run">
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding Ship.DmgCap_SupportOver, Mode=OneWay}" Value="True">
+															<Setter Property="Foreground" Value="Gold" />
+															<Setter Property="FontWeight" Value="Bold" />
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Run.Style>
+										</Run>
+										<Run Text="/"
+											 FontSize="11"
+											 Foreground="{DynamicResource ForegroundBrushKey}" />
+										<Run Text="{Binding Ship.DmgCap_Support_HeadOn, Mode=OneWay}">
+											<Run.Style>
+												<Style TargetType="Run">
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding Ship.DmgCap_Support_HeadOnOver, Mode=OneWay}" Value="True">
+															<Setter Property="Foreground" Value="Gold" />
+															<Setter Property="FontWeight" Value="Bold" />
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Run.Style>
+										</Run>
+									</TextBlock>
+
+									<TextBlock Grid.Row="8"
+											   Grid.ColumnSpan="3"
+											   Style="{DynamicResource DefaultTextStyleKey}"
+											   TextWrapping="WrapWithOverflow"
+											   Margin="0,10,5,0">
+										※ 수치는 "동항전 / 반항전"입니다.
+									</TextBlock>
+								</Grid>
 							</Grid>
 						</TextBlock.ToolTip> 
 					</TextBlock>

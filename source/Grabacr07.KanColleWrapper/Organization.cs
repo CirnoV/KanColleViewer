@@ -86,6 +86,28 @@ namespace Grabacr07.KanColleWrapper
 
 		#endregion
 
+		#region CombinedType 変更通知プロパティ
+
+		private CombinedFleetType _CombinedType;
+
+		/// <summary>
+		/// 제1, 제2 함대의 연합함대 형식
+		/// </summary>
+		public CombinedFleetType CombinedType
+		{
+			get { return this._CombinedType; }
+			set
+			{
+				if (this._CombinedType != value)
+				{
+					this._CombinedType = value;
+					this.RaisePropertyChanged();
+				}
+			}
+		}
+
+		#endregion
+
 		#region CombinedFleet 変更通知プロパティ
 
 		private CombinedFleet _CombinedFleet;
@@ -141,7 +163,14 @@ namespace Grabacr07.KanColleWrapper
 			proxy.api_req_member_updatedeckname.TryParse().Subscribe(this.UpdateFleetName);
 
 			proxy.api_req_hensei_combined.TryParse<kcsapi_hensei_combined>()
-				.Subscribe(x => this.Combined = x.Data.api_combined != 0);
+				.Subscribe(x =>
+				{
+					this.Combined = x.Data.api_combined != 0;
+
+					int type;
+					if (int.TryParse(x.Request["api_combined_type"], out type))
+						this.CombinedType = (CombinedFleetType)type;
+				});
 
 			this.SubscribeSortieSessions(proxy);
 		}

@@ -528,10 +528,46 @@ namespace Grabacr07.KanColleWrapper.Models
 		public int SumFirepower => this.Firepower.Current + this.EquippedItems.Sum(x => x.Item.Info.Firepower);
 		public int SumTorpedo => this.Torpedo.Current + this.EquippedItems.Sum(x => x.Item.Info.Torpedo);
 		public int SumAA => this.AA.Current + this.EquippedItems.Sum(x => x.Item.Info.AA);
-		public int SumLOS => this.ViewRange + this.EquippedItems.Sum(x => x.Item.Info.ViewRange);
+		public int SumLOS => this.ViewRange;// + this.EquippedItems.Sum(x => x.Item.Info.ViewRange);
 		public int SumArmor => this.Armer.Current + this.EquippedItems.Sum(x => x.Item.Info.Armer);
 		public int SumEvade => this.RawData.api_kaihi[0] + this.EquippedItems.Sum(x => x.Item.Info.Evade);
 		public int SumCarry => this.Slots.Sum(x => x.Maximum);
+
+		#region Cap Calc
+		public int DmgCap_Day => this.CalcDamageCap(1.0, 180, false);
+		public bool DmgCap_DayOver => this.DmgCap_Day >= 180;
+
+		public int DmgCap_Day_HeadOn => this.CalcDamageCap(0.8, 180, false);
+		public bool DmgCap_Day_HeadOnOver => this.DmgCap_Day >= 180;
+
+		public int DmgCap_Night => this.CalcDamageCap(1.0, 300, false);
+		public bool DmgCap_NightOver => this.DmgCap_Day >= 300;
+
+		public int DmgCap_Night_HeadOn => this.CalcDamageCap(0.8, 300, false);
+		public bool DmgCap_Night_HeadOnOver => this.DmgCap_Day >= 300;
+
+		//
+
+		public int DmgCap_Combined_Day => this.CalcDamageCap(1.0, 180, true);
+		public bool DmgCap_Combined_DayOver => this.DmgCap_Combined_Day >= 180;
+
+		public int DmgCap_Combined_Day_HeadOn => this.CalcDamageCap(0.8, 180, true);
+		public bool DmgCap_Combined_Day_HeadOnOver => this.DmgCap_Combined_Day >= 180;
+
+		public int DmgCap_Combined_Night => this.CalcDamageCap(1.0, 300, true);
+		public bool DmgCap_Combined_NightOver => this.DmgCap_Combined_Day >= 300;
+
+		public int DmgCap_Combined_Night_HeadOn => this.CalcDamageCap(0.8, 300, true);
+		public bool DmgCap_Combined_Night_HeadOnOver => this.DmgCap_Combined_Day >= 300;
+
+		//
+
+		public int DmgCap_Support => this.CalcDamageCap(1.0, 150, false, true);
+		public bool DmgCap_SupportOver => this.DmgCap_Day >= 150;
+
+		public int DmgCap_Support_HeadOn => this.CalcDamageCap(0.8, 150, false, true);
+		public bool DmgCap_Support_HeadOnOver => this.DmgCap_Day >= 150;
+		#endregion
 
 		public int Range => this.Info.RawData.api_leng;
 
@@ -654,6 +690,89 @@ namespace Grabacr07.KanColleWrapper.Models
 		{
 			foreach (var slot in this.Slots.Where(x => x.Equipped)) yield return slot;
 			if (this.ExSlot.Equipped) yield return this.ExSlot;
+		}
+
+		internal static int CalcCombinedFleetFactor(CombinedFleetType type, int fleetId, bool abyssalCombined)
+		{
+			if (type == CombinedFleetType.None || fleetId >= 3)
+				return 0;
+
+			if (abyssalCombined)
+			{
+				if (fleetId == 2) return -5;
+
+				switch (type)
+				{
+					case CombinedFleetType.SurfaceTaskForce:
+						return 2;
+
+					case CombinedFleetType.CarrierTaskForce:
+						return 2;
+
+					case CombinedFleetType.TransportEscort:
+						return -5;
+				}
+			}
+			else
+			{
+				switch (type)
+				{
+					case CombinedFleetType.SurfaceTaskForce:
+						if (fleetId == 1)
+							return 10;
+						else
+							return -5;
+
+					case CombinedFleetType.CarrierTaskForce:
+						if (fleetId == 1)
+							return 2;
+						else
+							return 10;
+					case CombinedFleetType.TransportEscort:
+						if (fleetId == 1)
+							return -5;
+						else
+							return 10;
+				}
+			}
+			return 0;
+		}
+		internal int CalcDamageCap(double formationMultiply, int cap, bool abyssalCombined, bool forSupport = false)
+		{
+			var combinedFleetFactor = CalcCombinedFleetFactor(homeport.Organization.CombinedType, this.FleetId, abyssalCombined);
+			double power = 0;
+
+			var shipType = this.Info.ShipType.Id;
+			if (shipType == 7 || shipType == 11 || shipType == 18)
+			{
+				power =
+					(int)
+					(
+						(
+							this.Firepower.Current
+							+ this.EquippedItems.Sum(x => x.Item.Info.Firepower)
+							+ this.Torpedo.Current
+							+ this.EquippedItems.Sum(x => x.Item.Info.Torpedo)
+							+ this.EquippedItems.Sum(x => (int)(x.Item.Info.Bomb * 1.3))
+							+ (forSupport ? -1 : combinedFleetFactor)
+						)
+						* 1.5
+					)
+					+ 55;
+			}
+			else
+			{
+				power = this.Firepower.Current
+					+ this.EquippedItems.Sum(x => x.Item.Info.Firepower)
+					+ (forSupport ? -1 : combinedFleetFactor)
+					+ 5;
+			}
+
+			power *= formationMultiply;
+			if (power > cap) // soft cap
+				power = cap + Math.Sqrt(power - cap);
+
+			return (int)Math.Floor(power);
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grabacr07.KanColleWrapper.Models.Raw;
+using Grabacr07.KanColleWrapper.Internal;
 
 namespace Grabacr07.KanColleWrapper.Models
 {
@@ -22,13 +23,29 @@ namespace Grabacr07.KanColleWrapper.Models
 
 		public bool Locked => this.RawData.api_locked == 1;
 
-		public double AfterFirepower => this.Info.Firepower + this.GetImprovementBonus(false);
-		public double AfterTorpedo => this.Info.Torpedo + this.GetImprovementBonus(true);
+		private SlotItemStat _ImprovementStats { get; set; }
+		public SlotItemStat ImprovementStats
+		{
+			get { return this._ImprovementStats; }
+			private set
+			{
+				if (this._ImprovementStats != value)
+				{
+					this._ImprovementStats = value;
+					this.RaisePropertyChanged(nameof(this.ImprovementStats));
+				}
+			}
+		}
+
+		public double ResultFirepower => this.Info.Firepower + this.ImprovementStats.Firepower;
+		public double ResultTorpedo => this.Info.Torpedo + this.ImprovementStats.Torpedo;
+		public double ResultBomb => this.Info.Bomb + this.ImprovementStats.Bomb;
 
 		internal SlotItem(kcsapi_slotitem rawData)
 			: base(rawData)
 		{
 			this.Info = KanColleClient.Current.Master.SlotItems[this.RawData.api_slotitem_id] ?? SlotItemInfo.Dummy;
+			this.ImprovementStats = this.GetImprovementBonus();
 		}
 
 
@@ -36,6 +53,7 @@ namespace Grabacr07.KanColleWrapper.Models
 		{
 			this.RawData.api_level = level;
 			this.Info = KanColleClient.Current.Master.SlotItems[masterId] ?? SlotItemInfo.Dummy;
+			this.ImprovementStats = this.GetImprovementBonus();
 
 			this.RaisePropertyChanged(nameof(this.Info));
 			this.RaisePropertyChanged(nameof(this.Level));
@@ -45,44 +63,6 @@ namespace Grabacr07.KanColleWrapper.Models
 		{
 			return $"ID = {this.Id}, Name = \"{this.Info.Name}\", Level = {this.Level}, Proficiency = {this.Proficiency}";
 		}
-
-		internal double GetImprovementBonusFactor(bool isTorpedo)
-		{
-			switch (this.Info.IconType)
-			{
-				case SlotItemIconType.MainCanonLight:
-				case SlotItemIconType.MainCanonMedium:
-				case SlotItemIconType.SecondaryCanon:
-				case SlotItemIconType.HighAngleGun:
-				case SlotItemIconType.APShell:
-				case SlotItemIconType.AntiAircraftFireDirector:
-				case SlotItemIconType.Searchlight:
-				case SlotItemIconType.LandingCraft:
-				case SlotItemIconType.AmphibiousLandingCraft:
-					if (!isTorpedo) return 1;
-					break;
-
-				case SlotItemIconType.MainCanonHeavy:
-					if (!isTorpedo) return 1.5;
-					break;
-
-				case SlotItemIconType.Torpedo:
-					if (isTorpedo) return 1.2;
-					break;
-
-				case SlotItemIconType.Soner:
-				case SlotItemIconType.ASW:
-					if (!isTorpedo) return 0.75;
-					break;
-
-				case SlotItemIconType.AAGun:
-					if (!isTorpedo) return 1;
-					return 1.2;
-			}
-			return 0;
-		}
-		internal double GetImprovementBonus(bool isTorpedo)
-			=> this.GetImprovementBonusFactor(isTorpedo) * Math.Sqrt(this.Level);
 
 		public static SlotItem Dummy { get; } = new SlotItem(new kcsapi_slotitem { api_slotitem_id = -1, });
 	}

@@ -73,9 +73,81 @@ namespace Grabacr07.KanColleWrapper.Models
 		public int ViewRange => this.RawData.api_saku;
 
 		/// <summary>
+		/// 원정 보너스 +%
+		/// </summary>
+		public int ExpeditionBonus
+		{
+			get
+			{
+				switch (this.Id)
+				{
+					case 68: // 대발동정
+						return 5;
+					case 166: // 대발동정(육전대)
+						return 2;
+					case 167: // 2식 내화정
+						return 1;
+					case 193: // 특대발동정
+						return 7;
+					default:
+						return 0;
+				}
+			}
+		}
+
+		/// <summary>
+		/// 포대형 특화 계수
+		/// </summary>
+		public double TurrentEfficacy
+		{
+			get
+			{
+				switch (this.Id)
+				{
+					case 68: // 대발동정
+						return 1.80;
+					case 166: // 대발동정(육전대)
+						return 2.15;
+					case 167: // 2식 내화정
+						return 2.40;
+					default:
+						return 0;
+				}
+			}
+		}
+
+		/// <summary>
 		/// 基地航空隊の航続距離値を取得します。
 		/// </summary>
 		public int Distance => this.RawData.api_distance;
+
+		/// <summary>
+		/// 기지항공대 배치 코스트
+		/// </summary>
+		public int AirBaseCost
+		{
+			get
+			{
+				var cost = this.RawData.api_cost;
+				if (cost == -1) return cost;
+
+				var type = this.Type;
+				if (type == SlotItemType.None) return cost;
+
+				switch (type)
+				{
+					case SlotItemType.艦上偵察機:
+					case SlotItemType.水上偵察機:
+					case SlotItemType.噴式偵察機:
+					case SlotItemType.大型飛行艇:
+						return cost * 4;
+
+					default:
+						return cost * 12;
+				}
+			}
+		}
+
 
 		public bool IsNumerable => this.Type.IsNumerable();
 
@@ -109,30 +181,6 @@ namespace Grabacr07.KanColleWrapper.Models
 								   || this.Type == SlotItemType.水上偵察機;
 
 		public double SecondEncounter => this.ViewRange * 0.07;
-
-		public int AirBaseCost
-		{
-			get
-			{
-				var cost = this.RawData.api_cost;
-				if (cost == -1) return cost;
-
-				var type = this.Type;
-				if (type == SlotItemType.None) return cost;
-
-				switch (type)
-				{
-					case SlotItemType.艦上偵察機:
-					case SlotItemType.水上偵察機:
-					case SlotItemType.噴式偵察機:
-					case SlotItemType.大型飛行艇:
-						return cost * 4;
-
-					default:
-						return cost * 12;
-				}
-			}
-		}
 
 		public SlotItemEquipType EquipType { get; }
 

@@ -15,8 +15,6 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 	/// </summary>
 	internal class Bq5 : NoOverUnderTracker, ITracker
 	{
-		private QuestProgressType lastProgress = QuestProgressType.None;
-
 		private int progress_3_1;
 		private int progress_3_2;
 		private int progress_3_3;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,9 +17,10 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 
 		public FleetStateViewModel State { get; }
 
-		public ViewModel QuickStateView => this.Source.State.Situation.HasFlag(FleetSituation.Sortie)
-			? this.State.Sortie
-			: this.State.Homeport as QuickStateViewViewModel;
+		public ViewModel QuickStateView
+			=> this.Source.State.Situation.HasFlag(FleetSituation.Sortie)
+				? this.State.Sortie
+				: this.State.Homeport as QuickStateViewViewModel;
 
 		/// <summary>
 		/// 艦隊に所属している艦娘のコレクションを取得します。

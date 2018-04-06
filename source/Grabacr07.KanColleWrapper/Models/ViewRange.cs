@@ -73,7 +73,7 @@ namespace Grabacr07.KanColleWrapper.Models
 		public override string Description =>
 			@"((각 장비의 색적값 + 개수 효과) × 장비 타입 보너스)의 합 × "
 			+ this.Cn + @"(√ 각 함의 색적값)의 합
-- (사령부 레벨 × 0.4)의 소수점 이하 올림 + 함대 여유 × 2
+- (사령부 레벨 × 0.4)의 소수점 이하 올림 + (6 - 함선 수) × 2
 ※ 대피한 함선 제외";
 
 		public override bool HasCombinedSettings { get; } = true;

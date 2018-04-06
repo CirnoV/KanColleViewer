@@ -86,6 +86,28 @@ namespace Grabacr07.KanColleWrapper
 
 		#endregion
 
+		#region CombinedType 変更通知プロパティ
+
+		private CombinedFleetType _CombinedType;
+
+		/// <summary>
+		/// 제1, 제2 함대의 연합함대 형식
+		/// </summary>
+		public CombinedFleetType CombinedType
+		{
+			get { return this._CombinedType; }
+			set
+			{
+				if (this._CombinedType != value)
+				{
+					this._CombinedType = value;
+					this.RaisePropertyChanged();
+				}
+			}
+		}
+
+		#endregion
+
 		#region CombinedFleet 変更通知プロパティ
 
 		private CombinedFleet _CombinedFleet;
@@ -141,7 +163,14 @@ namespace Grabacr07.KanColleWrapper
 			proxy.api_req_member_updatedeckname.TryParse().Subscribe(this.UpdateFleetName);
 
 			proxy.api_req_hensei_combined.TryParse<kcsapi_hensei_combined>()
-				.Subscribe(x => this.Combined = x.Data.api_combined != 0);
+				.Subscribe(x =>
+				{
+					this.Combined = x.Data.api_combined != 0;
+
+					int type;
+					if (int.TryParse(x.Request["api_combined_type"], out type))
+						this.CombinedType = (CombinedFleetType)type;
+				});
 
 			this.SubscribeSortieSessions(proxy);
 		}
@@ -250,13 +279,13 @@ namespace Grabacr07.KanColleWrapper
 			try
 			{
 				var fleet = this.Fleets[int.Parse(data.Request["api_id"])];
-				fleet.RaiseShipsUpdated();
 
 				var index = int.Parse(data.Request["api_ship_idx"]);
 				if (index == -1)
 				{
 					// 旗艦以外をすべて外すケース
 					fleet.UnsetAll();
+					fleet.RaiseShipsUpdated();
 					return;
 				}
 
@@ -265,6 +294,7 @@ namespace Grabacr07.KanColleWrapper
 				{
 					// 艦を外すケース
 					fleet.Unset(index);
+					fleet.RaiseShipsUpdated();
 					return;
 				}
 
@@ -273,6 +303,7 @@ namespace Grabacr07.KanColleWrapper
 				{
 					// ship が、現状どの艦隊にも所属していないケース
 					fleet.Change(index, ship);
+					fleet.RaiseShipsUpdated();
 					return;
 				}
 
@@ -283,6 +314,7 @@ namespace Grabacr07.KanColleWrapper
 				// Fleet.Change(int, Ship) は、変更前の艦を返す (= old) ので、
 				// ship の移動元 (currentFleet + currentIndex) に old を書き込みにいく
 				currentFleet.Change(currentIndex, old);
+				fleet.RaiseShipsUpdated();
 			}
 			catch (Exception ex)
 			{

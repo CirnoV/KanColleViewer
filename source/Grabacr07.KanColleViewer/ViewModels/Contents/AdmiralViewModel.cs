@@ -168,7 +168,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 				(goal - homeport.Materials.Steel + 2) / 3 * 3,
 				(goal - homeport.Materials.Bauxite + 2) / 3 * 1
 			};
-			if (!times.Any(x => x < 0))
+			if (!times.Any(x => x <= 0))
 			{
 				ResourceLimitRemaining = "--일 --시간 --분"; // 자연회복 없음
 				return;

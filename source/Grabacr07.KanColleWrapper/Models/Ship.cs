@@ -208,6 +208,21 @@ namespace Grabacr07.KanColleWrapper.Models
 		}
 		#endregion
 
+		#region Bauxite 変更通知プロパティ
+		public LimitedValue Bauxite
+			=> this.ExSlot != null
+				? new LimitedValue(
+						(this.Slots.Sum(x => x.Current) + this.ExSlot.Current) * 5,
+						(this.Slots.Sum(x => x.Maximum) + this.ExSlot.Maximum) * 5,
+						0
+					)
+				: new LimitedValue(
+						this.Slots.Sum(x => x.Current) * 5,
+						this.Slots.Sum(x => x.Maximum) * 5,
+						0
+					);
+		#endregion
+
 		#region Firepower 変更通知プロパティ
 
 		private ModernizableStatus _Firepower;
@@ -421,9 +436,10 @@ namespace Grabacr07.KanColleWrapper.Models
 
 		#endregion
 
-		#region UsedFuel UsedBull / FuelText BullText
+		#region UsedFuel UsedBull UsedBauxite / FuelText BullText
 		public int UsedFuel => (int)((this.Level <= 99 ? 1.0f : 0.85f) * (this.Fuel.Maximum - this.Fuel.Current));
 		public int UsedBull => (int)((this.Level <= 99 ? 1.0f : 0.85f) * (this.Bull.Maximum - this.Bull.Current));
+		public int UsedBauxite => this.Bauxite.Maximum - this.Bauxite.Current;
 
 		public string FuelText
 		{
@@ -528,10 +544,46 @@ namespace Grabacr07.KanColleWrapper.Models
 		public int SumFirepower => this.Firepower.Current + this.EquippedItems.Sum(x => x.Item.Info.Firepower);
 		public int SumTorpedo => this.Torpedo.Current + this.EquippedItems.Sum(x => x.Item.Info.Torpedo);
 		public int SumAA => this.AA.Current + this.EquippedItems.Sum(x => x.Item.Info.AA);
-		public int SumLOS => this.ViewRange + this.EquippedItems.Sum(x => x.Item.Info.ViewRange);
+		public int SumLOS => this.ViewRange;// + this.EquippedItems.Sum(x => x.Item.Info.ViewRange);
 		public int SumArmor => this.Armer.Current + this.EquippedItems.Sum(x => x.Item.Info.Armer);
 		public int SumEvade => this.RawData.api_kaihi[0] + this.EquippedItems.Sum(x => x.Item.Info.Evade);
 		public int SumCarry => this.Slots.Sum(x => x.Maximum);
+
+		#region Cap Calc
+		public int DmgCap_Day => this.CalcDamageCap(1.0, 180, false);
+		public bool DmgCap_DayOver => this.DmgCap_Day >= 180;
+
+		public int DmgCap_Day_HeadOn => this.CalcDamageCap(0.8, 180, false);
+		public bool DmgCap_Day_HeadOnOver => this.DmgCap_Day_HeadOn >= 180;
+
+		public int DmgCap_Night => this.CalcDamageCap(1.0, 300, false);
+		public bool DmgCap_NightOver => this.DmgCap_Night >= 300;
+
+		public int DmgCap_Night_HeadOn => this.CalcDamageCap(0.8, 300, false);
+		public bool DmgCap_Night_HeadOnOver => this.DmgCap_Night_HeadOn >= 300;
+
+		//
+
+		public int DmgCap_Combined_Day => this.CalcDamageCap(1.0, 180, true);
+		public bool DmgCap_Combined_DayOver => this.DmgCap_Combined_Day >= 180;
+
+		public int DmgCap_Combined_Day_HeadOn => this.CalcDamageCap(0.8, 180, true);
+		public bool DmgCap_Combined_Day_HeadOnOver => this.DmgCap_Combined_Day_HeadOn >= 180;
+
+		public int DmgCap_Combined_Night => this.CalcDamageCap(1.0, 300, true);
+		public bool DmgCap_Combined_NightOver => this.DmgCap_Combined_Night >= 300;
+
+		public int DmgCap_Combined_Night_HeadOn => this.CalcDamageCap(0.8, 300, true);
+		public bool DmgCap_Combined_Night_HeadOnOver => this.DmgCap_Combined_Night_HeadOn >= 300;
+
+		//
+
+		public int DmgCap_Support => this.CalcDamageCap(1.0, 150, false, true);
+		public bool DmgCap_SupportOver => this.DmgCap_Support >= 150;
+
+		public int DmgCap_Support_HeadOn => this.CalcDamageCap(0.8, 150, false, true);
+		public bool DmgCap_Support_HeadOnOver => this.DmgCap_Support_HeadOn >= 150;
+		#endregion
 
 		public int Range => this.Info.RawData.api_leng;
 
@@ -541,27 +593,6 @@ namespace Grabacr07.KanColleWrapper.Models
 				: this.Info.ShipType.Id == 1 ? SumASW >= 60 // 해방함
 				: this.Info.ShipType.Id == 7 && this.Speed == ShipSpeed.Slow ? SumASW >= 65 // 저속 경공모
 				: SumASW >= 100;
-
-		// 선제 대잠에 필요한 장비 추천
-		private string _RequireASW { get; set; } = null;
-		public string RequireASW
-		{
-			get
-			{
-				if (_RequireASW == null)
-				{
-					_RequireASW = "계산중...";
-
-					new Thread(() =>
-					{
-						this._RequireASW = ASWCalculator.GetASWTooltip(this);
-						this.RaisePropertyChanged(nameof(this.RequireASW));
-					}).Start();
-				}
-
-				return _RequireASW;
-			}
-		}
 
 		internal Ship(Homeport parent, kcsapi_ship2 rawData)
 			: base(rawData)
@@ -573,9 +604,6 @@ namespace Grabacr07.KanColleWrapper.Models
 		internal void Update(kcsapi_ship2 rawData)
 		{
 			this.UpdateRawData(rawData);
-
-			this._RequireASW = null;
-			this.RaisePropertyChanged(nameof(this.RequireASW));
 
 			this.Info = KanColleClient.Current.Master.Ships[rawData.api_ship_id] ?? ShipInfo.Dummy;
 			this.HP = new LimitedValue(this.RawData.api_nowhp, this.RawData.api_maxhp, 0);
@@ -654,6 +682,100 @@ namespace Grabacr07.KanColleWrapper.Models
 		{
 			foreach (var slot in this.Slots.Where(x => x.Equipped)) yield return slot;
 			if (this.ExSlot.Equipped) yield return this.ExSlot;
+		}
+
+		internal static int CalcCombinedFleetFactor(CombinedFleetType type, int fleetId, bool abyssalCombined)
+		{
+			if (type == CombinedFleetType.None || fleetId >= 3)
+				return 0;
+
+			if (abyssalCombined)
+			{
+				if (fleetId == 2)
+				{
+					if (type == CombinedFleetType.None)
+						return 5;
+					else
+						return -5;
+				}
+
+				switch (type)
+				{
+					case CombinedFleetType.SurfaceTaskForce:
+						return 2;
+
+					case CombinedFleetType.CarrierTaskForce:
+						return 2;
+
+					case CombinedFleetType.TransportEscort:
+						return -5;
+
+					default:
+						return 5;
+				}
+			}
+			else
+			{
+				switch (type)
+				{
+					case CombinedFleetType.SurfaceTaskForce:
+						if (fleetId == 1)
+							return 10;
+						else
+							return -5;
+
+					case CombinedFleetType.CarrierTaskForce:
+						if (fleetId == 1)
+							return 2;
+						else
+							return 10;
+					case CombinedFleetType.TransportEscort:
+						if (fleetId == 1)
+							return -5;
+						else
+							return 10;
+				}
+			}
+			return 0;
+		}
+		internal int CalcDamageCap(double formationMultiply, int cap, bool abyssalCombined, bool forSupport = false)
+		{
+			var combinedFleetFactor = CalcCombinedFleetFactor(homeport.Organization.CombinedType, this.FleetId, abyssalCombined);
+			double power = 0;
+
+			var shipType = this.Info.ShipType.Id;
+			// 항모계열
+			if (shipType == 7 || shipType == 11 || shipType == 18)
+			{
+				power =
+					(int)
+					(
+						(
+							this.Firepower.Current
+							+ this.EquippedItems.Sum(x => x.Item.ResultFirepower)
+							+ this.Torpedo.Current
+							+ this.EquippedItems.Sum(x => x.Item.ResultTorpedo)
+							+ this.EquippedItems.Sum(x => (int)(x.Item.ResultBomb * 1.3))
+							+ (forSupport ? -1 : combinedFleetFactor)
+						)
+						* 1.5
+					)
+					+ 55;
+			}
+			// 그 외 함선
+			else
+			{
+				power = this.Firepower.Current
+					+ this.EquippedItems.Sum(x => x.Item.ResultFirepower)
+					+ (forSupport ? -1 : combinedFleetFactor)
+					+ 5;
+			}
+
+			power *= formationMultiply;
+			if (power > cap) // soft cap
+				power = cap + Math.Sqrt(power - cap);
+
+			return (int)Math.Floor(power);
 		}
 	}
 }

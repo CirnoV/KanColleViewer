@@ -12,6 +12,7 @@ namespace Grabacr07.KanColleViewer.Controls
 	/// <summary>
 	/// 
 	/// </summary>
+	[TemplatePart(Name = "PART_PreviousIndicator", Type = typeof(FrameworkElement))]
 	public class ColorIndicator : ProgressBar
 	{
 		static ColorIndicator()
@@ -39,6 +40,16 @@ namespace Grabacr07.KanColleViewer.Controls
 		}
 		#endregion
 
+		#region Previous 종속성 프로퍼티
+		public double Previous
+		{
+			get { return (double)this.GetValue(PreviousProperty); }
+			set { this.SetValue(PreviousProperty, value); }
+		}
+		public static readonly DependencyProperty PreviousProperty =
+			DependencyProperty.Register(nameof(Previous), typeof(double), typeof(ColorIndicator), new UIPropertyMetadata(0.0));
+		#endregion
+
 		#region Columns 종속성 프로퍼티
 		public int Columns
 		{
@@ -59,11 +70,47 @@ namespace Grabacr07.KanColleViewer.Controls
 			DependencyProperty.Register(nameof(FullColor), typeof(Color), typeof(ColorIndicator), new UIPropertyMetadata(Color.FromRgb(40, 144, 16)));
 		#endregion
 
+		#region PreviousIndicator process
+		private FrameworkElement _track, _previousindicator;
+		public override void OnApplyTemplate()
+		{
+			base.OnApplyTemplate();
+
+			if (_track != null)
+				_track.SizeChanged -= OnTrackSizeChanged;
+
+			_track = GetTemplateChild("PART_Track") as FrameworkElement;
+			_previousindicator = GetTemplateChild("PART_PreviousIndicator") as FrameworkElement;
+
+			if (_track != null)
+				_track.SizeChanged += OnTrackSizeChanged;
+		}
+		private void OnTrackSizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			if (_track != null && _previousindicator != null)
+			{
+				double min = Minimum;
+				double max = Maximum;
+				double val = Previous;
+
+				// When indeterminate or maximum == minimum, have the indicator stretch the 
+				// whole length of track
+				double percent = IsIndeterminate || max <= min ? 1.0 : (val - min) / (max - min);
+				_previousindicator.Width = percent * _track.ActualWidth;
+			}
+		}
+		#endregion
+
+		/// <summary>
+		/// Calls after new <see cref="LimitedValue"/> given.
+		/// </summary>
+		/// <param name="value"></param>
 		private void ChangeColor(LimitedValue value)
 		{
 			this.Maximum = value.Maximum;
 			this.Minimum = value.Minimum;
 			this.Value = value.Current;
+			this.Previous = value.Previous < this.Minimum ? this.Minimum : (value.Previous > this.Maximum ? this.Maximum : value.Previous);
 
 			Color color;
 			var percentage = value.Maximum == 0 ? 0.0 : value.Current / (double)value.Maximum;

@@ -320,16 +320,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 		/// <summary>
 		/// 艦隊に所属している艦娘のコレクションを取得します。
 		/// </summary>
-		public ShipViewModel[] Ships
-		{
-			get
-			{
-				this.ShipTypeTable = MakeShipTypeTable(this.Source.Ships);
-				this.IsPassed = CompareExpeditionData(this.ExpeditionId, this.Source.Ships);
-
-				return this.Source.Ships.Select(x => new ShipViewModel(x)).ToArray();
-			}
-		}
+		public ShipViewModel[] Ships => this.Source.Ships.Select(x => new ShipViewModel(x)).ToArray();
 
 		public Dictionary<int, string> ResultList { get; set; }
 		private Dictionary<int, int> ShipTypeTable { get; set; }
@@ -383,8 +374,6 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 				(sender, args) => this.RaisePropertyChanged(args.PropertyName),
 				{ nameof(fleet.ShipsUpdated), (sender,args) => this.ExpeditionId = this.ExpeditionId }
 			});
-
-			fleet.State.Updated += (sender, args) => this.ExpeditionId = this.ExpeditionId; // 편성 변경?
 
 			this.CompositeDisposable.Add(new PropertyChangedEventListener(fleet.State)
 			{
@@ -488,10 +477,11 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 
 			if (fleet.Count() <= 0) return false;
 			if (Mission < 1) return false;
-			bool Chk = true;
+
+			var Chk = true;
+			this.ShipTypeTable = MakeShipTypeTable(this.Source.Ships);
 			if (this.ShipTypeTable?.Count <= 0) Chk = false;
 			if (Mission < 1) return false;
-			this.ShipTypeTable = this.ChangeSpecialType(this.ShipTypeTable, Mission);
 
 
 			this.nArmoLoss = LossResource(fleet, Mission, 1);
@@ -506,35 +496,31 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 
 			var ExpeditionTable = new Dictionary<int, int>();
 			var strb = new StringBuilder();
-			if (NeedShipRaw[0] == string.Empty)
-				return false;
-			else
+			if (NeedShipRaw[0] == string.Empty) return false;
+
+			strb.Append("총" + Convert.ToInt32(NeedShipRaw[0]) + "(");
+			if (NeedShipRaw.Length > 1)
 			{
-				strb.Append("총" + Convert.ToInt32(NeedShipRaw[0]) + "(");
-
-				if (NeedShipRaw.Length > 1)
+				var Ships = NeedShipRaw[1].Split(',');
+				for (int i = 0; i < Ships.Length; i++)
 				{
-					var Ships = NeedShipRaw[1].Split(',');
-
-					for (int i = 0; i < Ships.Length; i++)
-					{
-						var shipInfo = Ships[i].Split('*');
-						if (shipInfo.Length > 1)
-							ExpeditionTable.Add(Convert.ToInt32(shipInfo[0]), Convert.ToInt32(shipInfo[1]));
-					}
-					var list = ExpeditionTable.ToList();
-					for (int i = 0; i < ExpeditionTable.Count; i++)
-					{
-						if (i == 0)
-							strb.Append(KanColleClient.Current.Translations.GetTranslation("", TranslationType.ShipTypes, false, null, list[i].Key) + "×" + list[i].Value);
-						else
-							strb.Append("・" + KanColleClient.Current.Translations.GetTranslation("", TranslationType.ShipTypes, false, null, list[i].Key) + "×" + list[i].Value);
-					}
-					strb.Append(")");
-					strb = strb.Replace("()", "");
-					this.ShipTypeString = strb.ToString();
-					if (this.ShipTypeString.Length > 0) this.vNeed = Visibility.Visible;
+					var shipInfo = Ships[i].Split('*');
+					if (shipInfo.Length > 1)
+						ExpeditionTable.Add(Convert.ToInt32(shipInfo[0]), Convert.ToInt32(shipInfo[1]));
 				}
+
+				var list = ExpeditionTable.ToList();
+				for (int i = 0; i < ExpeditionTable.Count; i++)
+				{
+					if (i == 0)
+						strb.Append(KanColleClient.Current.Translations.GetTranslation("", TranslationType.ShipTypes, false, null, list[i].Key) + "×" + list[i].Value);
+					else
+						strb.Append("・" + KanColleClient.Current.Translations.GetTranslation("", TranslationType.ShipTypes, false, null, list[i].Key) + "×" + list[i].Value);
+				}
+				strb.Append(")");
+				strb = strb.Replace("()", "");
+				this.ShipTypeString = strb.ToString();
+				if (this.ShipTypeString.Length > 0) this.vNeed = Visibility.Visible;
 			}
 
 			if (fleet.Length < Convert.ToInt32(NeedShipRaw[0])) Chk = false;
@@ -561,162 +547,66 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 				this.vFlagType = Visibility.Visible;
 			}
 
+			var Firepower = KanColleClient.Current.Translations.GetExpeditionData("Firepower", Mission);
+			var AA = KanColleClient.Current.Translations.GetExpeditionData("AA", Mission);
+			var ASW = KanColleClient.Current.Translations.GetExpeditionData("ASW", Mission);
+			var LoS = KanColleClient.Current.Translations.GetExpeditionData("LoS", Mission);
+
+			if (Firepower != string.Empty)
+			{
+				int eFirepower;
+				if (int.TryParse(Firepower, out eFirepower) && fleet.Sum(x => x.SumFirepower) < eFirepower) Chk = false;
+			}
+			if (AA != string.Empty)
+			{
+				int eAA;
+				if (int.TryParse(AA, out eAA) && fleet.Sum(x => x.SumAA) < eAA) Chk = false;
+			}
+			if (ASW != string.Empty)
+			{
+				int eASW;
+				if (int.TryParse(ASW, out eASW) && fleet.Sum(x => x.SumASW) < eASW) Chk = false;
+			}
+			if (LoS != string.Empty)
+			{
+				int eLoS;
+				if (int.TryParse(LoS, out eLoS) && fleet.Sum(x => x.SumLOS) < eLoS) Chk = false;
+			}
+
 			var bChk = false;
 			try
 			{
-				var alters = GetAvailableAlternatives(fleet);
-				foreach (var alter in alters)
-					bChk |= CheckExpeditionTable(alter, ExpeditionTable);
+				for (var i = 1; i < NeedShipRaw.Length; i++)
+				{
+					ExpeditionTable = new Dictionary<int, int>();
+
+					var Ships = NeedShipRaw[i].Split(',');
+					for (int j = 0; j < Ships.Length; j++)
+					{
+						var shipInfo = Ships[j].Split('*');
+						if (shipInfo.Length > 1)
+							ExpeditionTable.Add(Convert.ToInt32(shipInfo[0]), Convert.ToInt32(shipInfo[1]));
+					}
+
+					var _Chk = true;
+					for (int j = 0; j < ExpeditionTable.Count; j++)
+					{
+						var test = ExpeditionTable.ToList();
+						if (this.ShipTypeTable.ContainsKey(test[j].Key))
+						{
+							var Count = this.ShipTypeTable[test[j].Key];
+							if (ExpeditionTable[test[j].Key] > this.ShipTypeTable[test[j].Key])
+								_Chk = false;
+						}
+						else _Chk = false;
+					}
+
+					bChk |= _Chk;
+				}
 			}
 			catch { }
 
-			return (Chk & bChk);
-		}
-		private Dictionary<int, int>[] GetAvailableAlternatives(Ship[] ships)
-		{
-			var list = new List<Dictionary<int, int>>();
-			var bTable = new List<int[]>();
-
-			#region 모든 경우의 수를 찾는다
-			{
-				var eIndex = new int[] { -1, -1, -1, -1, -1 };
-				var cIndex = new int[eIndex.Length];
-
-				var loopCount = 1 << eIndex.Length;
-				int eCount;
-
-				for (int i = 0; i < loopCount; i++)
-				{
-					eCount = 0;
-					Array.Copy(eIndex, cIndex, eIndex.Length);
-
-					for (int c = 0; c < eIndex.Length; c++)
-					{
-						int mask = (1 << c);
-						if ((i & mask) == mask)
-						{
-							cIndex[eCount] = c;
-							eCount++;
-						}
-					}
-
-					int[] combies = new int[eCount];
-					for (var j = 0; j < eCount; j++)
-						combies[j] = 1 + j;
-
-					bTable.Add(
-						combies.Reverse().ToArray()
-					);
-				}
-			}
-			#endregion
-
-			var baseTypes = MakeShipTypeTable(ships);
-
-			foreach (var entity in bTable)
-			{
-				var curTypes = baseTypes.ToDictionary(x => x.Key, x => x.Value); // Clone perfectly
-
-				foreach (var item in entity)
-				{
-					switch (item)
-					{
-						case 1: // 해방함 2 -> 구축함 2
-							if (curTypes.ContainsKey(1) && curTypes[1] >= 2) {
-								curTypes[1] -= 2;
-								if (curTypes[1] == 0)
-									curTypes.Remove(1);
-
-								if (curTypes.ContainsKey(2))
-									curTypes[2] += 2;
-								else
-									curTypes.Add(2, 2);
-							}
-							break;
-
-						case 2: // 해방함 3 -> [구축함 2] / 경순양함 1 구축함 1
-							if (curTypes.ContainsKey(1) && curTypes[1] >= 3)
-							{
-								curTypes[1] -= 3;
-								if (curTypes[1] == 0)
-									curTypes.Remove(1);
-
-								if (curTypes.ContainsKey(2))
-									curTypes[2] += 2;
-								else
-									curTypes.Add(2, 2);
-							}
-							break;
-
-						case 3: // 해방함 3 -> 구축함 2 / [경순양함 1 구축함 1]
-							if (curTypes.ContainsKey(1) && curTypes[1] >= 3)
-							{
-								curTypes[1] -= 3;
-								if (curTypes[1] == 0)
-									curTypes.Remove(1);
-
-								if (curTypes.ContainsKey(2))
-									curTypes[2] += 1;
-								else
-									curTypes.Add(2, 1);
-
-								if (curTypes.ContainsKey(3))
-									curTypes[3] += 1;
-								else
-									curTypes.Add(3, 1);
-							}
-							break;
-
-						case 4: // 타이요/타이요改/타이요改2 -> 경순양함 1
-							if (ships.Any(x => new int[] { 380, 526, 529 }.Contains(x.Info.Id)))
-							{
-								curTypes[7] -= 1;
-								if (curTypes[7] == 0)
-									curTypes.Remove(7);
-
-								if (curTypes.ContainsKey(3))
-									curTypes[3] += 1;
-								else
-									curTypes.Add(3, 1);
-							}
-							break;
-
-						case 5: // 연습순양함 -> 경순양함 1 (해방함 >= 2)
-							if ((curTypes.ContainsKey(1) && curTypes[1] >= 2) && curTypes.ContainsKey(21))
-							{
-								curTypes[21] -= 1;
-								if (curTypes[21] == 0)
-									curTypes.Remove(21);
-
-								if (curTypes.ContainsKey(3))
-									curTypes[3] += 1;
-								else
-									curTypes.Add(3, 1);
-							}
-							break;
-					}
-				}
-
-				list.Add(curTypes);
-			}
-			return list.Distinct().ToArray();
-		}
-		private bool CheckExpeditionTable(Dictionary<int, int> ShipTypeTable, Dictionary<int, int> ExpeditionTable)
-		{
-			var Chk = true;
-			var list = ExpeditionTable.ToList();
-
-			foreach(var item in list)
-			{
-				if (ShipTypeTable.ContainsKey(item.Key))
-				{
-					var Count = ShipTypeTable[item.Key];
-					if (ExpeditionTable[item.Key] > ShipTypeTable[item.Key])
-						Chk = false;
-				}
-				else Chk = false;
-			}
-			return Chk;
+			return Chk && bChk;
 		}
 
 
@@ -728,36 +618,6 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 			var rawList = source.Select(x => x.Info.ShipType.Id);
 			return rawList.Distinct()
 				.ToDictionary(x => x, x => rawList.Count(y => y == x));
-		}
-		private Dictionary<int, int> ChangeSpecialType(Dictionary<int, int> list, int MissionNum)
-		{
-			Dictionary<int, int> templist = new Dictionary<int, int>(list ?? new Dictionary<int, int>());
-			bool Checker = true;
-			int SpecialCount = 1;
-			while (Checker)
-			{
-				string SepcialElement = "Special";
-				var temp = SepcialElement + SpecialCount.ToString();
-				var specialData = KanColleClient.Current.Translations.GetExpeditionData(temp, MissionNum);
-
-				if (specialData != string.Empty)
-				{
-					var splitData = specialData.Split(';');
-					if (templist.ContainsKey(Convert.ToInt32(splitData[0])))
-					{
-						int tempCount = templist[Convert.ToInt32(splitData[0])];
-
-						if (templist.ContainsKey(Convert.ToInt32(splitData[1]))) templist[Convert.ToInt32(splitData[1])] += tempCount;
-						else templist.Add(Convert.ToInt32(splitData[1]), tempCount);
-
-						templist.Remove(Convert.ToInt32(splitData[0]));
-					}
-				}
-				else Checker = false;
-				SpecialCount++;
-			}
-
-			return templist;
 		}
 		private Dictionary<int, string> MakeResultList()
 		{

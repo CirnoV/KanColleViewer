@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +10,11 @@ namespace Grabacr07.KanColleWrapper.Internal
 	{
 		public static string GetResponseAsJson(this Session session)
 		{
-			return session.Response.BodyAsString.Replace("svdata=", "");
+			// return session.Response.BodyAsString.Replace("svdata=", "");
+			var body = session.Response.BodyAsString;
+			return body.StartsWith("svdata=")
+				? body.Substring(7)
+				: body;
 		}
 
 		/// <summary>

@@ -240,25 +240,40 @@ namespace Grabacr07.KanColleWrapper
 		private void BattleResult(kcsapi_battle_result br)
 		{
 			string ShipName = "";
+			string ItemName = "";
 			string MapType = "";
+
 			if (br.api_get_ship != null)
-			{
 				ShipName = KanColleClient.Current.Translations.GetTranslation(br.api_get_ship.api_ship_name, TranslationType.Ships, false, br);
-			}
+
+			if (br.api_get_useitem != null)
+				ItemName = KanColleClient.Current.Translations.GetTranslation(
+					KanColleClient.Current.Master.UseItems
+						.SingleOrDefault(x => x.Value.Id == br.api_get_useitem.api_useitem_id).Value
+						?.Name,
+					TranslationType.Useitems,
+					false,
+					br
+				);
+
 			MapType = KanColleClient.Current.Translations.GetTranslation(br.api_quest_name, TranslationType.OperationMaps, false, br);
 
 			string currentTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
 
 			#region CSV파일 저장
 			//날짜,해역이름,해역,보스,적 함대,랭크,드랍
-			Log(LogType.ShipDrop, "{0},{1},{2},{3},{4},{5},{6}",
+			Log(
+				LogType.ShipDrop,
+				"{0},{1},{2},{3},{4},{5},{6}",
 				currentTime,
 				MapType,
 				$"{NodeData.SelectToken("world").ToString()}-{(int)NodeData.SelectToken("mapnum")}-{(int)NodeData.SelectToken("node")}",
 				IsBossCell ? "O" : "X",
 				KanColleClient.Current.Translations.GetTranslation(br.api_enemy_info.api_deck_name, TranslationType.OperationSortie, false, br, -1),
 				br.api_win_rank, 
-				ShipName);
+				ShipName,
+				ItemName
+			);
 			#endregion
 		}
 
@@ -324,7 +339,7 @@ namespace Grabacr07.KanColleWrapper
 						}
 						using (StreamWriter w = File.AppendText(MainFolder + "\\DropLog2.csv"))
 						{
-							w.WriteLine("날짜,해역이름,해역,보스,적 함대,랭크,드랍", args);
+							w.WriteLine("날짜,해역이름,해역,보스,적 함대,랭크,드랍,아이템", args);
 						}
 					}
 

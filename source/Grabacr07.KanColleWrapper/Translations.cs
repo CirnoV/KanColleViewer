@@ -21,7 +21,8 @@ namespace Grabacr07.KanColleWrapper
 		private XDocument QuestsXML;//4
 		private XDocument ExpeditionXML;//5
 		private XDocument RemodelXml;//6
-        private XDocument EquipmentTypesXML;//7
+		private XDocument EquipmentTypesXML;//7
+		private XDocument UseitemsXML;//8
 		string MainFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 
 		public bool EnableTranslations { get; set; }
@@ -34,7 +35,8 @@ namespace Grabacr07.KanColleWrapper
 		public string ShipsVersion { get; set; }
 		public string ShipTypesVersion { get; set; }
 		public string RemodelSlotsVersion { get; set; }
-        public string EquipmentTypesVersion { get; set; }
+		public string EquipmentTypesVersion { get; set; }
+		public string UseitemsVersion { get; set; }
 		private void SaveXmls(int idx)
 		{
 			switch (idx)
@@ -57,12 +59,14 @@ namespace Grabacr07.KanColleWrapper
 				case 5:
 					ExpeditionXML.Save(Path.Combine(MainFolder, "Translations", "Expeditions.xml"));
 					break;
-				case 6://리모델링은 세이브가 없다
+				case 6: // 개수공창 정보는 번역하여 저장하지 않음
 					break;
-                case 7:
-                    EquipmentTypesXML.Save(Path.Combine(MainFolder, "Translations", "EquipmentTypes.xml"));
-                    break;
-            }
+				case 7:
+					EquipmentTypesXML.Save(Path.Combine(MainFolder, "Translations", "EquipmentTypes.xml"));
+					break;
+				case 8: // Useitems 정보는 번역하여 저장하지 않음
+					break;
+			}
 			LoadXmls();
 		}
 		private void LoadXmls()
@@ -74,10 +78,10 @@ namespace Grabacr07.KanColleWrapper
 			if (File.Exists(Path.Combine(MainFolder, "Translations", "Quests.xml"))) QuestsXML = XDocument.Load(Path.Combine(MainFolder, "Translations", "Quests.xml"));
 			if (File.Exists(Path.Combine(MainFolder, "Translations", "Expeditions.xml"))) ExpeditionXML = XDocument.Load(Path.Combine(MainFolder, "Translations", "Expeditions.xml"));
 			if (File.Exists(Path.Combine(MainFolder, "Translations", "RemodelSlots.xml"))) RemodelXml = XDocument.Load(Path.Combine(MainFolder, "Translations", "RemodelSlots.xml"));
-            if (File.Exists(Path.Combine(MainFolder, "Translations", "EquipmentTypes.xml"))) EquipmentTypesXML = XDocument.Load(Path.Combine(MainFolder, "Translations", "EquipmentTypes.xml"));
-
-        }
-        internal Translations()
+			if (File.Exists(Path.Combine(MainFolder, "Translations", "EquipmentTypes.xml"))) EquipmentTypesXML = XDocument.Load(Path.Combine(MainFolder, "Translations", "EquipmentTypes.xml"));
+			if (File.Exists(Path.Combine(MainFolder, "Translations", "Useitems.xml"))) UseitemsXML = XDocument.Load(Path.Combine(MainFolder, "Translations", "Useitems.xml"));
+		}
+		internal Translations()
 		{
 			try
 			{
@@ -93,21 +97,25 @@ namespace Grabacr07.KanColleWrapper
 				else ShipsVersion = "알 수 없음";
 			else
 				ShipsVersion = "없음";
+
 			if (ShipTypesXML != null)
 				if (ShipTypesXML.Root.Attribute("Version") != null) ShipTypesVersion = ShipTypesXML.Root.Attribute("Version").Value;
 				else ShipTypesVersion = "알 수 없음";
 			else
 				ShipTypesVersion = "없음";
+
 			if (EquipmentXML != null)
 				if (EquipmentXML.Root.Attribute("Version") != null) EquipmentVersion = EquipmentXML.Root.Attribute("Version").Value;
 				else EquipmentVersion = "알 수 없음";
 			else
 				EquipmentVersion = "없음";
+
 			if (OperationsXML != null)
 				if (OperationsXML.Root.Attribute("Version") != null) OperationsVersion = OperationsXML.Root.Attribute("Version").Value;
 				else OperationsVersion = "알 수 없음";
 			else
 				OperationsVersion = "없음";
+
 			if (QuestsXML != null)
 				if (QuestsXML.Root.Attribute("Version") != null) QuestsVersion = QuestsXML.Root.Attribute("Version").Value;
 				else QuestsVersion = "알 수 없음";
@@ -116,16 +124,24 @@ namespace Grabacr07.KanColleWrapper
 				else ExpeditionsVersion = "알 수 없음";
 			else
 				QuestsVersion = "없음";
+
 			if (RemodelXml != null)
 				if (RemodelXml.Root.Attribute("Version") != null) RemodelSlotsVersion = RemodelXml.Root.Attribute("Version").Value;
 				else RemodelSlotsVersion = "알 수 없음";
 			else
 				RemodelSlotsVersion = "없음";
-            if (EquipmentTypesXML != null)
-                if (EquipmentTypesXML.Root.Attribute("Version") != null) EquipmentTypesVersion = EquipmentTypesXML.Root.Attribute("Version").Value;
-                else EquipmentTypesVersion = "알 수 없음";
-            else
-                EquipmentTypesVersion = "없음";
+
+			if (EquipmentTypesXML != null)
+				if (EquipmentTypesXML.Root.Attribute("Version") != null) EquipmentTypesVersion = EquipmentTypesXML.Root.Attribute("Version").Value;
+				else EquipmentTypesVersion = "알 수 없음";
+			else
+				EquipmentTypesVersion = "없음";
+
+			if (UseitemsXML != null)
+				if (UseitemsXML.Root.Attribute("Version") != null) EquipmentTypesVersion = UseitemsXML.Root.Attribute("Version").Value;
+				else UseitemsVersion = "알 수 없음";
+			else
+				UseitemsVersion = "없음";
 		}
 
 		private IEnumerable<XElement> GetTranslationList(TranslationType Type)
@@ -165,17 +181,17 @@ namespace Grabacr07.KanColleWrapper
 						return EquipmentXML.Descendants("Item");
 					}
 					break;
-                case TranslationType.EquipmentTypes:
-                    if (EquipmentTypesXML != null)
-                    {
-                        if (KanColleClient.Current.Updater.EquipTypesUpdate)
-                        {
-                            this.EquipmentTypesXML = XDocument.Load(Path.Combine(MainFolder, "Translations", "EquipmentTypes.xml"));
-                            KanColleClient.Current.Updater.EquipTypesUpdate = false;
-                        }
-                        return EquipmentTypesXML.Descendants("Item");
-                    }
-                    break;
+				case TranslationType.EquipmentTypes:
+					if (EquipmentTypesXML != null)
+					{
+						if (KanColleClient.Current.Updater.EquipTypesUpdate)
+						{
+							this.EquipmentTypesXML = XDocument.Load(Path.Combine(MainFolder, "Translations", "EquipmentTypes.xml"));
+							KanColleClient.Current.Updater.EquipTypesUpdate = false;
+						}
+						return EquipmentTypesXML.Descendants("Item");
+					}
+					break;
 				case TranslationType.OperationMaps:
 					if (OperationsXML != null)
 					{
@@ -222,6 +238,17 @@ namespace Grabacr07.KanColleWrapper
 							KanColleClient.Current.Updater.ExpeditionUpdate = false;
 						}
 						return ExpeditionXML.Descendants("Expedition");
+					}
+					break;
+				case TranslationType.Useitems:
+					if (UseitemsXML != null)
+					{
+						if (KanColleClient.Current.Updater.UseitemsUpdate)
+						{
+							this.UseitemsXML = XDocument.Load(Path.Combine(MainFolder, "Translations", "Useitems.xml"));
+							KanColleClient.Current.Updater.UseitemsUpdate = false;
+						}
+						return UseitemsXML.Descendants("Useitem");
 					}
 					break;
 			}

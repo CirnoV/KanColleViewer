@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,6 +25,7 @@ namespace Grabacr07.KanColleWrapper.Models.Raw
 		public int api_first_clear { get; set; }
 		public int[] api_get_flag { get; set; }
 		public kcsapi_battleresult_getship api_get_ship { get; set; }
+		public kcsapi_get_useitem api_get_useitem { get; set; }
 		public kcsapi_battleresult_geteventitem[] api_get_eventitem { get; set; }
 		public int api_get_eventflag { get; set; }
 		public int api_get_exmap_rate { get; set; }
@@ -45,6 +46,11 @@ namespace Grabacr07.KanColleWrapper.Models.Raw
 		public string api_ship_type { get; set; }
 		public string api_ship_name { get; set; }
 		public string api_ship_getmes { get; set; }
+	}
+	public class kcsapi_get_useitem
+	{
+		public int api_useitem_id { get; set; }
+		public int api_useitem_count { get; set; }
 	}
 
 	public class kcsapi_battleresult_geteventitem

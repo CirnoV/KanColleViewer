@@ -294,7 +294,7 @@ namespace Grabacr07.KanColleWrapper
 				if (TranslationList == null && RawData != null)
 				{
 					if (!IsLogReader) AddTranslation(RawData, Type);
-					if (ID < 0 && !IsLogReader) return "[" + ID.ToString() + "] " + JPString;
+					if (ID > 0 && !IsLogReader) return "[" + ID.ToString() + "] " + JPString;
 					else return JPString;
 				}
 

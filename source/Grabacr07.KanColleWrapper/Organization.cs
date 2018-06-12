@@ -172,6 +172,23 @@ namespace Grabacr07.KanColleWrapper
 						this.CombinedType = (CombinedFleetType)type;
 				});
 
+			proxy.api_req_mission_result.TryParse<kcsapi_mission_result>()
+				.Subscribe(x => {
+					var mission = KanColleClient.Current.Master.Missions
+						.Select(y => y.Value)
+						.FirstOrDefault(y => y.JPTitle == x.Data.api_quest_name);
+
+					if (mission != null)
+					{
+						var fleet = this.Fleets
+							.Select(y => y.Value)
+							.FirstOrDefault(y => y.Expedition.Id == mission.Id);
+
+						if (fleet != null)
+							fleet.Expedition.Done(x.Data);
+					}
+				});
+
 			this.SubscribeSortieSessions(proxy);
 		}
 

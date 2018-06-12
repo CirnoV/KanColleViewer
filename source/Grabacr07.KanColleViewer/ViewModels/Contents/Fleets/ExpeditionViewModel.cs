@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,9 +34,11 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 
 				var start = source.ReturnTime.Value.Subtract(TimeSpan.FromMinutes(source.Mission.RawData.api_time));
 				var value = (int)DateTimeOffset.Now.Subtract(start).TotalSeconds;
-				return new LimitedValue(value, source.Mission.RawData.api_time * 60, 0);
+				return new LimitedValue(value, source.Mission.RawData.api_time * 60, 0, 0);
 			}
 		}
+
+		public ExpeditionResult ExpeditionResult => this.source.ExpeditionResult;
 
 		public ExpeditionViewModel(Expedition expedition)
 		{
@@ -45,8 +47,8 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 			this.CompositeDisposable.Add(new PropertyChangedEventListener(expedition)
 				{
 					{nameof(expedition.Remaining), (sender, args) => {
-						this.RaisePropertyChanged("Returned");
-						this.RaisePropertyChanged("Progress");
+						this.RaisePropertyChanged(nameof(Returned));
+						this.RaisePropertyChanged(nameof(Progress));
 					} }
 				}
 			);

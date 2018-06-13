@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,14 +22,16 @@ namespace Grabacr07.KanColleWrapper.Models.Raw
 		public int api_quest_level { get; set; }
 		public int[] api_get_material { get; set; }
 		public int[] api_useitem_flag { get; set; }
+
 		public kcsapi_mission_result_item api_get_item1 { get; set; }
+		public kcsapi_mission_result_item api_get_item2 { get; set; }
 	}
 
 
 	public class kcsapi_mission_result_item
 	{
 		public int api_useitem_id { get; set; }
-		public object api_useitem_name { get; set; }
+		public string api_useitem_name { get; set; }
 		public int api_useitem_count { get; set; }
 	}
 	// ReSharper restore InconsistentNaming

@@ -1,4 +1,4 @@
-﻿
+
 namespace Grabacr07.KanColleWrapper.Models
 {
 	public enum TranslationType
@@ -67,6 +67,8 @@ namespace Grabacr07.KanColleWrapper.Models
 
 		RemodelSlots = 13,
 
-        EquipmentTypes = 14,
+		EquipmentTypes = 14,
+
+		Useitems = 15,
 	}
 }

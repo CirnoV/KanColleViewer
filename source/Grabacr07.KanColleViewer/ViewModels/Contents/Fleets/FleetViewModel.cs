@@ -149,7 +149,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 
 				this.IsPossible = !this.IsPassed
 					? ExpeditionPossible.NotAccepted
-					: this.Source.Ships.Where(x => (x.Fuel.Current != x.Fuel.Maximum) || x.Bull.Current != x.Bull.Maximum).Count() > 0
+					: this.Source.Ships.Any(x => (x.Fuel.Current != x.Fuel.Maximum) || (x.Bull.Current != x.Bull.Maximum))
 						? ExpeditionPossible.NotSupplied
 						: ExpeditionPossible.Possible;
 				this.GreatChance = this.IsPossible == ExpeditionPossible.Possible
@@ -401,6 +401,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 						this.RaisePropertyChanged(nameof(this.UsedFuel));
 						this.RaisePropertyChanged(nameof(this.UsedAmmo));
 						this.RaisePropertyChanged(nameof(this.UsedBauxite));
+						this.ExpeditionId = this.ExpeditionId;
 					}
 				},
 				{  nameof(fleet.State.UsedBull), (sender,args) =>
@@ -408,6 +409,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 						this.RaisePropertyChanged(nameof(this.UsedFuel));
 						this.RaisePropertyChanged(nameof(this.UsedAmmo));
 						this.RaisePropertyChanged(nameof(this.UsedBauxite));
+						this.ExpeditionId = this.ExpeditionId;
 					}
 				}
 			});

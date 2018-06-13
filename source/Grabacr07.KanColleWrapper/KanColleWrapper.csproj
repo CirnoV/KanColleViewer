@@ -124,6 +124,7 @@
     <Compile Include="Models\ASWCalculator.cs" />
     <Compile Include="Models\CombinedFleet.cs" />
     <Compile Include="Models\CombinedFleetType.cs" />
+    <Compile Include="Models\ExpeditionResult.cs" />
     <Compile Include="Models\FleetSpeed.cs" />
     <Compile Include="Models\FleetState.cs" />
     <Compile Include="Models\LogDataList.cs" />

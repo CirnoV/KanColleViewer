@@ -240,25 +240,43 @@ namespace Grabacr07.KanColleWrapper
 		private void BattleResult(kcsapi_battle_result br)
 		{
 			string ShipName = "";
+			string ItemName = "";
 			string MapType = "";
+
 			if (br.api_get_ship != null)
-			{
 				ShipName = KanColleClient.Current.Translations.GetTranslation(br.api_get_ship.api_ship_name, TranslationType.Ships, false, br);
+
+			var _item = KanColleClient.Current.Master.UseItems
+				.SingleOrDefault(x => x.Value.Id == br.api_get_useitem?.api_useitem_id).Value
+				?.Name;
+			if (_item != null)
+			{
+				ItemName = KanColleClient.Current.Translations.GetTranslation(
+					_item,
+					TranslationType.Useitems,
+					false,
+					br
+				);
 			}
+
 			MapType = KanColleClient.Current.Translations.GetTranslation(br.api_quest_name, TranslationType.OperationMaps, false, br);
 
 			string currentTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
 
 			#region CSV파일 저장
 			//날짜,해역이름,해역,보스,적 함대,랭크,드랍
-			Log(LogType.ShipDrop, "{0},{1},{2},{3},{4},{5},{6}",
+			Log(
+				LogType.ShipDrop,
+				"{0},{1},{2},{3},{4},{5},{6},{7}",
 				currentTime,
 				MapType,
 				$"{NodeData.SelectToken("world").ToString()}-{(int)NodeData.SelectToken("mapnum")}-{(int)NodeData.SelectToken("node")}",
 				IsBossCell ? "O" : "X",
 				KanColleClient.Current.Translations.GetTranslation(br.api_enemy_info.api_deck_name, TranslationType.OperationSortie, false, br, -1),
 				br.api_win_rank, 
-				ShipName);
+				ShipName,
+				ItemName
+			);
 			#endregion
 		}
 
@@ -314,21 +332,22 @@ namespace Grabacr07.KanColleWrapper
 				}
 				else if (Type == LogType.ShipDrop)
 				{
-					if (!System.IO.File.Exists(MainFolder + "\\DropLog2.csv"))
+					var csvPath = Path.Combine(MainFolder, "DropLog2.csv");
+
+					if (!System.IO.File.Exists(csvPath))
 					{
-						var csvPath = Path.Combine(MainFolder, "DropLog2.csv");
 						using (var fileStream = new FileStream(csvPath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
 						using (var writer = new BinaryWriter(fileStream))
 						{
 							writer.Write(utf8Bom);
 						}
-						using (StreamWriter w = File.AppendText(MainFolder + "\\DropLog2.csv"))
+						using (StreamWriter w = File.AppendText(csvPath))
 						{
-							w.WriteLine("날짜,해역이름,해역,보스,적 함대,랭크,드랍", args);
+							w.WriteLine("날짜,해역이름,해역,보스,적 함대,랭크,드랍,아이템", args);
 						}
 					}
 
-					using (StreamWriter w = File.AppendText(MainFolder + "\\DropLog2.csv"))
+					using (StreamWriter w = File.AppendText(csvPath))
 					{
 						w.WriteLine(format, args);
 					}
@@ -430,6 +449,7 @@ namespace Grabacr07.KanColleWrapper
 				item.EnemyFleet = args[4].ToString();
 				item.Rank = args[5].ToString();
 				item.Drop = args[6].ToString();
+				item.ItemDrop = args[7].ToString();
 
 				using (var fileStream = new FileStream(binPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
 				using (var writer = new BinaryWriter(fileStream))
@@ -442,6 +462,7 @@ namespace Grabacr07.KanColleWrapper
 					writer.Write(item.EnemyFleet);
 					writer.Write(item.Rank);
 					writer.Write(item.Drop);
+					writer.Write(item.ItemDrop);
 
 					fileStream.Dispose();
 					fileStream.Close();

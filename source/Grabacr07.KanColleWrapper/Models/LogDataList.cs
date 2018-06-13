@@ -1,4 +1,4 @@
-﻿
+
 namespace Grabacr07.KanColleWrapper.Models
 {
 	/// <summary>
@@ -13,6 +13,7 @@ namespace Grabacr07.KanColleWrapper.Models
 		public string EnemyFleet { get; set; }
 		public string Rank { get; set; }
 		public string Drop { get; set; }
+		public string ItemDrop { get; set; }
 	}
 	/// <summary>
 	/// 날짜,비서함,연료,탄,강재,보크사이트,결과

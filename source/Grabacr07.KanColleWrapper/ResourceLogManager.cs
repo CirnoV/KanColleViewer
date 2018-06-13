@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,6 +30,7 @@ namespace Grabacr07.KanColleWrapper
 
 		private Random RandomInstance { get; } = new Random();
 		private double ListenerEventID { get; set; }
+		private DateTime LatestWritten { get; set; } = DateTime.Now;
 
 
 		public ResourceLogManager(KanColleClient client)
@@ -95,6 +96,76 @@ namespace Grabacr07.KanColleWrapper
 				};
 				#endregion
 			};
+
+			Task.Run(() => UpdateResources());
+		}
+		private async void UpdateResources()
+		{
+			var latest = DateTime.MinValue;
+			var zItemsPath = ResourceCachePath;
+			var _ResourceList = new List<ResourceModel>();
+
+			if (File.Exists(zItemsPath))
+			{
+				await Task.Run(() =>
+				{
+					CriticalSection("ResourceChartWrite", async () =>
+					{
+						var cnt = 0;
+						using (FileStream fs = File.OpenRead(zItemsPath))
+						{
+							while (fs.Position < fs.Length)
+							{
+								string[] data = CSV.Read(fs);
+								if (data.Length != 9) continue;
+
+								DateTime dt;
+								if (!DateTime.TryParse(data[0], out dt)) continue;
+
+								cnt++;
+								if ((dt - latest).TotalSeconds < 60.0) continue; // skip
+
+								ResourceModel model = new ResourceModel
+								{
+									Date = dt,
+									Fuel = int.Parse(data[1]),
+									Ammo = int.Parse(data[2]),
+									Steel = int.Parse(data[3]),
+									Bauxite = int.Parse(data[4]),
+									RepairBucket = int.Parse(data[5]),
+									DevelopmentMaterial = int.Parse(data[6]),
+									InstantConstruction = int.Parse(data[7]),
+									ImprovementMaterial = int.Parse(data[8]),
+								};
+								_ResourceList.Add(model);
+								latest = dt;
+							}
+						}
+						while (cnt != _ResourceList.Count)
+						{
+							try
+							{
+								using (FileStream fs = new FileStream(zItemsPath, FileMode.Create))
+								{
+									foreach (var res in _ResourceList)
+									{
+										CSV.Write(fs,
+											res.Date.ToString("yyyy-MM-dd HH:mm:ss"),
+											res.Fuel, res.Ammo, res.Steel, res.Bauxite,
+											res.RepairBucket, res.DevelopmentMaterial,
+											res.InstantConstruction, res.ImprovementMaterial
+										);
+									}
+								}
+								break;
+							}
+							catch (Exception) { }
+
+							await Task.Delay(500);
+						}
+					});
+				});
+			}
 		}
 		private async void ListenerEventWorker()
 		{
@@ -124,6 +195,7 @@ namespace Grabacr07.KanColleWrapper
 			CriticalSection("ResourceChartWrite", () =>
 			{
 				int tries = 5;
+				if ((DateTime.Now - LatestWritten).TotalSeconds < 60.0) return;
 
 				while (tries > 0)
 				{

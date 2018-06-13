@@ -18,6 +18,7 @@ namespace Grabacr07.KanColleWrapper
 		public bool ExpeditionUpdate { get; set; }
 		public bool RemodelUpdate { get; set; }
 		public bool EquipTypesUpdate { get; set; }
+		public bool UseitemsUpdate { get; set; }
 
 		/// <summary>
 		/// 업데이트 상태를 구별한다.
@@ -55,6 +56,9 @@ namespace Grabacr07.KanColleWrapper
 						break;
 					case TranslationType.EquipmentTypes:
 						this.EquipTypesUpdate = true;
+						break;
+					case TranslationType.Useitems:
+						this.UseitemsUpdate = true;
 						break;
 				}
 			}
@@ -167,11 +171,16 @@ namespace Grabacr07.KanColleWrapper
 						Client.DownloadFile(BaseTranslationURL + "RemodelSlots.xml", Path.Combine(MainFolder, "Translations", "tmp", "RemodelSlots.xml"));
 						ReturnValue = XmlFileWizard(MainFolder, "RemodelSlots.xml", TranslationType.RemodelSlots);
 					}
-                    if (IsOnlineVersionGreater(TranslationType.EquipmentTypes, TranslationsRef.EquipmentTypesVersion))
-                    {
-                        Client.DownloadFile(BaseTranslationURL + "EquipmentTypes.xml", Path.Combine(MainFolder, "Translations", "tmp", "EquipmentTypes.xml"));
-                        ReturnValue = XmlFileWizard(MainFolder, "EquipmentTypes.xml", TranslationType.EquipmentTypes);
-                    }
+					if (IsOnlineVersionGreater(TranslationType.EquipmentTypes, TranslationsRef.EquipmentTypesVersion))
+					{
+						Client.DownloadFile(BaseTranslationURL + "EquipmentTypes.xml", Path.Combine(MainFolder, "Translations", "tmp", "EquipmentTypes.xml"));
+						ReturnValue = XmlFileWizard(MainFolder, "EquipmentTypes.xml", TranslationType.EquipmentTypes);
+					}
+					if (IsOnlineVersionGreater(TranslationType.Useitems, TranslationsRef.UseitemsVersion))
+					{
+						Client.DownloadFile(BaseTranslationURL + "Useitems.xml", Path.Combine(MainFolder, "Translations", "tmp", "Useitems.xml"));
+						ReturnValue = XmlFileWizard(MainFolder, "Useitems.xml", TranslationType.Useitems);
+					}
 
 				}
 				catch
@@ -224,8 +233,10 @@ namespace Grabacr07.KanColleWrapper
 					return Versions.Where(x => x.Element("Name").Value.Equals("ShipTypes")).FirstOrDefault().Element(ElementName).Value;
 				case TranslationType.RemodelSlots:
 					return Versions.Where(x => x.Element("Name").Value.Equals("RemodelSlots")).FirstOrDefault().Element(ElementName).Value;
-                case TranslationType.EquipmentTypes:
-                    return Versions.Where(x => x.Element("Name").Value.Equals("EquipmentTypes")).FirstOrDefault().Element(ElementName).Value;
+				case TranslationType.EquipmentTypes:
+					return Versions.Where(x => x.Element("Name").Value.Equals("EquipmentTypes")).FirstOrDefault().Element(ElementName).Value;
+				case TranslationType.Useitems:
+					return Versions.Where(x => x.Element("Name").Value.Equals("Useitems")).FirstOrDefault().Element(ElementName).Value;
 			}
 			return "";
 		}
@@ -272,8 +283,10 @@ namespace Grabacr07.KanColleWrapper
 					return LocalVersion.CompareTo(new Version(Versions.Where(x => x.Element("Name").Value.Equals("ShipTypes")).FirstOrDefault().Element(ElementName).Value)) < 0;
 				case TranslationType.RemodelSlots:
 					return LocalVersion.CompareTo(new Version(Versions.Where(x => x.Element("Name").Value.Equals("RemodelSlots")).FirstOrDefault().Element(ElementName).Value)) < 0;
-                case TranslationType.EquipmentTypes:
-                    return LocalVersion.CompareTo(new Version(Versions.Where(x => x.Element("Name").Value.Equals("EquipmentTypes")).FirstOrDefault().Element(ElementName).Value)) < 0;
+				case TranslationType.EquipmentTypes:
+					return LocalVersion.CompareTo(new Version(Versions.Where(x => x.Element("Name").Value.Equals("EquipmentTypes")).FirstOrDefault().Element(ElementName).Value)) < 0;
+				case TranslationType.Useitems:
+					return LocalVersion.CompareTo(new Version(Versions.Where(x => x.Element("Name").Value.Equals("Useitems")).FirstOrDefault().Element(ElementName).Value)) < 0;
 			}
 
 			return false;

@@ -167,16 +167,6 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			RenderHorizontalLine(g, sz, yList);
 			RenderVerticalLine(g, sz, xList);
 
-			if (GuideLine.HasValue)
-			{
-				var y = sz.Height - BottomMargin - 2 - (int)((float)(GuideLine.Value - YMin) / (YMax - YMin) * (sz.Height - BottomMargin - 2));
-				g.DrawLine(
-					new Pen(Color.FromArgb(0x40, 0x7E, 0x1D, 0xBF), 1.77f),
-					new System.Drawing.Point(LeftMargin, y),
-					new System.Drawing.Point(sz.Width, y)
-				);
-			}
-
 			foreach (var type in ElementToDraw)
 			{
 				var color = colorTable[type];
@@ -203,20 +193,10 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 				path.AddLine(
 					new System.Drawing.Point(
 						pt.X,
-						pt.Y
-					),
-					new System.Drawing.Point(
-						pt.X + 5,
-						pt.Y
-					)
-				);
-				path.AddLine(
-					new System.Drawing.Point(
-						pt.X + 5,
 						sz.Height - BottomMargin + 4 - 1
 					),
 					new System.Drawing.Point(
-						pt.X + 5,
+						pt.X,
 						sz.Height - BottomMargin + 4 - 1
 					)
 				);
@@ -224,6 +204,17 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 				g.FillPath(new SolidBrush(Color.FromArgb(51, color)), path);
 				g.DrawPath(new Pen(color, 2.15f), path);
 			}
+
+			if (GuideLine.HasValue)
+			{
+				var y = sz.Height - BottomMargin - 2 - (int)((float)(GuideLine.Value - YMin) / (YMax - YMin) * (sz.Height - BottomMargin - 2));
+				g.DrawLine(
+					new Pen(Color.FromArgb(0xC0, 0x7E, 0x1D, 0xBF), 1.77f),
+					new System.Drawing.Point(LeftMargin, y),
+					new System.Drawing.Point(sz.Width, y)
+				);
+			}
+
 			g.ResetClip();
 		}
 

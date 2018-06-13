@@ -138,7 +138,7 @@ namespace Grabacr07.KanColleWrapper
 				EquipmentTypesVersion = "없음";
 
 			if (UseitemsXML != null)
-				if (UseitemsXML.Root.Attribute("Version") != null) EquipmentTypesVersion = UseitemsXML.Root.Attribute("Version").Value;
+				if (UseitemsXML.Root.Attribute("Version") != null) UseitemsVersion = UseitemsXML.Root.Attribute("Version").Value;
 				else UseitemsVersion = "알 수 없음";
 			else
 				UseitemsVersion = "없음";

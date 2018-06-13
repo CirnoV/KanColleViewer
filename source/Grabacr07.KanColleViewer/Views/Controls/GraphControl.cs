@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -141,9 +141,9 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			}
 		}
 
-		public void Render(Graphics g, System.Drawing.Size sz, IEnumerable<ResourceModel> Data, int[] ElementToDraw, DateTime beginTime, DateTime endTime, int YMin, int YMax)
+		public void Render(Graphics g, System.Drawing.Size sz, IEnumerable<ResourceModel> Data, int[] ElementToDraw, DateTime beginTime, DateTime endTime, int YMin, int YMax, int? GuideLine)
 		{
-			var renderData = Data.OrderBy(x => x.Date);
+			var renderData = PackData(Data, sz.Width);
 
 			int length = (int)(endTime - beginTime).TotalMinutes;
 
@@ -153,7 +153,6 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 
 			while ((YMax - YMin) / step < 4) step /= 2;
 			while ((YMax - YMin) / step > 6) step *= 2;
-
 
 			// Graph-box
 			g.DrawRectangle(
@@ -167,6 +166,16 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			g.SetClip(new Rectangle(LeftMargin + 1, 1, sz.Width - LeftMargin - 2, sz.Height - BottomMargin));
 			RenderHorizontalLine(g, sz, yList);
 			RenderVerticalLine(g, sz, xList);
+
+			if (GuideLine.HasValue)
+			{
+				var y = sz.Height - BottomMargin - 2 - (int)((float)(GuideLine.Value - YMin) / (YMax - YMin) * (sz.Height - BottomMargin - 2));
+				g.DrawLine(
+					new Pen(Color.FromArgb(0x40, 0x7E, 0x1D, 0xBF), 1.77f),
+					new System.Drawing.Point(LeftMargin, y),
+					new System.Drawing.Point(sz.Width, y)
+				);
+			}
 
 			foreach (var type in ElementToDraw)
 			{
@@ -194,10 +203,20 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 				path.AddLine(
 					new System.Drawing.Point(
 						pt.X,
+						pt.Y
+					),
+					new System.Drawing.Point(
+						pt.X + 5,
+						pt.Y
+					)
+				);
+				path.AddLine(
+					new System.Drawing.Point(
+						pt.X + 5,
 						sz.Height - BottomMargin + 4 - 1
 					),
 					new System.Drawing.Point(
-						pt.X,
+						pt.X + 5,
 						sz.Height - BottomMargin + 4 - 1
 					)
 				);
@@ -206,6 +225,34 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 				g.DrawPath(new Pen(color, 2.15f), path);
 			}
 			g.ResetClip();
+		}
+
+		private IEnumerable<ResourceModel> PackData(IEnumerable<ResourceModel> Data, int width)
+		{
+			var data = Data.OrderBy(x => x.Date);
+			var cnt = data.Count();
+			var idx = 0;
+
+			var perPixel = Math.Max(1, cnt / width * 4);
+			if (perPixel == 1) return data;
+
+			var list = new List<ResourceModel>();
+			var tmp = new ResourceModel();
+			foreach (var model in data)
+			{
+				tmp += model;
+
+				idx = (idx + 1) % perPixel;
+				if (idx == 0)
+				{
+					list.Add(tmp / perPixel);
+					tmp.Clear();
+				}
+			}
+			if (idx > 0)
+				list.Add(tmp / idx);
+
+			return list.ToArray();
 		}
 	}
 
@@ -243,6 +290,7 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			var Properties = new string[]
 			{
 				nameof(ElementToDraw),
+				nameof(GuideLine),
 				nameof(Data),
 				nameof(BeginDate),
 				nameof(EndDate),
@@ -264,6 +312,18 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 		}
 		public static readonly DependencyProperty ElementToDrawProperty =
 			DependencyProperty.Register(nameof(ElementToDraw), typeof(int[]), typeof(GraphControl), new UIPropertyMetadata(new int[0]));
+
+		public int? GuideLine
+		{
+			get { return (int?)this.GetValue(GuideLineProperty); }
+			set
+			{
+				this.SetValue(GuideLineProperty, value);
+				this.Redraw();
+			}
+		}
+		public static readonly DependencyProperty GuideLineProperty =
+			DependencyProperty.Register(nameof(GuideLine), typeof(int?), typeof(GraphControl), new UIPropertyMetadata(null));
 
 		public ResourceModel[] Data
 		{
@@ -348,7 +408,7 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 				g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
 
 				var renderer = new GraphRenderer();
-				renderer.Render(g, sz, Data, ElementToDraw, BeginDate, EndDate, YMin, YMax);
+				renderer.Render(g, sz, Data, ElementToDraw, BeginDate, EndDate, YMin, YMax, GuideLine);
 			}
 
 			this.image.Source = BitmapToImageSource(buffer);

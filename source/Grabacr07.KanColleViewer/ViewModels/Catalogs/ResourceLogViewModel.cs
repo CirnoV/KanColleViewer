@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.IO;
 using System.Windows.Media;
@@ -44,6 +44,19 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 
 		private Random RandomInstance { get; } = new Random();
 		private double ListenerEventID { get; set; }
+
+		#region ChartLoading 프로퍼티
+		private bool _ChartLoading;
+		public bool ChartLoading
+		{
+			get { return _ChartLoading; }
+			set
+			{
+				this._ChartLoading = value;
+				RaisePropertyChanged();
+			}
+		}
+		#endregion
 
 		#region DisplayPeriod 프로퍼티
 		private string _DisplayPeriod;
@@ -405,6 +418,11 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 		}
 		#endregion
 
+		#region GuideLine 프로퍼티
+		public int GuideLine
+			=> KanColleClient.Current.Homeport?.Admiral?.ResourceLimit ?? 0;
+		#endregion
+
 		public ResourceLogViewModel()
 		{
 			this.Title = "자원 기록 그래프";
@@ -460,8 +478,14 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 				}}
 			});
 
-			LoadChart();
-			ResetChart(GetDaysFromPeriod());
+			ChartLoading = true;
+			Task.Run(async () => {
+				while (!LoadChart())
+					await Task.Delay(500);
+
+				ChartLoading = false;
+				ResetChart(GetDaysFromPeriod());
+			});
 		}
 		private async void ListenerEventWorker()
 		{
@@ -512,15 +536,16 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 			return 7;
 		}
 
-		private async void LoadChart()
+		private bool LoadChart()
 		{
 			var _ResourceList = new List<ResourceModel>();
 			ResourceList = new ResourceModel[0];
+			var latest = DateTime.MinValue;
 
 			string zItemsPath = ResourceCachePath;
 			if (File.Exists(zItemsPath))
-			{
-				await Task.Run(() =>
+		{
+				try
 				{
 					using (FileStream fs = File.OpenRead(zItemsPath))
 					{
@@ -531,6 +556,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 
 							DateTime dt;
 							if (!DateTime.TryParse(data[0], out dt)) continue;
+							if ((dt - latest).TotalSeconds < 60.0) continue; // skip
 
 							ResourceModel model = new ResourceModel
 							{
@@ -547,10 +573,16 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 							_ResourceList.Add(model);
 						}
 					}
-				});
+				}
+				catch
+				{
+					return false;
+				}
 			}
 			ResourceList = _ResourceList.ToArray();
 			ResetChart(GetDaysFromPeriod());
+
+			return true;
 		}
 		private void ResetChart(int days)
 		{
@@ -586,29 +618,33 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 			// Measure Min and Max
 			int _YMin1 = int.MaxValue, _YMax1 = -1;
 			int _YMin2 = int.MaxValue, _YMax2 = -1;
-			foreach (var type in _ElementToDraw)
+
+			if (Data.Any())
 			{
-				if (type >= 1 && type <= 4)
+				foreach (var type in _ElementToDraw)
 				{
-					_YMin1 = Math.Min(_YMin1, Data.Select(x => renderer.ElementValue(type, x)).Min());
-					_YMax1 = Math.Max(_YMax1, Data.Select(x => renderer.ElementValue(type, x)).Max());
+					if (type >= 1 && type <= 4)
+					{
+						_YMin1 = Math.Min(_YMin1, Data.Select(x => renderer.ElementValue(type, x)).Min());
+						_YMax1 = Math.Max(_YMax1, Data.Select(x => renderer.ElementValue(type, x)).Max());
+					}
+					else
+					{
+						_YMin2 = Math.Min(_YMin2, Data.Select(x => renderer.ElementValue(type, x)).Min());
+						_YMax2 = Math.Max(_YMax2, Data.Select(x => renderer.ElementValue(type, x)).Max());
+					}
 				}
-				else
-				{
-					_YMin2 = Math.Min(_YMin2, Data.Select(x => renderer.ElementValue(type, x)).Min());
-					_YMax2 = Math.Max(_YMax2, Data.Select(x => renderer.ElementValue(type, x)).Max());
-				}
+
+				_YMin1 -= (int)Math.Pow(10, Math.Floor(Math.Log10(_YMax1)));
+				_YMax1 += (int)Math.Pow(10, Math.Floor(Math.Log10(_YMax1)));
+				_YMin2 -= (int)Math.Pow(10, Math.Floor(Math.Log10(_YMax2)));
+				_YMax2 += (int)Math.Pow(10, Math.Floor(Math.Log10(_YMax2)));
+
+				_YMax1 = Math.Min(_YMax1, 305000);
+				_YMin1 = Math.Max(0, _YMin1);
+				_YMax2 = Math.Min(_YMax2, 3100);
+				_YMin2 = Math.Max(0, _YMin2);
 			}
-
-			_YMin1 -= (int)Math.Pow(10, Math.Floor(Math.Log10(_YMax1)));
-			_YMax1 += (int)Math.Pow(10, Math.Floor(Math.Log10(_YMax1)));
-			_YMin2 -= (int)Math.Pow(10, Math.Floor(Math.Log10(_YMax2)));
-			_YMax2 += (int)Math.Pow(10, Math.Floor(Math.Log10(_YMax2)));
-
-			_YMax1 = Math.Min(_YMax1, 305000);
-			_YMin1 = Math.Max(0, _YMin1);
-			_YMax2 = Math.Min(_YMax2, 305000);
-			_YMin2 = Math.Max(0, _YMin2);
 
 			YMin1 = _YMin1;
 			YMax1 = _YMax1;
@@ -620,6 +656,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 
 			ElementToDraw1 = _ElementToDraw.Where(x => x <= 4).ToArray();
 			ElementToDraw2 = _ElementToDraw.Where(x => x > 4).ToArray();
+			this.RaisePropertyChanged(nameof(this.GuideLine));
 		}
 
 		public void Refresh()

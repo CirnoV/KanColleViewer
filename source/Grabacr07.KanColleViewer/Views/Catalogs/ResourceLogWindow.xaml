@@ -1,4 +1,4 @@
-﻿<metro:MetroWindow x:Class="Grabacr07.KanColleViewer.Views.Catalogs.ResourceLogWindow"
+<metro:MetroWindow x:Class="Grabacr07.KanColleViewer.Views.Catalogs.ResourceLogWindow"
 				   x:Name="GlowMetroWindow"
 				   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 				   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -147,11 +147,11 @@
 					<CheckBox Grid.Column="3" Grid.Row="1" Content="개수자재" Foreground="#FFCCCCCC" IsChecked="{Binding ImprovementMaterialVisible}" />
 				</Grid>
 
-				<metro2:CallMethodButton
-							Grid.Column="3"
-							Margin="5,5,5,5"
-							MethodName="Refresh"
-							Content="새로고침" />
+				<metro2:CallMethodButton Grid.Column="3"
+										 Margin="5,5,5,5"
+										 MethodName="Refresh"
+										 IsEnabled="{Binding ChartLoaded, Mode=OneWay}"
+										 Content="새로고침" />
 			</Grid>
 
 			<ScrollViewer Grid.Row="1"
@@ -194,14 +194,22 @@
 					<Grid Grid.Row="1"
 						  MinHeight="80"
 						  Margin="5,5,5,5">
-						<controls:GraphControl Width="{Binding ElementName=root, Path=ActualWidth}" 
-													Height="{Binding ElementName=root, Path=ActualHeight}"
-													ElementToDraw="{Binding ElementToDraw1, Mode=OneWay}"
-													Data="{Binding ResourceList, Mode=OneWay}"
-													BeginDate="{Binding BeginDate, Mode=OneWay}"
-													EndDate="{Binding EndDate, Mode=OneWay}"
-													YMin="{Binding YMin1, Mode=OneWay}"
-													YMax="{Binding YMax1, Mode=OneWay}" />
+						<controls:GraphControl Width="{Binding ElementName=root, Path=ActualWidth}"
+											   Height="{Binding ElementName=root, Path=ActualHeight}"
+											   ElementToDraw="{Binding ElementToDraw1, Mode=OneWay}"
+											   GuideLine="{Binding GuideLine, Mode=OneWay}"
+											   Data="{Binding ResourceList, Mode=OneWay}"
+											   BeginDate="{Binding BeginDate, Mode=OneWay}"
+											   EndDate="{Binding EndDate, Mode=OneWay}"
+											   YMin="{Binding YMin1, Mode=OneWay}"
+											   YMax="{Binding YMax1, Mode=OneWay}" />
+
+						<Grid Background="#60000000"
+							  Visibility="{Binding ChartLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+							<TextBlock HorizontalAlignment="Center"
+									   VerticalAlignment="Center"
+									   Text="자원 기록을 불러오고 있습니다..."/>
+						</Grid>
 					</Grid>
 
 					<TextBlock Grid.Row="3"
@@ -227,14 +235,21 @@
 					<Grid Grid.Row="4"
 						  MinHeight="80"
 						  Margin="5,5,5,5">
-						<controls:GraphControl Width="{Binding ElementName=root, Path=ActualWidth}" 
-													Height="{Binding ElementName=root, Path=ActualHeight}"
-													ElementToDraw="{Binding ElementToDraw2, Mode=OneWay}"
-													Data="{Binding ResourceList, Mode=OneWay}"
-													BeginDate="{Binding BeginDate, Mode=OneWay}"
-													EndDate="{Binding EndDate, Mode=OneWay}"
-													YMin="{Binding YMin2, Mode=OneWay}"
-													YMax="{Binding YMax2, Mode=OneWay}" />
+						<controls:GraphControl Width="{Binding ElementName=root, Path=ActualWidth}"
+											   Height="{Binding ElementName=root, Path=ActualHeight}"
+											   ElementToDraw="{Binding ElementToDraw2, Mode=OneWay}"
+											   Data="{Binding ResourceList, Mode=OneWay}"
+											   BeginDate="{Binding BeginDate, Mode=OneWay}"
+											   EndDate="{Binding EndDate, Mode=OneWay}"
+											   YMin="{Binding YMin2, Mode=OneWay}"
+											   YMax="{Binding YMax2, Mode=OneWay}" />
+
+						<Grid Background="#60000000"
+							  Visibility="{Binding ChartLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+							<TextBlock HorizontalAlignment="Center"
+									   VerticalAlignment="Center"
+									   Text="자원 기록을 불러오고 있습니다..."/>
+						</Grid>
 					</Grid>
 				</Grid>
 			</ScrollViewer>

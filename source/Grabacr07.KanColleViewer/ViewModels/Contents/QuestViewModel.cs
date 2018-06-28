@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,6 +21,24 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 				if (this._Id != value)
 				{
 					this._Id = value;
+					this.RaisePropertyChanged();
+				}
+			}
+		}
+
+		#endregion
+
+		#region Tab 변경통지 프로퍼티
+
+		private int _Tab;
+		public int Tab
+		{
+			get { return this._Tab; }
+			set
+			{
+				if (this._Tab != value)
+				{
+					this._Tab = value;
 					this.RaisePropertyChanged();
 				}
 			}
@@ -239,6 +257,8 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 				? QuestNameTable.IdNameTable[this.Id]
 				: string.Format("[{0}]", this.Id);
 
+		public string TabId => string.Format("{0}-{1}", this.Tab, this.Id);
+
 		#region Page 변경통지 프로퍼티
 
 		private int _Page { get; set; }
@@ -327,6 +347,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 			else
 			{
 				this.Id = quest.Id;
+				this.Tab = quest.Tab;
 				this.IsUntaken = false;
 
 				this.Type = quest.Type;

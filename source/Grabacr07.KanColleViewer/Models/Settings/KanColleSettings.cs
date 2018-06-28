@@ -277,7 +277,7 @@ namespace Grabacr07.KanColleViewer.Models.Settings
 		/// <summary>
 		/// 전체 탭이 아닌 일간, 주간 등의 탭에서도 갱신되도록 합니다.
 		/// </summary>
-		public static SerializableProperty<bool> QuestOnAllTabs { get; }
+		public static SerializableProperty<bool> QuestOnAnyTabs { get; }
 			= new SerializableProperty<bool>(GetKey(), Providers.Viewer, false);
 
 		/// <summary>
@@ -329,7 +329,7 @@ namespace Grabacr07.KanColleViewer.Models.Settings
 
 		bool IKanColleClientSettings.CheckFlagshipIsRepairShip => CheckFlagshipIsNotRepairShip.Value;
 
-		bool IKanColleClientSettings.QuestOnAllTabs => QuestOnAllTabs.Value;
+		bool IKanColleClientSettings.QuestOnAnyTabs => QuestOnAnyTabs.Value;
 
 		#endregion
 

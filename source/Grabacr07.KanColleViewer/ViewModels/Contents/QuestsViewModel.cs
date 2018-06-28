@@ -110,7 +110,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 		{
 			get
 			{
-				var tab = IsOnAnyTab ? 0 : CurrentTab;
+				var tab = !IsOnAnyTab ? 0 : CurrentTab;
 				return this.IsUntakenTable == null
 					? true
 					: !this.IsUntakenTable.ContainsKey(tab) || this.IsUntakenTable[tab];
@@ -126,7 +126,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 		{
 			get
 			{
-				var tab = IsOnAnyTab ? 0 : CurrentTab;
+				var tab = !IsOnAnyTab ? 0 : CurrentTab;
 				return this.IsEmptyTable == null
 					? false
 					: this.IsEmptyTable.ContainsKey(tab) && this.IsEmptyTable[tab];

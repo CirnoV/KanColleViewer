@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Grabacr07.KanColleViewer.Views.Settings.Operation"
+<UserControl x:Class="Grabacr07.KanColleViewer.Views.Settings.Operation"
 			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -166,7 +166,7 @@
 
 				<Border Height="8" />
 				<CheckBox Content="전체 탭만이 아닌 모든 탭에서 임무를 갱신"
-						  IsChecked="{Binding Source={x:Static ms:KanColleSettings.QuestOnAllTabs}, Path=Value}" />
+						  IsChecked="{Binding Source={x:Static ms:KanColleSettings.QuestOnAnyTabs}, Path=Value}" />
 			</StackPanel>
 
 			<Rectangle Style="{DynamicResource SeparatorStyleKey}" />

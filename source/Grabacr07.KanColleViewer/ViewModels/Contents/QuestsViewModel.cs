@@ -59,7 +59,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 			get
 			{
 				IEnumerable<QuestViewModel> temp;
-				var onAnyTabs = KanColleClient.Current.Settings.QuestOnAnyTabs;
+				var onAnyTabs = IsOnAnyTab;
 				var tabId = CurrentTab;
 				switch (tabId)
 				{
@@ -92,7 +92,9 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 					temp = temp.Where(x => CategoryToColor(x.Category) == QuestCategorySelected.Display);
 
 				if (!onAnyTabs) tabId = 0;
-				temp = temp.Where(x => x.Tab == tabId)
+				temp = temp
+					.Where(x => x.Tab == tabId)
+					.OrderBy(x => x.Id)
 					.Distinct(x => x.Id);
 
 				return ComputeQuestPage(temp.ToArray());
@@ -105,9 +107,15 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 
 		private Dictionary<int, bool> IsUntakenTable;
 		public bool IsUntaken
-			=> this.IsUntakenTable == null
-				? true
-				: !this.IsUntakenTable.ContainsKey(CurrentTab) || this.IsUntakenTable[CurrentTab];
+		{
+			get
+			{
+				var tab = IsOnAnyTab ? 0 : CurrentTab;
+				return this.IsUntakenTable == null
+					? true
+					: !this.IsUntakenTable.ContainsKey(tab) || this.IsUntakenTable[tab];
+			}
+		}
 
 		#endregion
 
@@ -115,13 +123,21 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 
 		private Dictionary<int, bool> IsEmptyTable;
 		public bool IsEmpty
-			=> this.IsEmptyTable == null
-				? false
-				: this.IsEmptyTable.ContainsKey(CurrentTab) && this.IsEmptyTable[CurrentTab];
+		{
+			get
+			{
+				var tab = IsOnAnyTab ? 0 : CurrentTab;
+				return this.IsEmptyTable == null
+					? false
+					: this.IsEmptyTable.ContainsKey(tab) && this.IsEmptyTable[tab];
+			}
+		}
 
 		#endregion
 
 		private int CurrentTab => GetTabIdByKey(SelectedItem.Key);
+
+		private bool IsOnAnyTab => KanColleClient.Current.Settings.QuestOnAnyTabs;
 
 		#region QuestCategories 프로퍼티
 
@@ -286,7 +302,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 			this.OriginalQuests = viewList.ToArray();
 
 			var tab = CurrentTab;
-			if (KanColleClient.Current.Settings.QuestOnAnyTabs) tab = 0;
+			if (IsOnAnyTab) tab = 0;
 			this.IsEmptyTable = quests.IsEmpty;
 			this.IsUntakenTable = quests.IsUntaken;
 

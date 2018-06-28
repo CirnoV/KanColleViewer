@@ -236,7 +236,15 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 			{
 				{ nameof(quests.All), (sender, args) => this.UpdateQuest(quests) },
 			});
-			
+
+			KanColleSettings.QuestOnAnyTabs.Subscribe(x =>
+			{
+				this.RaisePropertyChanged(nameof(this.Quests));
+				this.RaisePropertyChanged(nameof(this.Current));
+				this.RaisePropertyChanged(nameof(this.IsEmpty));
+				this.RaisePropertyChanged(nameof(this.IsUntaken));
+			});
+
 			// set Quest Tarcker
 			questTracker = new TrackManager();
 			questTracker.QuestsEventChanged += (s, e) => this.UpdateQuest(quests);
@@ -290,11 +298,12 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 				questTracker.AllQuests
 					.ForEach(x =>
 					{
-						var y = viewList.FirstOrDefault(z => z.Id == x.Id);
-						if (y == null) return;
-
-						y.QuestProgressValue = x.GetProgress();
-						y.QuestProgressText = x.GetProgressText();
+						var y = viewList.Where(z => z.Id == x.Id);
+						foreach (var z in y)
+						{
+							z.QuestProgressValue = x.GetProgress();
+							z.QuestProgressText = x.GetProgressText();
+						}
 					});
 			}
 			catch { }
@@ -307,8 +316,13 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 			this.IsUntakenTable = quests.IsUntaken;
 
 			// Quests 멤버는 필터 적용된걸 get으로 반환해서 문제가 있음
-			_badge = OriginalQuests.Count(x => x.QuestProgressValue == 100);
+			_badge = OriginalQuests
+				.Where(x => x.QuestProgressValue == 100)
+				.Distinct(x => x.Id)
+				.Count();
+
 			this.UpdateBadge();
+			this.RaisePropertyChanged(nameof(this.Quests));
 		}
 		private QuestViewModel[] ComputeQuestPage(QuestViewModel[] inp)
 		{

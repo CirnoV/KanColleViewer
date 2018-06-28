@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -31,6 +31,6 @@ namespace Grabacr07.KanColleWrapper
 		/// </summary>
 		bool CheckFlagshipIsRepairShip { get; }
 
-		bool QuestOnAllTabs { get; }
+		bool QuestOnAnyTabs { get; }
 	}
 }

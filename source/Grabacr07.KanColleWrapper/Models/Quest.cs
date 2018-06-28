@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -50,6 +50,18 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// 任務の詳細を取得します。
 		/// </summary>
 		public string DetailJP => RawData.api_detail;
+
+		/// <summary>
+		/// 임무 화면에서의 탭 번호
+		/// </summary>
+		/// 0 - 전체
+		/// 9 - 진행중
+		/// 1 - 일간
+		/// 2 - 주간
+		/// 3 - 월간
+		/// 4 - 일회성
+		/// 5 - 그 외
+		public int Tab { get; set; }
 
 		/// <summary>
 		/// 임무 화면에서의 페이지 번호

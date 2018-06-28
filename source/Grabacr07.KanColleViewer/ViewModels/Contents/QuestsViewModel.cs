@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +24,10 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 
 		private int? _badge = null;
 
-		public QuestViewModel[] Current => this.OriginalQuests.Where(x => x.State != QuestState.None).ToArray();
+		public QuestViewModel[] Current
+			=> this.OriginalQuests
+				.Where(x => x.State != QuestState.None)
+				.ToArray();
 
 		#region Quests 変更通知プロパティ
 
@@ -40,8 +43,10 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 				if (this._OriginalQuests != value)
 				{
 					this._OriginalQuests = value;
-					this.RaisePropertyChanged("Quests");
-					this.RaisePropertyChanged("Current");
+					this.RaisePropertyChanged(nameof(this.Quests));
+					this.RaisePropertyChanged(nameof(this.Current));
+					this.RaisePropertyChanged(nameof(this.IsEmpty));
+					this.RaisePropertyChanged(nameof(this.IsUntaken));
 				}
 			}
 		}
@@ -54,35 +59,41 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 			get
 			{
 				IEnumerable<QuestViewModel> temp;
-				switch (SelectedItem.Key)
+				var onAnyTabs = KanColleClient.Current.Settings.QuestOnAnyTabs;
+				var tabId = CurrentTab;
+				switch (tabId)
 				{
-					case "All":
+					case 0: // All
 						temp = OriginalQuests;
 						break;
-					case "Current":
+					case 9: // Current
 						temp = OriginalQuests.Where(x => x.State != QuestState.None);
 						break;
-					case "Daily":
+					case 1: // Daily
 						temp = OriginalQuests.Where(x => x.Type == QuestType.Daily);
 						break;
-					case "Weekly":
+					case 2: // Weekly
 						temp = OriginalQuests.Where(x => x.Type == QuestType.Weekly);
 						break;
-					case "Monthly":
+					case 3: // Monthly
 						temp = OriginalQuests.Where(x => x.Type == QuestType.Monthly);
 						break;
-					case "Once":
+					case 4: // Once
 						temp = OriginalQuests.Where(x => x.Type == QuestType.OneTime);
 						break;
-					case "Others":
+					case 5: // Others
 						temp = OriginalQuests.Where(x => x.Type == QuestType.Other);
 						break;
-					default:
+					default: // Unknown
 						temp = this.OriginalQuests = new QuestViewModel[0];
 						break;
 				}
 				if (QuestCategorySelected.Display != CategoryToColor(QuestCategory.Other))
 					temp = temp.Where(x => CategoryToColor(x.Category) == QuestCategorySelected.Display);
+
+				if (!onAnyTabs) tabId = 0;
+				temp = temp.Where(x => x.Tab == tabId)
+					.Distinct(x => x.Id);
 
 				return ComputeQuestPage(temp.ToArray());
 			}
@@ -92,42 +103,25 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 
 		#region IsUntaken 変更通知プロパティ
 
-		private bool _IsUntaken;
-
+		private Dictionary<int, bool> IsUntakenTable;
 		public bool IsUntaken
-		{
-			get { return this._IsUntaken; }
-			set
-			{
-				if (this._IsUntaken != value)
-				{
-					this._IsUntaken = value;
-					this.RaisePropertyChanged();
-				}
-			}
-		}
+			=> this.IsUntakenTable == null
+				? true
+				: !this.IsUntakenTable.ContainsKey(CurrentTab) || this.IsUntakenTable[CurrentTab];
 
 		#endregion
 
 		#region IsEmpty 変更通知プロパティ
 
-		private bool _IsEmpty;
-
+		private Dictionary<int, bool> IsEmptyTable;
 		public bool IsEmpty
-		{
-			get { return this._IsEmpty; }
-			set
-			{
-				if (this._IsEmpty != value)
-				{
-					this._IsEmpty = value;
-					this.RaisePropertyChanged();
-				}
-			}
-		}
+			=> this.IsEmptyTable == null
+				? false
+				: this.IsEmptyTable.ContainsKey(CurrentTab) && this.IsEmptyTable[CurrentTab];
 
 		#endregion
 
+		private int CurrentTab => GetTabIdByKey(SelectedItem.Key);
 
 		#region QuestCategories 프로퍼티
 
@@ -147,7 +141,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 				{
 					this._QuestCategorySelected = value;
 					this.RaisePropertyChanged();
-					this.RaisePropertyChanged("Quests");
+					this.RaisePropertyChanged(nameof(this.Quests));
 				}
 			}
 		}
@@ -165,8 +159,10 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 				if (this._SelectedItem != value)
 				{
 					this._SelectedItem = value;
-					this.RaisePropertyChanged("Quests");
-					this.RaisePropertyChanged("SelectedItem");
+					this.RaisePropertyChanged(nameof(this.Quests));
+					this.RaisePropertyChanged(nameof(this.SelectedItem));
+					this.RaisePropertyChanged(nameof(this.IsEmpty));
+					this.RaisePropertyChanged(nameof(this.IsUntaken));
 				}
 			}
 		}
@@ -188,7 +184,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 					new KeyNameTabItemViewModel("Once", "일회성"),
 					new KeyNameTabItemViewModel("Others", "그 외")
 				};
-			this.SelectedItem = this.TabItems.FirstOrDefault(x => x.Name == "진행중");
+			this.SelectedItem = this.TabItems.FirstOrDefault(x => x.Key == "Current");
 
 
 			var categoryTable = new Dictionary<string, string>
@@ -227,13 +223,34 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 			
 			// set Quest Tarcker
 			questTracker = new TrackManager();
-			questTracker.QuestsEventChanged += (s, e) => this.UpdateQuest(quests, true);
-
+			questTracker.QuestsEventChanged += (s, e) => this.UpdateQuest(quests);
 
 			KanColleSettings.ShowQuestBadge.ValueChanged += (s, e) => this.UpdateBadge();
 			this.UpdateQuest(quests);
 
 			this.Fleets = fleets;
+		}
+
+		private int GetTabIdByKey(string Key)
+		{
+			switch (Key)
+			{
+				case "Current":
+					return 9;
+				case "Daily":
+					return 1;
+				case "Weekly":
+					return 2;
+				case "Monthly":
+					return 3;
+				case "Once":
+					return 4;
+				case "Others":
+					return 5;
+				case "All":
+				default:
+					return 0;
+			}
 		}
 
 		private void UpdateBadge()
@@ -245,29 +262,33 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 			else this.Badge = null;
 		}
 
-		private void UpdateQuest(Quests quests, bool fromTracker = false)
+		private void UpdateQuest(Quests quests)
 		{
 			var viewList = quests.All
 				.Select(x => new QuestViewModel(x))
-				.Distinct(x => x.Id)
+				.Distinct(x => x.TabId)
 				.ToList();
 
 			try
 			{ // QuestTracker 어디서 문제가 생길지 모름
-				questTracker.AllQuests.ForEach(x =>
-				{
-					var y = viewList.Where(z => z.Id == x.Id).FirstOrDefault();
-					if (y == null) return;
+				questTracker.AllQuests
+					.ForEach(x =>
+					{
+						var y = viewList.FirstOrDefault(z => z.Id == x.Id);
+						if (y == null) return;
 
-					y.QuestProgressValue = x.GetProgress();
-					y.QuestProgressText = x.GetProgressText();
-				});
+						y.QuestProgressValue = x.GetProgress();
+						y.QuestProgressText = x.GetProgressText();
+					});
 			}
 			catch { }
 
 			this.OriginalQuests = viewList.ToArray();
-			this.IsEmpty = quests.IsEmpty;
-			this.IsUntaken = quests.IsUntaken;
+
+			var tab = CurrentTab;
+			if (KanColleClient.Current.Settings.QuestOnAnyTabs) tab = 0;
+			this.IsEmptyTable = quests.IsEmpty;
+			this.IsUntakenTable = quests.IsUntaken;
 
 			// Quests 멤버는 필터 적용된걸 get으로 반환해서 문제가 있음
 			_badge = OriginalQuests.Count(x => x.QuestProgressValue == 100);

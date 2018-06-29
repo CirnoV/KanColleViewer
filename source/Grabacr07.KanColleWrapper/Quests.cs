@@ -195,10 +195,15 @@ namespace Grabacr07.KanColleWrapper
 		{
 			Quest temp;
 
-			foreach(var tab in this.questPages)
+			foreach (var tab in this.questPages)
 			{
-				foreach (var page in tab.Value) {
-					foreach(var key in page.Keys)
+				if (tab.Value == null) continue;
+
+				foreach (var page in tab.Value)
+				{
+					if (page == null) continue;
+
+					foreach (var key in page.Keys)
 					{
 						if (page[key] == null) continue;
 						if (page[key].Id == q_id)

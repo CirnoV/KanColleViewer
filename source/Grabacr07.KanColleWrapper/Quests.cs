@@ -232,7 +232,7 @@ namespace Grabacr07.KanColleWrapper
 			// キャッシュしてるページの数が、取得したページ数 (api_page_count) より大きいとき
 			// 取得したページ数と同じ数になるようにキャッシュしてるページを減らす
 			while (this.questPages[tab].Count > questlist.api_page_count)
-				this.questPages[tab].RemoveAt(this.questPages.Count - 1);
+				this.questPages[tab].RemoveAt(this.questPages[tab].Count - 1);
 
 			// 小さいときは、キャッシュしたページ数と同じ数になるようにページを増やす
 			while (this.questPages[tab].Count < questlist.api_page_count)
@@ -257,16 +257,16 @@ namespace Grabacr07.KanColleWrapper
 					quest.Tab = tab;
 					this.questPages[tab][page].AddOrUpdate(quest.Id, quest, (_, __) => quest);
 				}
-
-				this.All = this.questPages
-					.SelectMany(y =>
-						y.Value.Where(x => x != null)
-							.SelectMany(x => x.Select(kvp => kvp.Value))
-							.Distinct(x => x.Id)
-							.OrderBy(x => x.Id)
-					)
-					.ToList();
 			}
+
+			this.All = this.questPages
+				.SelectMany(y =>
+					y.Value.Where(x => x != null)
+						.SelectMany(x => x.Select(kvp => kvp.Value))
+						.Distinct(x => x.Id)
+						.OrderBy(x => x.Id)
+				)
+				.ToList();
 		}
 	}
 }

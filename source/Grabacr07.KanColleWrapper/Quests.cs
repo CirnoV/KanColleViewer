@@ -135,6 +135,18 @@ namespace Grabacr07.KanColleWrapper
 
 					ClearQuest(q_id);
 				});
+
+			proxy.ApiSessionSource
+				.Where(x => x.Request.PathAndQuery == "/kcsapi/api_req_quest/stop")
+				.TryParse()
+				.Where(x => x.IsSuccess)
+				.Subscribe(x =>
+				{
+					int q_id;
+					if (!int.TryParse(x.Request["api_quest_id"], out q_id)) return;
+
+					StopQuest(q_id);
+				});
 		}
 
 		private static kcsapi_questlist Serialize(Session session)
@@ -208,6 +220,34 @@ namespace Grabacr07.KanColleWrapper
 						if (page[key] == null) continue;
 						if (page[key].Id == q_id)
 							page.TryRemove(key, out temp);
+					}
+				}
+			}
+
+			this.All = this.questPages
+				.SelectMany(y =>
+					y.Value.Where(x => x != null)
+						.SelectMany(x => x.Select(kvp => kvp.Value))
+						.Distinct(x => x.Id)
+						.OrderBy(x => x.Id)
+				)
+				.ToList();
+		}
+		private void StopQuest(int q_id)
+		{
+			foreach (var tab in this.questPages)
+			{
+				if (tab.Value == null) continue;
+
+				foreach (var page in tab.Value)
+				{
+					if (page == null) continue;
+
+					foreach (var key in page.Keys)
+					{
+						if (page[key] == null) continue;
+						if (page[key].Id == q_id)
+							page[key].Stop();
 					}
 				}
 			}

@@ -70,6 +70,11 @@ namespace Grabacr07.KanColleWrapper.Models
 
 		public Quest(kcsapi_quest rawData) : base(rawData) { }
 
+		public void Stop()
+		{
+			this.RawData.api_state = 1;
+			this.RaisePropertyChanged(nameof(this.State));
+		}
 
 		public override string ToString()
 		{

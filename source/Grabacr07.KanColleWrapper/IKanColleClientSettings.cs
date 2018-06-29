@@ -32,5 +32,6 @@ namespace Grabacr07.KanColleWrapper
 		bool CheckFlagshipIsRepairShip { get; }
 
 		bool QuestOnAnyTabs { get; }
+		bool QuestNoTakeOnTab { get; }
 	}
 }

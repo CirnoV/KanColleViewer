@@ -66,6 +66,7 @@ namespace Grabacr07.KanColleViewer.Models.Migration
 				KanColleSettings.ReSortieCondition.Value = Current.KanColleClientSettings.ReSortieCondition;
 				KanColleSettings.AutoTranslateEnable.Value = Current.KanColleClientSettings.AutoTranslateEnable;
 				KanColleSettings.QuestOnAnyTabs.Value = Current.KanColleClientSettings.QuestOnAnyTabs;
+				KanColleSettings.QuestNoTakeOnTab.Value = Current.KanColleClientSettings.QuestNoTakeOnTab;
 			}
 
 			if (Current.ProxySettings != null)

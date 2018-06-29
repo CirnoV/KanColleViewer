@@ -27,6 +27,8 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 		public QuestViewModel[] Current
 			=> this.OriginalQuests
 				.Where(x => x.State != QuestState.None)
+				.Distinct(x => x.Id)
+				.OrderBy(x => x.Id)
 				.ToArray();
 
 		#region Quests 変更通知プロパティ
@@ -92,10 +94,22 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 					temp = temp.Where(x => CategoryToColor(x.Category) == QuestCategorySelected.Display);
 
 				if (!onAnyTabs) tabId = 0;
-				temp = temp
-					.Where(x => x.Tab == tabId)
-					.OrderBy(x => x.Id)
-					.Distinct(x => x.Id);
+
+				if (tabId == 9 && IsNoTakeOnTab)
+				{
+					temp = temp
+						.Where(x => x.Tab != 9)
+						.Where(x => x.State != QuestState.None)
+						.OrderBy(x => x.Id)
+						.Distinct(x => x.Id);
+				}
+				else
+				{
+					temp = temp
+						.Where(x => x.Tab == tabId)
+						.OrderBy(x => x.Id)
+						.Distinct(x => x.Id);
+				}
 
 				return ComputeQuestPage(temp.ToArray());
 			}
@@ -111,9 +125,14 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 			get
 			{
 				var tab = !IsOnAnyTab ? 0 : CurrentTab;
-				return this.IsUntakenTable == null
-					? true
-					: !this.IsUntakenTable.ContainsKey(tab) || this.IsUntakenTable[tab];
+				if (CurrentTab == 9 && IsNoTakeOnTab)
+					return this.IsUntakenTable == null
+						? true
+						: this.IsUntakenTable.Any(x => x.Value);
+				else
+					return this.IsUntakenTable == null
+						? true
+						: !this.IsUntakenTable.ContainsKey(tab) || this.IsUntakenTable[tab];
 			}
 		}
 
@@ -127,9 +146,14 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 			get
 			{
 				var tab = !IsOnAnyTab ? 0 : CurrentTab;
-				return this.IsEmptyTable == null
-					? false
-					: this.IsEmptyTable.ContainsKey(tab) && this.IsEmptyTable[tab];
+				if (CurrentTab == 9 && IsNoTakeOnTab)
+					return this.IsEmptyTable == null
+						? false
+						: this.IsEmptyTable.All(x => x.Value);
+				else
+					return this.IsEmptyTable == null
+						? false
+						: this.IsEmptyTable.ContainsKey(tab) && this.IsEmptyTable[tab];
 			}
 		}
 
@@ -138,6 +162,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 		private int CurrentTab => GetTabIdByKey(SelectedItem.Key);
 
 		private bool IsOnAnyTab => KanColleClient.Current.Settings.QuestOnAnyTabs;
+		private bool IsNoTakeOnTab => KanColleClient.Current.Settings.QuestNoTakeOnTab;
 
 		#region QuestCategories 프로퍼티
 
@@ -244,6 +269,13 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 				this.RaisePropertyChanged(nameof(this.IsEmpty));
 				this.RaisePropertyChanged(nameof(this.IsUntaken));
 			});
+			KanColleSettings.QuestNoTakeOnTab.Subscribe(x =>
+			{
+				this.RaisePropertyChanged(nameof(this.Quests));
+				this.RaisePropertyChanged(nameof(this.Current));
+				this.RaisePropertyChanged(nameof(this.IsEmpty));
+				this.RaisePropertyChanged(nameof(this.IsUntaken));
+			});
 
 			// set Quest Tarcker
 			questTracker = new TrackManager();
@@ -338,9 +370,12 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 				.Distinct()
 				.ToArray();
 
-			foreach (var page in pages)
-				inp.Where(x => x.Page == page)
-					.Last().LastOnPage = true;
+			if (CurrentTab != 9 || !IsNoTakeOnTab)
+			{
+				foreach (var page in pages)
+					inp.Where(x => x.Page == page)
+						.Last().LastOnPage = true;
+			}
 
 			return inp.ToArray();
 		}

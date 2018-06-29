@@ -281,6 +281,12 @@ namespace Grabacr07.KanColleViewer.Models.Settings
 			= new SerializableProperty<bool>(GetKey(), Providers.Viewer, false);
 
 		/// <summary>
+		/// 위 설정을 사용중일 때, 진행중 탭의 내용을 다른 탭에서 가져오도록 합니다.
+		/// </summary>
+		public static SerializableProperty<bool> QuestNoTakeOnTab { get; }
+			= new SerializableProperty<bool>(GetKey(), Providers.Viewer, false);
+
+		/// <summary>
 		/// 모항 정보에 원정 진행바를 표시할지를 설정합니다.
 		/// </summary>
 		public static SerializableProperty<bool> AdmiralExpeditionBars { get; }
@@ -330,6 +336,8 @@ namespace Grabacr07.KanColleViewer.Models.Settings
 		bool IKanColleClientSettings.CheckFlagshipIsRepairShip => CheckFlagshipIsNotRepairShip.Value;
 
 		bool IKanColleClientSettings.QuestOnAnyTabs => QuestOnAnyTabs.Value;
+
+		bool IKanColleClientSettings.QuestNoTakeOnTab => QuestNoTakeOnTab.Value;
 
 		#endregion
 

@@ -167,6 +167,11 @@
 				<Border Height="8" />
 				<CheckBox Content="전체 탭만이 아닌 모든 탭에서 임무를 갱신"
 						  IsChecked="{Binding Source={x:Static ms:KanColleSettings.QuestOnAnyTabs}, Path=Value}" />
+
+				<Border Height="8" />
+				<CheckBox Margin="20,0,0,0"
+						  Content="위 설정을 사용중일 때, 진행중 탭의 내용을 다른 탭에서 가져옴"
+						  IsChecked="{Binding Source={x:Static ms:KanColleSettings.QuestNoTakeOnTab}, Path=Value}" />
 			</StackPanel>
 
 			<Rectangle Style="{DynamicResource SeparatorStyleKey}" />

@@ -95,7 +95,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 
 				if (!onAnyTabs) tabId = 0;
 
-				if (tabId == 9 && IsNoTakeOnTab)
+				if (tabId == 9 && IsOnAnyTab && IsNoTakeOnTab)
 				{
 					temp = temp
 						.Where(x => x.Tab != 9)
@@ -125,7 +125,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 			get
 			{
 				var tab = !IsOnAnyTab ? 0 : CurrentTab;
-				if (CurrentTab == 9 && IsNoTakeOnTab)
+				if (CurrentTab == 9 && IsOnAnyTab && IsNoTakeOnTab)
 					return this.IsUntakenTable == null
 						? true
 						: this.IsUntakenTable.Any(x => x.Value);
@@ -146,7 +146,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 			get
 			{
 				var tab = !IsOnAnyTab ? 0 : CurrentTab;
-				if (CurrentTab == 9 && IsNoTakeOnTab)
+				if (CurrentTab == 9 && IsOnAnyTab && IsNoTakeOnTab)
 					return this.IsEmptyTable == null
 						? false
 						: this.IsEmptyTable.All(x => x.Value);
@@ -370,7 +370,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 				.Distinct()
 				.ToArray();
 
-			if (CurrentTab != 9 || !IsNoTakeOnTab)
+			if (!(CurrentTab == 9 && IsOnAnyTab && IsNoTakeOnTab))
 			{
 				foreach (var page in pages)
 					inp.Where(x => x.Page == page)

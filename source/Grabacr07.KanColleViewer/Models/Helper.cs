@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -38,15 +38,22 @@ namespace Grabacr07.KanColleViewer.Models
 		public static bool IsInDesignMode => DesignerProperties.GetIsInDesignMode(new DependencyObject());
 
 
-		public static string CreateScreenshotFilePath()
+		public static string CreateScreenshotFilePath(bool defaultPath = false)
 		{
-			var filePath = Path.Combine(
-				Settings.ScreenshotSettings.Destination,
-				$"KanColle-{DateTimeOffset.Now.LocalDateTime.ToString("yyMMdd-HHmmssff")}");
+			var filePath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+
+			if (!defaultPath)
+			{
+				filePath = Path.Combine(
+					Settings.ScreenshotSettings.Destination,
+					$"KanColle-{DateTimeOffset.Now.LocalDateTime.ToString("yyMMdd-HHmmssff")}"
+				);
+			}
 
 			filePath = Path.ChangeExtension(
 				filePath,
-				Settings.ScreenshotSettings.Format == SupportedImageFormat.Png ? ".png" : ".jpg");
+				Settings.ScreenshotSettings.Format == SupportedImageFormat.Png ? ".png" : ".jpg"
+			);
 
 			return filePath;
 		}

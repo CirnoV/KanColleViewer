@@ -43,12 +43,12 @@ namespace Grabacr07.KanColleViewer.Models
 			var filePath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 
 			if (!defaultPath)
-			{
-				filePath = Path.Combine(
-					Settings.ScreenshotSettings.Destination,
-					$"KanColle-{DateTimeOffset.Now.LocalDateTime.ToString("yyMMdd-HHmmssff")}"
-				);
-			}
+				filePath = Settings.ScreenshotSettings.Destination;
+
+			filePath = Path.Combine(
+				filePath,
+				$"KanColle-{DateTimeOffset.Now.LocalDateTime.ToString("yyMMdd-HHmmssff")}"
+			);
 
 			filePath = Path.ChangeExtension(
 				filePath,

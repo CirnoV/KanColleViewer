@@ -1,4 +1,4 @@
-﻿using Grabacr07.KanColleWrapper;
+using Grabacr07.KanColleWrapper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +10,10 @@ namespace Grabacr07.KanColleViewer.Models
 {
 	public class HQRecord
 	{
+		// 로컬 타임과 무관하게 항상 UTC+9 타임존의 Now (Asia/Tokyo)
+		private static DateTime UTC9Now
+			=> DateTime.UtcNow.AddHours(9);
+
 		public class HQRecordElement
 		{
 			/// <summary>
@@ -29,7 +33,7 @@ namespace Grabacr07.KanColleViewer.Models
 
 			public HQRecordElement()
 			{
-				Date = DateTime.Now;
+				Date = UTC9Now;
 			}
 
 			public HQRecordElement(DateTime time, int level, int exp) : this()
@@ -54,7 +58,7 @@ namespace Grabacr07.KanColleViewer.Models
 		public HQRecord()
 		{
 			Record = new List<HQRecordElement>();
-			_prevTime = DateTime.Now;
+			_prevTime = UTC9Now;
 			_initialFlag = true;
 		}
 
@@ -62,7 +66,7 @@ namespace Grabacr07.KanColleViewer.Models
 		{
 			if (_initialFlag || IsCrossedHour(_prevTime))
 			{
-				_prevTime = DateTime.Now;
+				_prevTime = UTC9Now;
 				_initialFlag = false;
 
 				var admiral = KanColleClient.Current.Homeport.Admiral;
@@ -173,7 +177,7 @@ namespace Grabacr07.KanColleViewer.Models
 		/// </summary>
 		public HQRecordElement GetRecordPrevious()
 		{
-			DateTime now = DateTime.Now;
+			DateTime now = UTC9Now;
 			DateTime target;
 
 			if (now.TimeOfDay.Hours < 2)
@@ -191,7 +195,7 @@ namespace Grabacr07.KanColleViewer.Models
 		/// </summary>
 		public HQRecordElement GetRecordDay()
 		{
-			DateTime now = DateTime.Now;
+			DateTime now = UTC9Now;
 			DateTime target;
 			if (now.TimeOfDay.Hours < 2)
 				target = new DateTime(now.Year, now.Month, now.Day, 2, 0, 0).Subtract(TimeSpan.FromDays(1));
@@ -206,7 +210,7 @@ namespace Grabacr07.KanColleViewer.Models
 		/// </summary>
 		public HQRecordElement GetRecordMonth()
 		{
-			DateTime now = DateTime.Now;
+			DateTime now = UTC9Now;
 			return GetRecord(new DateTime(now.Year, now.Month, 1));
 		}
 
@@ -218,7 +222,7 @@ namespace Grabacr07.KanColleViewer.Models
 		public static bool IsCrossedHour(DateTime prev)
 		{
 			DateTime nexthour = prev.Date.AddHours(prev.Hour + 1);
-			return nexthour <= DateTime.Now;
+			return nexthour <= UTC9Now;
 		}
 
 		public static string TimeToCSVString(DateTime time)

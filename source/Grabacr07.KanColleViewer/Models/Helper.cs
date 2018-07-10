@@ -40,13 +40,15 @@ namespace Grabacr07.KanColleViewer.Models
 
 		public static string CreateScreenshotFilePath(bool defaultPath = false)
 		{
-			var filePath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+			var directory = "";
 
 			if (!defaultPath)
-				filePath = Settings.ScreenshotSettings.Destination;
+				directory = Settings.ScreenshotSettings.Destination;
+			else
+				directory= Environment.GetFolderPath(Environment.SpecialFolder.MyPictures); ;
 
-			filePath = Path.Combine(
-				filePath,
+			var filePath = Path.Combine(
+				directory,
 				$"KanColle-{DateTimeOffset.Now.LocalDateTime.ToString("yyMMdd-HHmmssff")}"
 			);
 

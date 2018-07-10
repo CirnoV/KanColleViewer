@@ -236,7 +236,11 @@ namespace Grabacr07.KanColleViewer.ViewModels
 			}
 		}
 
-		public void TakeScreenshot() => TakeScreenshot(false);
+		public void TakeScreenshot()
+		{
+			TakeScreenshot(false);
+		}
+
 		public void TakeScreenshot(bool defaultPath)
 		{
 			var path = Helper.CreateScreenshotFilePath(defaultPath);

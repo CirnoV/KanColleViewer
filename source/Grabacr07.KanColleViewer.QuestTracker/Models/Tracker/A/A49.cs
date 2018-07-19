@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -68,13 +68,14 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 		}
 
 		public int GetProgress()
-		{
-			return count * 100 / max_count;
-		}
+			=> count * 100 / max_count;
 
-		public string GetProgressText()
-		{
-			return count >= max_count ? "완료" : "사츠키,후미즈키,나가츠키와 그 외 구축 1척만으로 편성 (" + count.ToString() + " / " + max_count.ToString() + ")";
-		}
+		public string ProgressText
+			=> count >= max_count
+				? "완료"
+				: "사츠키,후미즈키,나가츠키와 그 외 구축 1척만으로 편성 (" + count.ToString() + " / " + max_count.ToString() + ")";
+
+		public int[] GetRawDatas() => new int[] { this.count };
+		public void SetRawDatas(int[] data) => this.count.Min(0).Max(this.max_count);
 	}
 }

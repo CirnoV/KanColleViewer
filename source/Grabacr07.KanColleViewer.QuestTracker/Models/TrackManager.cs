@@ -4,11 +4,14 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
 using System.Reactive.Linq;
+using WebUtility = System.Net.WebUtility;
+using _EventArgs = System.EventArgs;
 
 using Grabacr07.KanColleWrapper;
 using Grabacr07.KanColleWrapper.Models;
@@ -58,7 +61,6 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 
 		internal SlotItemTracker slotitemTracker { get; }
 
-		public readonly System.EventArgs EmptyEventArg = new System.EventArgs();
 		public event EventHandler QuestsEventChanged;
 
 		private BattleCalculator battleCalculator { get; set; }
@@ -72,7 +74,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 			catch { }
 		}
 
-		public TrackManager(Func<bool> PreprocessCheck)
+		public TrackManager(Func<bool> PreprocessCheck, Func<string> KcaQSync_Auth, Func<string> KcaQSync_Enc)
 		{
 			this.PreprocessCheck = PreprocessCheck;
 
@@ -83,6 +85,85 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 			battleCalculator = new BattleCalculator();
 			slotitemTracker = new SlotItemTracker(homeport, proxy);
 
+			// 동기화
+			proxy.api_start2.TryParse()
+				.Where(x => x.IsSuccess)
+				.Subscribe(x =>
+				{
+					var enc37 = new Func<int, string>(input =>
+					{
+						var table = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ=";
+						var output = "";
+						do
+						{
+							var pos = Math.Min(table.Length - 1, input);
+							output += table[pos];
+							input -= pos;
+						} while (input > 0);
+						return output;
+					});
+
+					var auth = KcaQSync_Auth?.Invoke();
+					var enc = KcaQSync_Enc?.Invoke();
+					if (string.IsNullOrEmpty(auth) || string.IsNullOrEmpty(enc)) return;
+
+					var data = string.Format(
+						"{{\"userid\":{0}}}",
+						KanColleClient.Current.Homeport.Admiral.RawData.api_member_id
+					);
+
+					HTTPRequest.PostAsync(
+						"http://kcaqsync.swaytwig.com/api/get",
+						"auth=" + WebUtility.UrlEncode(auth) + "&data=" + WebUtility.UrlEncode(data),
+						y =>
+						{
+							var json = Codeplex.Data.DynamicJson.Parse(y);
+							ApplySyncData(json.data.ToString());
+						}
+					);
+				});
+			this.QuestsEventChanged += (s, e) =>
+			{
+				var enc37 = new Func<int, string>(input =>
+				{
+					var table = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ=";
+					var output = "";
+					do
+					{
+						var pos = Math.Min(table.Length - 1, input);
+						output += table[pos];
+						input -= pos;
+					} while (input > 0);
+					return output;
+				});
+
+				var auth = KcaQSync_Auth?.Invoke();
+				var enc = KcaQSync_Enc?.Invoke();
+				if (string.IsNullOrEmpty(auth) || string.IsNullOrEmpty(enc)) return;
+
+				var data = "";
+				foreach (var item in this.trackingAvailable)
+				{
+					var content =
+						(item.IsTracking ? "1" : "0")
+						+ enc37(item.Id).PadLeft(2, '0')
+						+ string.Join("", item.GetRawDatas().Select(enc37));
+
+					data += enc37(content.Length) + content;
+				}
+				data = string.Format(
+					"{{\"userid\":{0},\"data\":\"{1}\"}}",
+					KanColleClient.Current.Homeport.Admiral.RawData.api_member_id,
+					data
+				);
+
+				HTTPRequest.PostAsync(
+					"http://kcaqsync.swaytwig.com/api/write",
+					"auth=" + WebUtility.UrlEncode(auth) + "&data=" + WebUtility.UrlEncode(data),
+					y => { }
+				);
+			};
+
 			// 편성 변경
 			homeport.Organization.PropertyChanged += (s, e) =>
 			{
@@ -90,14 +171,14 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 				{
 					var fleets = homeport.Organization.Fleets.Select(x => x.Value);
 					foreach (var x in fleets)
-						x.State.Updated += (_, _2) => Preprocess(() => HenseiEvent?.Invoke(this, this.EmptyEventArg));
+						x.State.Updated += (_, _2) => Preprocess(() => HenseiEvent?.Invoke(this, _EventArgs.Empty));
 				}
 			};
 			// 장비 변경
 			proxy.api_req_kaisou_slot_exchange_index.TryParse<kcsapi_slot_exchange_index>()
-				.Subscribe(x => Preprocess(() => EquipEvent?.Invoke(this, this.EmptyEventArg)));
+				.Subscribe(x => Preprocess(() => EquipEvent?.Invoke(this, _EventArgs.Empty)));
 			proxy.api_req_kaisou_slot_deprive.TryParse<kcsapi_slot_deprive>()
-				.Subscribe(x => Preprocess(() => EquipEvent?.Invoke(this, this.EmptyEventArg)));
+				.Subscribe(x => Preprocess(() => EquipEvent?.Invoke(this, _EventArgs.Empty)));
 
 			// 근대화 개수
 			proxy.api_req_kaisou_powerup.TryParse<kcsapi_powerup>()
@@ -116,18 +197,18 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 
 			// 건조
 			proxy.api_req_kousyou_createship.TryParse<kcsapi_createship>()
-				.Subscribe(x => Preprocess(() => CreateShipEvent?.Invoke(this, this.EmptyEventArg)));
+				.Subscribe(x => Preprocess(() => CreateShipEvent?.Invoke(this, _EventArgs.Empty)));
 
 			// 개발
 			slotitemTracker.CreateItemEvent += (s, e) => Preprocess(() => CreateItemEvent?.Invoke(this, e));
 
 			// 보급
 			proxy.api_req_hokyu_charge.TryParse<kcsapi_charge>()
-				.Subscribe(x => Preprocess(() => ChargeEvent?.Invoke(this, this.EmptyEventArg)));
+				.Subscribe(x => Preprocess(() => ChargeEvent?.Invoke(this, _EventArgs.Empty)));
 
 			// 입거
 			proxy.ApiSessionSource.Where(x => x.Request.PathAndQuery == "/kcsapi/api_req_nyukyo/start")
-				.Subscribe(x => Preprocess(() => RepairStartEvent?.Invoke(this, this.EmptyEventArg)));
+				.Subscribe(x => Preprocess(() => RepairStartEvent?.Invoke(this, _EventArgs.Empty)));
 
 			// 원정
 			proxy.api_req_mission_result.TryParse<kcsapi_mission_result>()
@@ -257,7 +338,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 					{
 						try
 						{
-							QuestsEventChanged?.Invoke(this, EmptyEventArg);
+							QuestsEventChanged?.Invoke(this, _EventArgs.Empty);
 						}
 						catch { }
 					});
@@ -265,11 +346,54 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 			};
 		}
 
+		private bool ApplySyncData(string data)
+		{
+			var regex = new Regex("^[01][0-9A-Z=]+$", RegexOptions.Compiled);
+			var table = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ=";
+
+			var length = data.Length;
+			var pos = 0;
+
+			var list = new List<SyncData>();
+			while (pos < length)
+			{
+				var size = table.IndexOf(data[pos++]);
+				var q = data.Substring(pos, size);
+
+				if (size < 4) return false;
+				if (q.Length != size) return false;
+				if (!regex.IsMatch(q)) return false;
+
+				int[] tmp = null;
+				var id = SyncData.Decode(q.Substring(1, 2));
+				if (id == 215) // 로호
+				{
+					tmp = new int[] { 0 };
+				}
+
+				list.Add(new SyncData
+				{
+					Active = SyncData.Decode(q[0].ToString()) > 0,
+					Id = id,
+					Count = SyncData.DecodeList(q.Substring(3), tmp)
+				});
+			}
+
+			foreach(var item in list)
+			{
+				var tracker = this.trackingAvailable.FirstOrDefault(x => x.Id == item.Id);
+				if (tracker == null) continue;
+
+				tracker.SetRawDatas(item.Count);
+			}
+			return true;
+		}
+
 		public void RefreshTrackers()
 		{
-			Preprocess(() => HenseiEvent?.Invoke(this, EmptyEventArg));
-			Preprocess(() => EquipEvent?.Invoke(this, EmptyEventArg));
-			QuestsEventChanged?.Invoke(this, EmptyEventArg);
+			Preprocess(() => HenseiEvent?.Invoke(this, _EventArgs.Empty));
+			Preprocess(() => EquipEvent?.Invoke(this, _EventArgs.Empty));
+			QuestsEventChanged?.Invoke(this, _EventArgs.Empty);
 		}
 
 

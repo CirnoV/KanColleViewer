@@ -66,10 +66,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 			return count * 100 / max_count;
 		}
 
-		public string GetProgressText()
-		{
-			return count >= max_count ? "완료" : "즈이카쿠 비서함, 숙련도max 영식 함전 52형丙(이와이소대) 장착, 영식 함상전투기 62형(폭전) 폐기 " + count.ToString() + " / " + max_count.ToString();
-		}
+		public string ProgressText => count >= max_count ? "완료" : "즈이카쿠 비서함, 숙련도max 영식 함전 52형丙(이와이소대) 장착, 영식 함상전투기 62형(폭전) 폐기 " + count.ToString() + " / " + max_count.ToString();
 
 		public string SerializeData()
 		{

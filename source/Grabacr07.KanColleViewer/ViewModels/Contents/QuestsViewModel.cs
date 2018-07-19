@@ -334,7 +334,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 						foreach (var z in y)
 						{
 							z.QuestProgressValue = x.GetProgress();
-							z.QuestProgressText = x.GetProgressText();
+							z.QuestProgressText = x.ProgressText;
 						}
 					});
 			}

@@ -54,10 +54,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 			return count * 100 / max_count;
 		}
 
-		public string GetProgressText()
-		{
-			return count >= max_count ? "완료" : "기함 레벨 90~99 편성 " + (count==0 ? "X" : "OK");
-		}
+		public string ProgressText => count >= max_count ? "완료" : "기함 레벨 90~99 편성 " + (count == 0 ? "X" : "OK");
 
 		public string SerializeData()
 		{

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,11 +21,15 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 
 		event EventHandler ProcessChanged;
 
-		string GetProgressText();
+		string ProgressText { get; }
+
 		int GetProgress();
 
 		string SerializeData();
 		void DeserializeData(string data);
+
+		int[] GetRawDatas();
+		void SetRawDatas(int[] data);
 
 		void CheckOverUnder(QuestProgressType progress);
 	}

@@ -63,6 +63,18 @@ namespace Grabacr07.KanColleViewer.Models.Settings
 		public static SerializableProperty<string> TaskbarProgressSourceWhenSortie { get; }
 			= new SerializableProperty<string>(GetKey(), Providers.Viewer, "") { AutoSave = true };
 
+		/// <summary>
+		/// KcaQSync 동기화를 위한 Authorization 키
+		/// </summary>
+		public static SerializableProperty<string> KcaQSync_Auth { get; }
+			= new SerializableProperty<string>(GetKey(), Providers.Viewer, "") { AutoSave = true };
+
+		/// <summary>
+		/// KcaQSync 동기화를 위한 Encryption 키
+		/// </summary>
+		public static SerializableProperty<string> KcaQSync_Enc { get; }
+			= new SerializableProperty<string>(GetKey(), Providers.Viewer, "") { AutoSave = true };
+
 		private static string GetKey([CallerMemberName] string propertyName = "")
 		{
 			return nameof(GeneralSettings) + "." + propertyName;

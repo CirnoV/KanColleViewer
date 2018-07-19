@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -53,14 +53,14 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 			ProcessChanged?.Invoke(this, emptyEventArgs);
 		}
 
-		public int GetProgress()
-		{
-			return count * 100 / max_count;
-		}
+		public int GetProgress() => count * 100 / max_count;
 
-		public string GetProgressText()
-		{
-			return count >= max_count ? "완료" : "잠수함 " + count.ToString() + " / " + max_count.ToString() + " 척 편성";
-		}
+		public string ProgressText
+			=> count >= max_count
+				? "완료"
+				: "잠수함 " + count.ToString() + " / " + max_count.ToString() + " 척 편성";
+
+		public int[] GetRawDatas() => new int[] { this.count };
+		public void SetRawDatas(int[] data) => this.count.Min(0).Max(this.max_count);
 	}
 }

@@ -76,10 +76,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 			return count * 100 / max_count;
 		}
 
-		public string GetProgressText()
-		{
-			return count >= max_count ? "완료" : "히에이,키리시마,나가라,아카츠키,이카즈치,이나즈마 편성 5-1 보스전 S승리 " + count.ToString() + " / " + max_count.ToString();
-		}
+		public string ProgressText => count >= max_count ? "완료" : "히에이,키리시마,나가라,아카츠키,이카즈치,이나즈마 편성 5-1 보스전 S승리 " + count.ToString() + " / " + max_count.ToString();
 
 		public string SerializeData()
 		{

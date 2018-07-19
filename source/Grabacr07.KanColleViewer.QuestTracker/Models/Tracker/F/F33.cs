@@ -50,10 +50,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 			return (count_1 + count_2) * 100 / max_count;
 		}
 
-		public string GetProgressText()
-		{
-			return (count_1 + count_2) >= max_count ? "완료" : "7.7mm 기관총 폐기 " + count_1.ToString() + "/2, 12.7mm 단장기관총 폐기 " + count_2.ToString()+"/2";
-		}
+		public string ProgressText => (count_1 + count_2) >= max_count ? "완료" : "7.7mm 기관총 폐기 " + count_1.ToString() + "/2, 12.7mm 단장기관총 폐기 " + count_2.ToString() + "/2";
 
 		public string SerializeData()
 		{

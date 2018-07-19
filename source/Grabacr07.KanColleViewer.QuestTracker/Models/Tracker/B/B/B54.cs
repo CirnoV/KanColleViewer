@@ -82,10 +82,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 			return count * 100 / max_count;
 		}
 
-		public string GetProgressText()
-		{
-			return count >= max_count ? "완료" : "즈이카쿠改 기함,치토세航,치요다航,즈이호改,이세改,휴가改 편성 2-4 보스전 S승리 " + count.ToString() + " / " + max_count.ToString();
-		}
+		public string ProgressText => count >= max_count ? "완료" : "즈이카쿠改 기함,치토세航,치요다航,즈이호改,이세改,휴가改 편성 2-4 보스전 S승리 " + count.ToString() + " / " + max_count.ToString();
 
 		public string SerializeData()
 		{

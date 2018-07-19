@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -60,7 +60,6 @@ namespace Grabacr07.KanColleViewer.Models.QuestTracker
 				if (e.PropertyName == nameof(quests.All))
 					new System.Threading.Thread(ProcessQuests).Start();
 			};
-
 		}
 		private void ProcessQuests()
 		{

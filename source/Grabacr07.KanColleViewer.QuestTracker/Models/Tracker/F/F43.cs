@@ -71,13 +71,10 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 			return (count + count_1 + count_2) * 100 / max_count;
 		}
 
-		public string GetProgressText()
-		{
-			return (count + count_1 + count_2) >= max_count ? "완료" :
+		public string ProgressText => (count + count_1 + count_2) >= max_count ? "완료" :
 				"연료 1200 소지 " + (count_1 == 0 ? "X" : "OK") + ", "
 				+ "보크사이트 3000 소지 " + (count_2 == 0 ? "X" : "OK") + ", "
 				+ "드럼통 폐기 " + count.ToString() + "/2";
-		}
 
 		public string SerializeData()
 		{

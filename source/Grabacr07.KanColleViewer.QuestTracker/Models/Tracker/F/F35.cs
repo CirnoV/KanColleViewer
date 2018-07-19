@@ -65,10 +65,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 			return count * 100 / max_count;
 		}
 
-		public string GetProgressText()
-		{
-			return count >= max_count ? "완료" : "호쇼 기함, 숙련도max 개수max 96식 함상전투기 장착, 훈장 2개 소지 " + count.ToString() + " / " + max_count.ToString();
-		}
+		public string ProgressText => count >= max_count ? "완료" : "호쇼 기함, 숙련도max 개수max 96식 함상전투기 장착, 훈장 2개 소지 " + count.ToString() + " / " + max_count.ToString();
 
 		public void CheckOverUnder(QuestProgressType progress)
 		{

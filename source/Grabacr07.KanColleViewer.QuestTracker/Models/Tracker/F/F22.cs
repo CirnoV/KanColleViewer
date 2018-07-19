@@ -62,10 +62,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 			return (count_1 + count_2) * 100 / max_count;
 		}
 
-		public string GetProgressText()
-		{
-			return (count_1 + count_2) >= max_count ? "완료" : "호쇼 비서함, 숙련도max 영식 함상전투기 21형 장착, 영식 함상전투기 21형 폐기 " + count_1.ToString() + "/2, 96식 함상전투기 폐기 " + count_2.ToString() + "/1";
-		}
+		public string ProgressText => (count_1 + count_2) >= max_count ? "완료" : "호쇼 비서함, 숙련도max 영식 함상전투기 21형 장착, 영식 함상전투기 21형 폐기 " + count_1.ToString() + "/2, 96식 함상전투기 폐기 " + count_2.ToString() + "/1";
 
 		public string SerializeData()
 		{

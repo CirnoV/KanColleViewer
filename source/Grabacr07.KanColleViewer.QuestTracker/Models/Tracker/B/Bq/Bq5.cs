@@ -71,14 +71,11 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 			return (progress_3_1 + progress_3_2 + progress_3_3) * 100 / 3;
 		}
 
-		public string GetProgressText()
-		{
-			return (progress_3_1 + progress_3_2 + progress_3_3) >= 3
+		public string ProgressText => (progress_3_1 + progress_3_2 + progress_3_3) >= 3
 				? "완료"
 				: "경순양함 1척 포함 함대로 3-1 보스전 A 승리 이상 " + progress_3_1.ToString() + " / 1, "
 				  + "3-2 보스전 A 승리 이상 " + progress_3_2.ToString() + " / 1, "
 				  + "3-3 보스전 A 승리 이상 " + progress_3_3.ToString() + " / 1";
-		}
 
 		public string SerializeData()
 		{

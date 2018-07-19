@@ -68,13 +68,16 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 			return (progress_combat + progress_combat_s + progress_boss + progress_boss_win) * 100 / (36 + 6 + 24 + 12);
 		}
 
-		public string GetProgressText()
+		public string ProgressText
 		{
-			if (progress_combat >= 36 && progress_combat_s >= 6 && progress_boss >= 24 && progress_boss_win >= 12)
-				return "완료";
+			get
+			{
+				if (progress_combat >= 36 && progress_combat_s >= 6 && progress_boss >= 24 && progress_boss_win >= 12)
+					return "완료";
 
-			return "출격 " + progress_combat.ToString() + "/36, S승리 " + progress_combat_s.ToString() + "/6," +
-				" 보스전 " + progress_boss.ToString() + "/24, 보스전 승리 " + progress_boss_win.ToString() + "/12";
+				return "출격 " + progress_combat.ToString() + "/36, S승리 " + progress_combat_s.ToString() + "/6," +
+					" 보스전 " + progress_boss.ToString() + "/24, 보스전 승리 " + progress_boss_win.ToString() + "/12";
+			}
 		}
 
 		public string SerializeData()

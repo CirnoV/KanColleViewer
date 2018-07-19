@@ -76,8 +76,10 @@
     <Compile Include="Models\Formation.cs" />
     <Compile Include="Models\ITracker.cs" />
     <Compile Include="Models\Model\BattleCalcaultor.cs" />
+    <Compile Include="Models\Model\HTTPRequest.cs" />
     <Compile Include="Models\Model\IdProgressPair.cs" />
     <Compile Include="Models\Model\QuestProgressType.cs" />
+    <Compile Include="Models\Model\SyncData.cs" />
     <Compile Include="Models\ShipData.cs" />
     <Compile Include="Models\ShipSlotData.cs" />
     <Compile Include="Models\SlotitemCategoryType.cs" />

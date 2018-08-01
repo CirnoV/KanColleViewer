@@ -12,20 +12,25 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 	/// <summary>
 	/// 해상보급 물자의 조달
 	/// </summary>
-	internal class F41 : NoOverUnderTracker, DefaultTracker
+	internal class F41 : DefaultTracker
 	{
-		private readonly int max_count = 6;
-		private int count, count_1, count_2, count_3, count_4;
-
-		public event EventHandler ProcessChanged;
-
 		public override int Id => 645;
 		public override QuestType Type => QuestType.Monthly;
-		public bool IsTracking { get; set; }
 
-		private System.EventArgs emptyEventArgs = new System.EventArgs();
+		public F41()
+		{
+			this.Datas = new TrackingValue[]
+			{
+				new TrackingValue(750, "연료"),
+				new TrackingValue(750, "탄약"),
+				new TrackingValue(2, "드럼통 소지"),
+				new TrackingValue(1, "91식 철갑탄 소지"),
+				new TrackingValue(1, "삼식탄 폐기")
+			};
+			this.Attach();
+		}
 
-		public void RegisterEvent(TrackManager manager)
+		public override void RegisterEvent(TrackManager manager)
 		{
 			manager.EquipEvent += (sender, args) =>
 			{
@@ -36,12 +41,10 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 				slotitems = slotitems.Where(x => homeport.Organization.Ships.Any(y => !y.Value.Slots.Select(z => z.Item.Id).Contains(x.Id)))
 					.Where(x => x.RawData.api_locked == 0).ToArray(); // 장비중이지 않고 잠기지 않은 장비들
 
-				count_1 = homeport.Materials.Fuel >= 750 ? 1 : 0; // 연료
-				count_2 = homeport.Materials.Ammunition >= 750 ? 1 : 0; // 탄약
-				count_3 = slotitems.Count(x => x.Info.Id == 75).Max(2); // 드럼통
-				count_4 = slotitems.Count(x => x.Info.Id == 36).Max(1); // 91식 철갑탄
-
-				ProcessChanged?.Invoke(this, emptyEventArgs);
+				this.Datas[0].Set(homeport.Materials.Fuel);
+				this.Datas[1].Set(homeport.Materials.Ammunition);
+				this.Datas[2].Set(slotitems.Count(x => x.Info.Id == 75)); // 드럼통
+				this.Datas[3].Set(slotitems.Count(x => x.Info.Id == 36)); // 91식 철갑탄
 			};
 			manager.DestoryItemEvent += (sender, args) =>
 			{
@@ -52,45 +55,17 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 				slotitems = slotitems.Where(x => homeport.Organization.Ships.Any(y => !y.Value.Slots.Select(z => z.Item.Id).Contains(x.Id)))
 					.Where(x => x.RawData.api_locked == 0).ToArray(); // 장비중이지 않고 잠기지 않은 장비들
 
-				var homeportSlotitems = homeport.Itemyard.SlotItems;
-				count = args.itemList.Count(x => (homeportSlotitems[x]?.Info.Id ?? 0) == 35).Max(1); // 삼식탄
+				this.Datas[0].Set(homeport.Materials.Fuel);
+				this.Datas[1].Set(homeport.Materials.Ammunition);
+				this.Datas[2].Set(slotitems.Count(x => x.Info.Id == 75)); // 드럼통
+				this.Datas[3].Set(slotitems.Count(x => x.Info.Id == 36)); // 91식 철갑탄
 
-				count_1 = homeport.Materials.Fuel >= 750 ? 1 : 0; // 연료
-				count_2 = homeport.Materials.Ammunition >= 750 ? 1 : 0; // 탄약
-				count_3 = slotitems.Count(x => x.Info.Id == 75).Max(2); // 드럼통
-				count_4 = slotitems.Count(x => x.Info.Id == 36).Max(1); // 91식 철갑탄
-
-				ProcessChanged?.Invoke(this, emptyEventArgs);
+				var master = KanColleClient.Current.Master.SlotItems;
+				var homeportSlotitems = manager.slotitemTracker.SlotItems;
+				this.Datas[4].Add( // 삼식탄
+					args.itemList.Count(x => homeportSlotitems[x]?.Info.Id == 35)
+				);
 			};
-		}
-
-		public void ResetQuest()
-		{
-			count = count_1 = count_2 = count_3 = count_4 = 0;
-			ProcessChanged?.Invoke(this, emptyEventArgs);
-		}
-
-		public int GetProgress()
-		{
-			return (count + count_1 + count_2 + count_3 + count_4) * 100 / max_count;
-		}
-
-		public string ProgressText => (count_1 + count_2 + count_3 + count_4) >= max_count ? "완료" :
-				"연료 750 소지 " + (count_1 == 0 ? "X" : "OK") + ", "
-				+ "탄약 750 소지 " + (count_2 == 0 ? "X" : "OK") + ", "
-				+ "드럼통 소지 " + count_3.ToString() + "/2, "
-				+ "91식 철갑탄 소지" + count_4.ToString() + "/1, "
-				+ "삼식탄 폐기 " + count.ToString() + "/1";
-
-		public string SerializeData()
-		{
-			return count.ToString();
-		}
-
-		public void DeserializeData(string data)
-		{
-			count = 0;
-			int.TryParse(data, out count);
 		}
 	}
 }

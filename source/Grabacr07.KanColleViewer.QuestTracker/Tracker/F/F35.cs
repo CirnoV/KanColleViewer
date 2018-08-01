@@ -51,7 +51,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 					var slotitems = fleet?.Ships[0]?.Slots;
 
 					// 숙련도max, 개수max 96식함전
-					Datas[0].Set(slotitems.Any(x => x.Item.Info.Id == 19 && x.Item.Level == 10 && x.Item.Proficiency == 7) ? 1 : 0);
+					this.Datas[0].Set(slotitems.Any(x => x.Item.Info.Id == 19 && x.Item.Level == 10 && x.Item.Proficiency == 7) ? 1 : 0);
 				}
 
 				// 훈장

@@ -334,14 +334,14 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 				{
 					tracker.RegisterEvent(this);
 					tracker.ResetQuest();
-					tracker.ProgressChanged += ((x, y) =>
-					{
-						try
-						{
-							QuestsEventChanged?.Invoke(this, _EventArgs.Empty);
-						}
-						catch { }
-					});
+					tracker.ProgressChanged += () =>
+					 {
+						 try
+						 {
+							 QuestsEventChanged?.Invoke(this, _EventArgs.Empty);
+						 }
+						 catch { }
+					 };
 				}
 			};
 		}

@@ -12,9 +12,9 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 {
 	public class DefaultTracker : TrackerBase
 	{
-		public override int Id => throw new NotImplementedException();
-		public override QuestType Type => throw new NotImplementedException();
-		public override TrackingValue[] Datas { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
+		public override int Id => 0;
+		public override QuestType Type => QuestType.None;
+		public override TrackingValue[] Datas { get; protected set; }
 
 		/// <summary>
 		///  Progress text to display
@@ -164,5 +164,8 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 
 			this.Datas[0].Current = Current;
 		}
+
+		public override void UpdateState(QuestProgressType State)
+			=> CheckOverUnder(State);
 	}
 }

@@ -10,7 +10,6 @@ using Grabacr07.KanColleViewer.Models.Settings;
 using Grabacr07.KanColleWrapper.Models;
 using Grabacr07.KanColleViewer.Models.QuestTracker;
 using Grabacr07.KanColleViewer.ViewModels.Contents.Fleets;
-using IdProgressPair =  Grabacr07.KanColleViewer.QuestTracker.Models.Model.IdProgressPair;
 
 namespace Grabacr07.KanColleViewer.ViewModels.Contents
 {

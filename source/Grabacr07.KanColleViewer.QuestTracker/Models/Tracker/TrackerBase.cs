@@ -87,5 +87,11 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 		/// </summary>
 		/// <param name="data"></param>
 		public abstract void SetRawDatas(int[] data);
+
+		/// <summary>
+		/// Update progress state
+		/// </summary>
+		/// <param name="State"></param>
+		public abstract void UpdateState(QuestProgressType State);
 	}
 }

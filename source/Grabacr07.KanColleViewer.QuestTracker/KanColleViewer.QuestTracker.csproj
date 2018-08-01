@@ -33,6 +33,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Nekoxy, Version=1.5.3.21, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nekoxy.1.5.3.21\lib\net45\Nekoxy.dll</HintPath>
     </Reference>
@@ -87,9 +88,6 @@
     <Compile Include="SlotitemCategoryType.cs" />
     <Compile Include="Models\StorageData.cs" />
     <Compile Include="Models\TrackerMapInfo.cs" />
-    <Compile Include="NoOverUnderTracker.cs" />
-    <Compile Include="NoSerializeTracker.cs" />
-    <Compile Include="NoSerializeOverUnderTracker.cs" />
     <Compile Include="SlotItemTracker.cs" />
     <Compile Include="Tracker\B\Bd\Bd1.cs" />
     <Compile Include="Tracker\B\Bd\Bd2.cs" />

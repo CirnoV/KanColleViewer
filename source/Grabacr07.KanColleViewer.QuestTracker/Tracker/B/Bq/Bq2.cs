@@ -14,8 +14,6 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 	/// </summary>
 	internal class Bq2 : DefaultTracker
 	{
-		public event EventHandler ProcessChanged;
-
 		public override int Id => 854;
 		public override QuestType Type => QuestType.Quarterly;
 

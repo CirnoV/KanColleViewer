@@ -202,7 +202,7 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 				);
 
 				// g.FillPath(new SolidBrush(Color.FromArgb(51, color)), path);
-				g.DrawPath(new Pen(color, 2f), path);
+				g.DrawPath(new Pen(color, 1.1f), path);
 			}
 
 			if (GuideLine.HasValue)

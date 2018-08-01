@@ -40,7 +40,11 @@ namespace Grabacr07.KanColleViewer.Models.QuestTracker
 
 		public TrackManager()
 		{
-			trackManager = new Grabacr07.KanColleViewer.QuestTracker.Models.TrackManager(() => KanColleSettings.UseQuestTracker);
+			trackManager = new Grabacr07.KanColleViewer.QuestTracker.Models.TrackManager(
+				() => KanColleSettings.UseQuestTracker,
+				() => GeneralSettings.KcaQSync_Auth,
+				() => GeneralSettings.KcaQSync_Enc
+			);
 
 			var trackers = trackManager.Assembly.GetTypes()
 					.Where(x => (x.Namespace?.StartsWith(TrackerNamespace) ?? false) && typeof(TrackerBase).IsAssignableFrom(x));
@@ -251,7 +255,7 @@ namespace Grabacr07.KanColleViewer.Models.QuestTracker
 				var z = this.TrackingQuests.FirstOrDefault(y => y.Id == x.Id);
 				if (z == null) continue;
 
-				z.CheckOverUnder(x.State == QuestState.Accomplished ? QuestProgressType.Complete : (QuestProgressType)x.Progress);
+				z.UpdateState(x.State == QuestState.Accomplished ? QuestProgressType.Complete : (QuestProgressType)x.Progress);
 			}
 		}
 	}

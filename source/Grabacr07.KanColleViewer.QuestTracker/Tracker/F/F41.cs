@@ -1,26 +1,26 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Grabacr07.KanColleWrapper;
 using Grabacr07.KanColleWrapper.Models;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Extensions;
+using Grabacr07.KanColleViewer.QuestTracker.Extensions;
 
 namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 {
 	/// <summary>
 	/// 해상보급 물자의 조달
 	/// </summary>
-	internal class F41 : NoOverUnderTracker, TrackerBase
+	internal class F41 : NoOverUnderTracker, DefaultTracker
 	{
 		private readonly int max_count = 6;
 		private int count, count_1, count_2, count_3, count_4;
 
 		public event EventHandler ProcessChanged;
 
-		int TrackerBase.Id => 645;
-		public QuestType Type => QuestType.Monthly;
+		public override int Id => 645;
+		public override QuestType Type => QuestType.Monthly;
 		public bool IsTracking { get; set; }
 
 		private System.EventArgs emptyEventArgs = new System.EventArgs();

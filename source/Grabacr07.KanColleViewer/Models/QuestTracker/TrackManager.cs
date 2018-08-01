@@ -17,7 +17,7 @@ using Grabacr07.KanColleWrapper.Models.Raw;
 
 using Grabacr07.KanColleViewer.Models.Settings;
 using Grabacr07.KanColleViewer.QuestTracker.Models;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Model;
+using Grabacr07.KanColleViewer.QuestTracker.Models.Tracker;
 using Grabacr07.KanColleViewer.QuestTracker.Models.EventArgs;
 
 namespace Grabacr07.KanColleViewer.Models.QuestTracker
@@ -28,7 +28,7 @@ namespace Grabacr07.KanColleViewer.Models.QuestTracker
 		private readonly Dictionary<int, DateTime> trackingTime = new Dictionary<int, DateTime>();
 		private static DateTime TokyoDateTime => TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Tokyo Standard Time");
 
-		private KanColleViewer.QuestTracker.Models.TrackManager trackManager;
+		private Grabacr07.KanColleViewer.QuestTracker.Models.TrackManager trackManager;
 		public event EventHandler QuestsEventChanged
 		{
 			add { trackManager.QuestsEventChanged += value; }
@@ -40,7 +40,7 @@ namespace Grabacr07.KanColleViewer.Models.QuestTracker
 
 		public TrackManager()
 		{
-			trackManager = new KanColleViewer.QuestTracker.Models.TrackManager(() => KanColleSettings.UseQuestTracker);
+			trackManager = new Grabacr07.KanColleViewer.QuestTracker.Models.TrackManager(() => KanColleSettings.UseQuestTracker);
 
 			var trackers = trackManager.Assembly.GetTypes()
 					.Where(x => (x.Namespace?.StartsWith(TrackerNamespace) ?? false) && typeof(TrackerBase).IsAssignableFrom(x));

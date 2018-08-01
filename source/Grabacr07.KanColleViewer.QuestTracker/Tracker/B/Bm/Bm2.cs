@@ -1,96 +1,42 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Grabacr07.KanColleWrapper.Models;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Extensions;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Model;
+using Grabacr07.KanColleViewer.QuestTracker.Extensions;
 
 namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 {
 	/// <summary>
 	/// 잠수함대 출격하라!
 	/// </summary>
-	internal class Bm2 : TrackerBase
+	internal class Bm2 : DefaultTracker
 	{
-		private QuestProgressType lastProgress = QuestProgressType.None;
-		private readonly int max_count = 3;
-		private int count;
+		public override int Id => 256;
+		public override QuestType Type => QuestType.Monthly;
 
-		public event EventHandler ProcessChanged;
+		public Bm2()
+		{
+			this.Datas = new TrackingValue[]
+			{
+				new TrackingValue(3, "6-1 보스전 S승리")
+			};
+			this.Attach();
+		}
 
-		int TrackerBase.Id => 256;
-		public QuestType Type => QuestType.Monthly;
-		public bool IsTracking { get; set; }
-
-		private System.EventArgs emptyEventArgs = new System.EventArgs();
-
-		public void RegisterEvent(TrackManager manager)
+		public override void RegisterEvent(TrackManager manager)
 		{
 			manager.BattleResultEvent += (sender, args) =>
 			{
 				if (!IsTracking) return;
 
 				if (args.MapWorldId != 6 || args.MapAreaId != 1) return; // 6-1
-				if ("敵回航中空母" != args.EnemyName) return; // boss
+				if (!args.IsBoss) return; // boss
 				if (args.Rank != "S") return;
 
-				count = count.Add(1).Max(max_count);
-
-				ProcessChanged?.Invoke(this, emptyEventArgs);
+				this.Datas[0].Add(1);
 			};
-		}
-
-		public void ResetQuest()
-		{
-			count = 0;
-			ProcessChanged?.Invoke(this, emptyEventArgs);
-		}
-
-		public int GetProgress()
-		{
-			return count * 100 / max_count;
-		}
-
-		public string ProgressText => count >= max_count ? "완료" : "6-1 보스전 S 승리 " + count.ToString() + " / " + max_count.ToString();
-
-		public string SerializeData()
-		{
-			return count.ToString();
-		}
-
-		public void DeserializeData(string data)
-		{
-			count = 0;
-			int.TryParse(data, out count);
-		}
-
-		public void CheckOverUnder(QuestProgressType progress)
-		{
-			if (lastProgress == progress) return;
-			lastProgress = progress;
-
-			int cut50 = (int)Math.Ceiling(max_count * 0.5);
-			int cut80 = (int)Math.Ceiling(max_count * 0.8);
-
-			switch (progress)
-			{
-				case QuestProgressType.None:
-					if (count >= cut50) count = cut50 - 1;
-					break;
-				case QuestProgressType.Progress50:
-					if (count >= cut80) count = cut80 - 1;
-					else if (count < cut50) count = cut50;
-					break;
-				case QuestProgressType.Progress80:
-					if (count < cut80) count = cut80;
-					break;
-				case QuestProgressType.Complete:
-					count = max_count;
-					break;
-			}
-			ProcessChanged?.Invoke(this, emptyEventArgs);
 		}
 	}
 }

@@ -1,65 +1,40 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Grabacr07.KanColleWrapper.Models;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Extensions;
+using Grabacr07.KanColleViewer.QuestTracker.Extensions;
 
 namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 {
 	/// <summary>
 	/// 수송선단 호위를 강화하라!
 	/// </summary>
-	internal class D22 : NoOverUnderTracker, TrackerBase
+	internal class D22 : DefaultTracker
 	{
-		private readonly int max_count = 4;
-		private int count;
+		public override int Id => 424;
+		public override QuestType Type => QuestType.Monthly;
 
-		public event EventHandler ProcessChanged;
+		public D22()
+		{
+			this.Datas = new TrackingValue[]
+			{
+				new TrackingValue(4, "해상호위임무(5) 원정 성공")
+			};
+			this.Attach();
+		}
 
-		int TrackerBase.Id => 424;
-		public QuestType Type => QuestType.Monthly;
-		public bool IsTracking { get; set; }
-
-		private System.EventArgs emptyEventArgs = new System.EventArgs();
-
-		public void RegisterEvent(TrackManager manager)
+		public override void RegisterEvent(TrackManager manager)
 		{
 			manager.MissionResultEvent += (sender, args) =>
 			{
 				if (!IsTracking) return;
 				if (!args.IsSuccess) return;
+				if (args.Name != "海上護衛任務") return;
 
-				if (args.Name == "海上護衛任務") count = count.Add(1).Max(4);
-
-				ProcessChanged?.Invoke(this, emptyEventArgs);
+				this.Datas[0].Add(1);
 			};
-		}
-
-		public void ResetQuest()
-		{
-			count = 0;
-			ProcessChanged?.Invoke(this, emptyEventArgs);
-		}
-
-		public int GetProgress()
-		{
-			return count * 100 / max_count;
-		}
-
-		public string ProgressText => count >= max_count ? "완료" :
-				"해상호위임무(5) 원정 성공 " + count.ToString() + "/4";
-
-		public string SerializeData()
-		{
-			return count.ToString();
-		}
-
-		public void DeserializeData(string data)
-		{
-			count = 0;
-			int.TryParse(data, out count);
 		}
 	}
 }

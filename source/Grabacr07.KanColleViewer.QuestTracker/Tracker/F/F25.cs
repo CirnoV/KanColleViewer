@@ -1,33 +1,32 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Grabacr07.KanColleWrapper;
 using Grabacr07.KanColleWrapper.Models;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Extensions;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Model;
+using Grabacr07.KanColleViewer.QuestTracker.Extensions;
 
 namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 {
 	/// <summary>
 	/// 기종 전환 (영식 함전 52형(숙련))
 	/// </summary>
-	internal class F25 : TrackerBase
+	internal class F25 : DefaultTracker
 	{
-		private QuestProgressType lastProgress = QuestProgressType.None;
-		private readonly int max_count = 2;
-		private int count;
+		public override int Id => 628;
+		public override QuestType Type => QuestType.Monthly;
 
-		public event EventHandler ProcessChanged;
+		public F25()
+		{
+			this.Datas = new TrackingValue[]
+			{
+				new TrackingValue(2, "기함에 숙련max 영식함전21형(숙련) 장비하고 영식함전52형 폐기")
+			};
+			this.Attach();
+		}
 
-		int TrackerBase.Id => 628;
-		public QuestType Type => QuestType.Monthly;
-		public bool IsTracking { get; set; }
-
-		private System.EventArgs emptyEventArgs = new System.EventArgs();
-
-		public void RegisterEvent(TrackManager manager)
+		public override void RegisterEvent(TrackManager manager)
 		{
 			manager.DestoryItemEvent += (sender, args) =>
 			{
@@ -39,62 +38,8 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 				if (!slotitems.Any(x => x.Item.Info.Id == 96 && x.Item.Proficiency == 7)) return; // 숙련도max 영식 함전 21형(숙련)
 
 				var homeportSlotitems = manager.slotitemTracker.SlotItems;
-				count = count.Add(args.itemList.Count(x => (homeportSlotitems[x]?.Info.Id ?? 0) == 21)) // 영식 함전 52형
-							.Max(max_count);
-
-				ProcessChanged?.Invoke(this, emptyEventArgs);
+				this.Datas[0].Add(args.itemList.Count(x => (homeportSlotitems[x]?.Info.Id ?? 0) == 21)); // 영식 함전 52형
 			};
-		}
-
-		public void ResetQuest()
-		{
-			count = 0;
-			ProcessChanged?.Invoke(this, emptyEventArgs);
-		}
-
-		public int GetProgress()
-		{
-			return count * 100 / max_count;
-		}
-
-		public string ProgressText => count >= max_count ? "완료" : "비서함에 숙련도max 영식 함상전투기 21형(숙련) 장착, 영식 함상전투기 52형 폐기 " + count.ToString() + " / " + max_count.ToString();
-
-		public string SerializeData()
-		{
-			return count.ToString();
-		}
-
-		public void DeserializeData(string data)
-		{
-			count = 0;
-			int.TryParse(data, out count);
-		}
-
-		public void CheckOverUnder(QuestProgressType progress)
-		{
-			if (lastProgress == progress) return;
-			lastProgress = progress;
-
-			int cut50 = (int)Math.Ceiling(max_count * 0.5);
-			int cut80 = (int)Math.Ceiling(max_count * 0.8);
-
-			switch (progress)
-			{
-				case QuestProgressType.None:
-					if (count >= cut50) count = cut50 - 1;
-					break;
-				case QuestProgressType.Progress50:
-					if (count >= cut80) count = cut80 - 1;
-					else if (count < cut50) count = cut50;
-					break;
-				case QuestProgressType.Progress80:
-					if (count < cut80) count = cut80;
-					break;
-				case QuestProgressType.Complete:
-					count = max_count;
-					break;
-			}
-			ProcessChanged?.Invoke(this, emptyEventArgs);
 		}
 	}
 }

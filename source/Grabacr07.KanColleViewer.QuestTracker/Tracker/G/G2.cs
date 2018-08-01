@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Grabacr07.KanColleWrapper.Models;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Extensions;
+using Grabacr07.KanColleViewer.QuestTracker.Extensions;
 using Grabacr07.KanColleViewer.QuestTracker.Models.Model;
 
 namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
@@ -12,7 +12,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 	/// <summary>
 	/// 함선의 근대화개수를 실시하자!
 	/// </summary>
-	internal class G2 : TrackerBase
+	internal class G2 : DefaultTracker
 	{
 		private QuestProgressType lastProgress = QuestProgressType.None;
 		private readonly int max_count = 2;
@@ -20,8 +20,8 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 
 		public event EventHandler ProcessChanged;
 
-		int TrackerBase.Id => 702;
-		public QuestType Type => QuestType.Daily;
+		public override int Id => 702;
+		public override QuestType Type => QuestType.Daily;
 		public bool IsTracking { get; set; }
 
 		private System.EventArgs emptyEventArgs = new System.EventArgs();

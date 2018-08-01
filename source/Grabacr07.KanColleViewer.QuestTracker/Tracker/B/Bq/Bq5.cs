@@ -5,29 +5,30 @@ using System.Text;
 using System.Threading.Tasks;
 using Grabacr07.KanColleWrapper;
 using Grabacr07.KanColleWrapper.Models;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Extensions;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Model;
+using Grabacr07.KanColleViewer.QuestTracker.Extensions;
 
 namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 {
 	/// <summary>
 	/// 북방해역 경계를 실시하라!
 	/// </summary>
-	internal class Bq5 : NoOverUnderTracker, TrackerBase
+	internal class Bq5 : DefaultTracker
 	{
-		private int progress_3_1;
-		private int progress_3_2;
-		private int progress_3_3;
+		public override int Id => 873;
+		public override QuestType Type => QuestType.Quarterly;
 
-		public event EventHandler ProcessChanged;
+		public Bq5()
+		{
+			this.Datas = new TrackingValue[]
+			{
+				new TrackingValue(1, "3-1 보스전 A,S승리"),
+				new TrackingValue(1, "3-2 보스전 A,S승리"),
+				new TrackingValue(1, "3-3 보스전 A,S승리")
+			};
+			this.Attach();
+		}
 
-		int TrackerBase.Id => 873;
-		public QuestType Type => QuestType.Other;
-		public bool IsTracking { get; set; }
-
-		private System.EventArgs emptyEventArgs = new System.EventArgs();
-
-		public void RegisterEvent(TrackManager manager)
+		public override void RegisterEvent(TrackManager manager)
 		{
 			manager.BattleResultEvent += (sender, args) =>
 			{
@@ -37,63 +38,18 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 				var ships = fleet?.Ships;
 				if (ships.Count(x => x.Info.ShipType.Id == 3) < 1) return; // 경순양함
 
+				if (!args.IsBoss) return; // boss
+				if (!"SA".Contains(args.Rank)) return;
+
 				if (args.MapWorldId == 3 && args.MapAreaId == 1)
-				{
-					if (!args.IsBoss) return; // boss
-					if (!"SA".Contains(args.Rank)) return;
-					progress_3_1 = progress_3_1.Add(1).Max(1);
-				}
+					this.Datas[0].Add(1);
+
 				else if (args.MapWorldId == 3 && args.MapAreaId == 2)
-				{
-					if (!args.IsBoss) return; // boss
-					if (!"SA".Contains(args.Rank)) return;
-					progress_3_2 = progress_3_2.Add(1).Max(1);
-				}
+					this.Datas[1].Add(1);
+
 				else if (args.MapWorldId == 3 && args.MapAreaId == 3)
-				{
-					if (!args.IsBoss) return; // boss
-					if (!"SA".Contains(args.Rank)) return;
-					progress_3_3 = progress_3_3.Add(1).Max(1);
-				}
-
-				ProcessChanged?.Invoke(this, emptyEventArgs);
+					this.Datas[2].Add(1);
 			};
-		}
-
-		public void ResetQuest()
-		{
-			progress_3_1 = progress_3_2 = progress_3_3 = 0;
-			ProcessChanged?.Invoke(this, emptyEventArgs);
-		}
-
-		public int GetProgress()
-		{
-			return (progress_3_1 + progress_3_2 + progress_3_3) * 100 / 3;
-		}
-
-		public string ProgressText => (progress_3_1 + progress_3_2 + progress_3_3) >= 3
-				? "완료"
-				: "경순양함 1척 포함 함대로 3-1 보스전 A 승리 이상 " + progress_3_1.ToString() + " / 1, "
-				  + "3-2 보스전 A 승리 이상 " + progress_3_2.ToString() + " / 1, "
-				  + "3-3 보스전 A 승리 이상 " + progress_3_3.ToString() + " / 1";
-
-		public string SerializeData()
-		{
-			return progress_3_1.ToString() + ","
-				+ progress_3_2.ToString() + ","
-				+ progress_3_3.ToString();
-		}
-
-		public void DeserializeData(string data)
-		{
-			var part = data.Split(',');
-			progress_3_1 = progress_3_2 = progress_3_3 = 0;
-
-			if (part.Length != 3) return;
-
-			int.TryParse(part[0], out progress_3_1);
-			int.TryParse(part[1], out progress_3_2);
-			int.TryParse(part[2], out progress_3_3);
 		}
 	}
 }

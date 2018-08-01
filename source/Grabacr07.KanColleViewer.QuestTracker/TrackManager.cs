@@ -18,7 +18,7 @@ using Grabacr07.KanColleWrapper.Models;
 using Grabacr07.KanColleWrapper.Models.Raw;
 
 using Grabacr07.KanColleViewer.QuestTracker.Models;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Model;
+using Grabacr07.KanColleViewer.QuestTracker.Models.Tracker;
 using Grabacr07.KanColleViewer.QuestTracker.Models.EventArgs;
 
 #region Alias

@@ -37,5 +37,10 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// その他。
 		/// </summary>
 		Other = 5,
+
+		/// <summary>
+		/// 分岐任務。
+		/// </summary>
+		Quarterly = 5,
 	}
 }

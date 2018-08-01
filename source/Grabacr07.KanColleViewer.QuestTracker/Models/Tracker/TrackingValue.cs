@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Grabacr07.KanColleViewer.QuestTracker.Extensions;
+
 namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 {
 	public class TrackingValue
@@ -13,10 +15,40 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 		/// </summary>
 		public int Maximum { get; set; }
 
+		private int _Current { get; set; }
+
 		/// <summary>
 		/// Quest part's current value
 		/// </summary>
-		public int Current { get; set; }
+		public int Current
+		{
+			get { return this._Current; }
+			set
+			{
+				if (this._Current != value)
+				{
+					this._Current = value;
+					this.ValueChanged?.Invoke(this, System.EventArgs.Empty);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Quest part's name (Description)
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// <see cref="Currenct"/> has changed
+		/// </summary>
+		public event EventHandler ValueChanged;
+
+		public TrackingValue(int Maximum, string Name = "")
+		{
+			this.Name = Name;
+			this.Maximum = Maximum;
+			this.Current = 0;
+		}
 
 		/// <summary>
 		/// Reset part progress (Set <see cref="Current"/> to 0)
@@ -53,5 +85,14 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 			this.Maximum = _Maximum;
 			this.Current = _Value;
 		}
+
+		public int Set(int Value)
+			=> this.Current = Value.Min(0).Max(this.Maximum);
+
+		public int Add(int Value)
+			=> this.Current = this.Current.Add(Value).Max(this.Maximum);
+
+		public int Subtract(int Value)
+			=> this.Current = this.Current.Subtract(Value).Min(0);
 	}
 }

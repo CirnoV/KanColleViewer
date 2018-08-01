@@ -1,38 +1,37 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Grabacr07.KanColleWrapper;
 using Grabacr07.KanColleWrapper.Models;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Model;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Extensions;
+using Grabacr07.KanColleViewer.QuestTracker.Extensions;
 
 namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 {
 	/// <summary>
 	/// 숙련승무원 양성
 	/// </summary>
-	internal class F35 : NoSerializeTracker, TrackerBase
+	internal class F35 : DefaultTracker
 	{
-		private QuestProgressType lastProgress = QuestProgressType.None;
-		private readonly int max_count = 1;
-		private int count;
+		public override int Id => 637;
+		public override QuestType Type => QuestType.Quarterly; // 계절
 
-		public event EventHandler ProcessChanged;
+		public F35()
+		{
+			this.Datas = new TrackingValue[]
+			{
+				new TrackingValue(1, "호쇼 기함, 숙련max 개수max 96식함전 장비"),
+				new TrackingValue(2, "훈장2개 소지")
+			};
+			this.Attach();
+		}
 
-		int TrackerBase.Id => 637;
-		public QuestType Type => QuestType.Other; // 계절
-		public bool IsTracking { get; set; }
-
-		private System.EventArgs emptyEventArgs = new System.EventArgs();
-
-		public void RegisterEvent(TrackManager manager)
+		public override void RegisterEvent(TrackManager manager)
 		{
 			EventHandler handler = (sender, args) =>
 			{
 				if (!IsTracking) return;
-				count = 0;
 
 				var flagshipTable = new int[]
 				{
@@ -40,58 +39,27 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 					285, // 鳳翔改
 				};
 
+				this.Datas[0].Set(0);
+				this.Datas[1].Set(0);
+
 				var fleet = KanColleClient.Current.Homeport.Organization.Fleets[1];
-				if (!flagshipTable.Any(x => x == (fleet?.Ships[0]?.Info.Id ?? 0))) return; // 호쇼 기함
+				var items = KanColleClient.Current.Homeport.Itemyard.UseItems;
 
-				var slotitems = fleet?.Ships[0]?.Slots;
-				if (!slotitems.Any(x => x.Item.Info.Id == 19 && x.Item.Level == 10 && x.Item.Proficiency == 7)) return;
-				// 숙련도max, 개수max 96식함전
+				// 호쇼 기함
+				if (flagshipTable.Any(x => x == (fleet?.Ships[0]?.Info.Id ?? 0)))
+				{
+					var slotitems = fleet?.Ships[0]?.Slots;
 
-				count = 1;
-				ProcessChanged?.Invoke(this, emptyEventArgs);
+					// 숙련도max, 개수max 96식함전
+					Datas[0].Set(slotitems.Any(x => x.Item.Info.Id == 19 && x.Item.Level == 10 && x.Item.Proficiency == 7) ? 1 : 0);
+				}
+
+				// 훈장
+				if (items.Any(x => x.Value.Id == 57))
+					this.Datas[1].Set(items.First(x => x.Value.Id == 57).Value.Count);
 			};
 			manager.HenseiEvent += handler;
 			manager.EquipEvent += handler;
-		}
-
-		public void ResetQuest()
-		{
-			count = 0;
-			ProcessChanged?.Invoke(this, emptyEventArgs);
-		}
-
-		public int GetProgress()
-		{
-			return count * 100 / max_count;
-		}
-
-		public string ProgressText => count >= max_count ? "완료" : "호쇼 기함, 숙련도max 개수max 96식 함상전투기 장착, 훈장 2개 소지 " + count.ToString() + " / " + max_count.ToString();
-
-		public void CheckOverUnder(QuestProgressType progress)
-		{
-			if (lastProgress == progress) return;
-			lastProgress = progress;
-
-			int cut50 = (int)Math.Ceiling(max_count * 0.5);
-			int cut80 = (int)Math.Ceiling(max_count * 0.8);
-
-			switch (progress)
-			{
-				case QuestProgressType.None:
-					if (count >= cut50) count = cut50 - 1;
-					break;
-				case QuestProgressType.Progress50:
-					if (count >= cut80) count = cut80 - 1;
-					else if (count < cut50) count = cut50;
-					break;
-				case QuestProgressType.Progress80:
-					if (count < cut80) count = cut80;
-					break;
-				case QuestProgressType.Complete:
-					count = max_count;
-					break;
-			}
-			ProcessChanged?.Invoke(this, emptyEventArgs);
 		}
 	}
 }

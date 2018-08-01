@@ -74,8 +74,8 @@
     <Compile Include="FleetData.cs" />
     <Compile Include="FleetType.cs" />
     <Compile Include="Formation.cs" />
-    <Compile Include="Models\Tracker\ITracker.cs" />
     <Compile Include="Models\Tracker\TrackerBase.cs" />
+    <Compile Include="Models\Tracker\DefaultTracker.cs" />
     <Compile Include="Models\BattleCalcaultor.cs" />
     <Compile Include="Models\HTTPRequest.cs" />
     <Compile Include="Models\IdProgressPair.cs" />
@@ -112,6 +112,7 @@
     <Compile Include="Tracker\B\Bq\Bq4.cs" />
     <Compile Include="Tracker\B\Bq\Bq5.cs" />
     <Compile Include="Tracker\B\Bq\Bq6.cs" />
+    <Compile Include="Tracker\B\Bq\Bq7.cs" />
     <Compile Include="Tracker\B\Bw\Bw1.cs" />
     <Compile Include="Tracker\B\Bw\Bw10.cs" />
     <Compile Include="Tracker\B\Bw\Bw2.cs" />

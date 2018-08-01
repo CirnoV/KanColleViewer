@@ -1,32 +1,31 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Grabacr07.KanColleWrapper.Models;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Extensions;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Model;
+using Grabacr07.KanColleViewer.QuestTracker.Extensions;
 
 namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 {
 	/// <summary>
 	/// 남방쥐수송을 계속 실시하라!
 	/// </summary>
-	internal class D11 : TrackerBase
+	internal class D11 : DefaultTracker
 	{
-		private QuestProgressType lastProgress = QuestProgressType.None;
-		private readonly int max_count = 6;
-		private int count;
+		public override int Id => 411;
+		public override QuestType Type => QuestType.Weekly;
 
-		public event EventHandler ProcessChanged;
+		public D11()
+		{
+			this.Datas = new TrackingValue[]
+			{
+				new TrackingValue(6, "도쿄급행/도쿄급행(弐) 원정 성공")
+			};
+			this.Attach();
+		}
 
-		int TrackerBase.Id => 411;
-		public QuestType Type => QuestType.Weekly;
-		public bool IsTracking { get; set; }
-
-		private System.EventArgs emptyEventArgs = new System.EventArgs();
-
-		public void RegisterEvent(TrackManager manager)
+		public override void RegisterEvent(TrackManager manager)
 		{
 			manager.MissionResultEvent += (sender, args) =>
 			{
@@ -34,61 +33,8 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 				if (!args.IsSuccess) return;
 				if (!args.Name.Contains("東京急行")) return;
 
-				count = count.Add(1).Max(max_count);
-
-				ProcessChanged?.Invoke(this, emptyEventArgs);
+				this.Datas[0].Add(1);
 			};
-		}
-
-		public void ResetQuest()
-		{
-			count = 0;
-			ProcessChanged?.Invoke(this, emptyEventArgs);
-		}
-
-		public int GetProgress()
-		{
-			return count * 100 / max_count;
-		}
-
-		public string ProgressText => count >= max_count ? "완료" : "도쿄급행/도쿄급행(弐) 원정 성공 " + count.ToString() + " / " + max_count.ToString();
-
-		public string SerializeData()
-		{
-			return count.ToString();
-		}
-
-		public void DeserializeData(string data)
-		{
-			count = 0;
-			int.TryParse(data, out count);
-		}
-
-		public void CheckOverUnder(QuestProgressType progress)
-		{
-			if (lastProgress == progress) return;
-			lastProgress = progress;
-
-			int cut50 = (int)Math.Ceiling(max_count * 0.5);
-			int cut80 = (int)Math.Ceiling(max_count * 0.8);
-
-			switch (progress)
-			{
-				case QuestProgressType.None:
-					if (count >= cut50) count = cut50 - 1;
-					break;
-				case QuestProgressType.Progress50:
-					if (count >= cut80) count = cut80 - 1;
-					else if (count < cut50) count = cut50;
-					break;
-				case QuestProgressType.Progress80:
-					if (count < cut80) count = cut80;
-					break;
-				case QuestProgressType.Complete:
-					count = max_count;
-					break;
-			}
-			ProcessChanged?.Invoke(this, emptyEventArgs);
 		}
 	}
 }

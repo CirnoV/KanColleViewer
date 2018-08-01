@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +10,9 @@ namespace Grabacr07.KanColleWrapper.Models
 	/// </summary>
 	public enum QuestType
 	{
+		None = 0,
+		Unknown = 0,
+
 		/// <summary>
 		/// デイリー任務。
 		/// </summary>

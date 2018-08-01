@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -144,7 +144,7 @@ namespace Grabacr07.KanColleWrapper.Models
 			{ 117, new Experience(117, 1000000, 12000000) },
 			{ 118, new Experience(118, 1000000, 13000000) },
 			{ 119, new Experience(119, 1000000, 14000000) },
-			{ 120, new Experience(120, 0, 15000000) }
+			{ 120, new Experience(120, 180000000, 15000000) }
 		};
 
 		#endregion

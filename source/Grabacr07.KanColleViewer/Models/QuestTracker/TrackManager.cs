@@ -35,19 +35,19 @@ namespace Grabacr07.KanColleViewer.Models.QuestTracker
 			remove { trackManager.QuestsEventChanged -= value; }
 		}
 
-		public List<ITracker> TrackingQuests => trackManager?.TrackingQuests;
-		public List<ITracker> AllQuests => trackManager?.AllQuests;
+		public List<TrackerBase> TrackingQuests => trackManager?.TrackingQuests;
+		public List<TrackerBase> AllQuests => trackManager?.AllQuests;
 
 		public TrackManager()
 		{
 			trackManager = new KanColleViewer.QuestTracker.Models.TrackManager(() => KanColleSettings.UseQuestTracker);
 
 			var trackers = trackManager.Assembly.GetTypes()
-					.Where(x => (x.Namespace?.StartsWith(TrackerNamespace) ?? false) && typeof(ITracker).IsAssignableFrom(x));
+					.Where(x => (x.Namespace?.StartsWith(TrackerNamespace) ?? false) && typeof(TrackerBase).IsAssignableFrom(x));
 
 			foreach (var tracker in trackers)
 			{
-				try { trackManager?.trackingAvailable.Add((ITracker)Activator.CreateInstance(tracker)); }
+				try { trackManager?.trackingAvailable.Add((TrackerBase)Activator.CreateInstance(tracker)); }
 				catch { }
 			}
 

@@ -75,6 +75,7 @@
     <Compile Include="FleetData.cs" />
     <Compile Include="FleetType.cs" />
     <Compile Include="Formation.cs" />
+    <Compile Include="Models\RSA.cs" />
     <Compile Include="Models\Tracker\TrackerBase.cs" />
     <Compile Include="Models\Tracker\DefaultTracker.cs" />
     <Compile Include="Models\BattleCalcaultor.cs" />

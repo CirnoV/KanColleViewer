@@ -241,33 +241,14 @@
 					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
 
-				<TextBlock Grid.ColumnSpan="2"
-						   Margin="0,0,0,10">
-					<metro2:HyperlinkEx Uri="http://kcaqsync.swaytwig.com">
-						<Run Text="http://kcaqsync.swaytwig.com" />
-					</metro2:HyperlinkEx>
-					<Run Text="를 통해 인증 키와 암호화 키를 받아 아래에 입력합니다." />
-				</TextBlock>
-
 				<TextBlock Grid.Column="0"
 						   Grid.Row="1"
-						   Margin="0,5,0,0"
-						   Text="인증 키:" />
+						   Text="패스워드:" />
 				<metro:PromptTextBox Grid.Row="1"
 									 Grid.Column="1"
-									 Margin="10,5,0,0"
-									 Text="{Binding Source={x:Static ms:GeneralSettings.KcaQSync_Auth}, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-									 Prompt="Authorization Key" />
-
-				<TextBlock Grid.Column="0"
-						   Grid.Row="2"
-						   Margin="0,5,0,0"
-						   Text="암호화 키:" />
-				<metro:PromptTextBox Grid.Row="2"
-									 Grid.Column="1"
-									 Margin="10,5,0,0"
-									 Text="{Binding Source={x:Static ms:GeneralSettings.KcaQSync_Enc}, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-									 Prompt="Encryption Key" />
+									 Margin="10,0,0,0"
+									 Text="{Binding Source={x:Static ms:GeneralSettings.KcaQSync_Password}, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+									 Prompt="패스워드" />
 			</Grid>
 
 			<Rectangle Style="{DynamicResource SeparatorStyleKey}" />

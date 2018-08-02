@@ -74,7 +74,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 			catch { }
 		}
 
-		public TrackManager(Func<bool> PreprocessCheck, Func<string> KcaQSync_Auth, Func<string> KcaQSync_Enc)
+		public TrackManager(Func<bool> PreprocessCheck, Func<string> KcaQSync_Pass)
 		{
 			this.PreprocessCheck = PreprocessCheck;
 
@@ -86,44 +86,38 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 			slotitemTracker = new SlotItemTracker(homeport, proxy);
 
 			// 동기화
-			proxy.api_start2.TryParse()
-				.Where(x => x.IsSuccess)
-				.Subscribe(x =>
-				{
-					var enc37 = new Func<int, string>(input =>
+			{
+				var pass = KcaQSync_Pass?.Invoke();
+				if (string.IsNullOrEmpty(pass)) return;
+
+				var data = string.Format(
+					"{{\"userid\":{0}}}",
+					KanColleClient.Current.Homeport.Admiral.RawData.api_member_id
+				);
+
+				HTTPRequest.PostAsync(
+					"http://kcaqsync.swaytwig.com/api/read",
+					"password=" + WebUtility.UrlEncode(pass) + "&data=" + WebUtility.UrlEncode(RSA.Encrypt(data)),
+					y =>
 					{
-						var table = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ=";
-						var output = "";
-						do
-						{
-							var pos = Math.Min(table.Length - 1, input);
-							output += table[pos];
-							input -= pos;
-						} while (input > 0);
-						return output;
-					});
-
-					var auth = KcaQSync_Auth?.Invoke();
-					var enc = KcaQSync_Enc?.Invoke();
-					if (string.IsNullOrEmpty(auth) || string.IsNullOrEmpty(enc)) return;
-
-					var data = string.Format(
-						"{{\"userid\":{0}}}",
-						KanColleClient.Current.Homeport.Admiral.RawData.api_member_id
-					);
-
-					HTTPRequest.PostAsync(
-						"http://kcaqsync.swaytwig.com/api/get",
-						"auth=" + WebUtility.UrlEncode(auth) + "&data=" + WebUtility.UrlEncode(data),
-						y =>
-						{
-							var json = Codeplex.Data.DynamicJson.Parse(y);
-							ApplySyncData(json.data.ToString());
-						}
-					);
-				});
+						var json = Codeplex.Data.DynamicJson.Parse(y);
+						ApplySyncData(json.data.ToString());
+					}
+				);
+			}
 			this.QuestsEventChanged += (s, e) =>
 			{
+				var enc36 = new Func<int, string>(input =>
+				{
+					var table = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ=";
+					var output = "";
+					do
+					{
+						output = table[input % 36] + output;
+						input /= 36;
+					} while (input > 0);
+					return output;
+				});
 				var enc37 = new Func<int, string>(input =>
 				{
 					var table = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ=";
@@ -137,16 +131,18 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 					return output;
 				});
 
-				var auth = KcaQSync_Auth?.Invoke();
-				var enc = KcaQSync_Enc?.Invoke();
-				if (string.IsNullOrEmpty(auth) || string.IsNullOrEmpty(enc)) return;
+				var pass = KcaQSync_Pass?.Invoke();
+				if (string.IsNullOrEmpty(pass)) return;
 
 				var data = "";
 				foreach (var item in this.trackingAvailable)
 				{
+					if (item.GetType() == typeof(DefaultTracker)) continue;
+					if (item.GetRawDatas().All(x => x == 0) && !item.IsTracking) continue;
+
 					var content =
 						(item.IsTracking ? "1" : "0")
-						+ enc37(item.Id).PadLeft(2, '0')
+						+ enc36(item.Id).PadLeft(2, '0')
 						+ string.Join("", item.GetRawDatas().Select(enc37));
 
 					data += enc37(content.Length) + content;
@@ -159,7 +155,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 
 				HTTPRequest.PostAsync(
 					"http://kcaqsync.swaytwig.com/api/write",
-					"auth=" + WebUtility.UrlEncode(auth) + "&data=" + WebUtility.UrlEncode(data),
+					"password=" + WebUtility.UrlEncode(pass) + "&data=" + WebUtility.UrlEncode(RSA.Encrypt(data)),
 					y => { }
 				);
 			};

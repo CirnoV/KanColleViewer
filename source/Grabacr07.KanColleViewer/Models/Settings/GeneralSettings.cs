@@ -64,15 +64,9 @@ namespace Grabacr07.KanColleViewer.Models.Settings
 			= new SerializableProperty<string>(GetKey(), Providers.Viewer, "") { AutoSave = true };
 
 		/// <summary>
-		/// KcaQSync 동기화를 위한 Authorization 키
+		/// KcaQSync 동기화를 위한 패스워드
 		/// </summary>
-		public static SerializableProperty<string> KcaQSync_Auth { get; }
-			= new SerializableProperty<string>(GetKey(), Providers.Viewer, "") { AutoSave = true };
-
-		/// <summary>
-		/// KcaQSync 동기화를 위한 Encryption 키
-		/// </summary>
-		public static SerializableProperty<string> KcaQSync_Enc { get; }
+		public static SerializableProperty<string> KcaQSync_Password { get; }
 			= new SerializableProperty<string>(GetKey(), Providers.Viewer, "") { AutoSave = true };
 
 		private static string GetKey([CallerMemberName] string propertyName = "")

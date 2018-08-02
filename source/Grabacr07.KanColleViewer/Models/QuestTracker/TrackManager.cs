@@ -42,8 +42,7 @@ namespace Grabacr07.KanColleViewer.Models.QuestTracker
 		{
 			trackManager = new Grabacr07.KanColleViewer.QuestTracker.Models.TrackManager(
 				() => KanColleSettings.UseQuestTracker,
-				() => GeneralSettings.KcaQSync_Auth,
-				() => GeneralSettings.KcaQSync_Enc
+				() => GeneralSettings.KcaQSync_Password
 			);
 
 			var trackers = trackManager.Assembly.GetTypes()

@@ -97,7 +97,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 
 				HTTPRequest.PostAsync(
 					"http://kcaqsync.swaytwig.com/api/read",
-					"password=" + WebUtility.UrlEncode(pass) + "&data=" + WebUtility.UrlEncode(RSA.Encrypt(data)),
+					"pass=" + WebUtility.UrlEncode(pass) + "&data=" + WebUtility.UrlEncode(RSA.Encrypt(data)),
 					y =>
 					{
 						var json = Codeplex.Data.DynamicJson.Parse(y);
@@ -155,7 +155,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 
 				HTTPRequest.PostAsync(
 					"http://kcaqsync.swaytwig.com/api/write",
-					"password=" + WebUtility.UrlEncode(pass) + "&data=" + WebUtility.UrlEncode(RSA.Encrypt(data)),
+					"pass=" + WebUtility.UrlEncode(pass) + "&data=" + WebUtility.UrlEncode(RSA.Encrypt(data)),
 					y => { }
 				);
 			};

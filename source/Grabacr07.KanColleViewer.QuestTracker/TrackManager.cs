@@ -383,6 +383,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 				var tracker = this.trackingAvailable.FirstOrDefault(x => x.Id == item.Id);
 				if (tracker == null) continue;
 
+				tracker.IsTracking = item.Active; // Needed?
 				tracker.SetRawDatas(item.Count);
 			}
 			return true;

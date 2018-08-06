@@ -54,16 +54,52 @@ namespace Grabacr07.KanColleViewer.Models.QuestTracker
 				catch { }
 			}
 
+			var proxy = KanColleClient.Current.Proxy;
+			proxy.ApiSessionSource
+				.Where(x => x.Request.PathAndQuery == "/kcsapi/api_req_quest/clearitemget")
+				.TryParse()
+				.Where(x => x.IsSuccess)
+				.Subscribe(x =>
+				{
+					int q_id;
+					if (!int.TryParse(x.Request["api_quest_id"], out q_id)) return;
+					StopQuest(q_id, true);
+				});
+
+			proxy.ApiSessionSource
+				.Where(x => x.Request.PathAndQuery == "/kcsapi/api_req_quest/stop")
+				.TryParse()
+				.Where(x => x.IsSuccess)
+				.Subscribe(x =>
+				{
+					int q_id;
+					if (!int.TryParse(x.Request["api_quest_id"], out q_id)) return;
+					StopQuest(q_id);
+				});
+
 			this.QuestsEventChanged += (s, e) => WriteToStorage();
 			ReadFromStorage();
 			WriteToStorage();
 
 			var quests = KanColleClient.Current.Homeport.Quests;
-			quests.PropertyChanged += (s, e) => {
+			quests.PropertyChanged += async (s, e) => {
 				if (e.PropertyName == nameof(quests.All))
-					new System.Threading.Thread(ProcessQuests).Start();
+					await Task.Run(() => ProcessQuests());
 			};
 		}
+
+		private void StopQuest(int quest, bool Cleared = false)
+		{
+			var tracker = trackManager?.trackingAvailable.FirstOrDefault(t => t.Id == quest);
+			if (tracker == default(TrackerBase)) return; // 추적할 수 없는 임무
+
+			tracker.IsTracking = false;
+			if (Cleared) tracker.ResetQuest();
+
+			trackManager?.RefreshTrackers();
+			WriteToStorage();
+		}
+
 		private void ProcessQuests()
 		{
 			var quests = KanColleClient.Current.Homeport.Quests;
@@ -131,21 +167,23 @@ namespace Grabacr07.KanColleViewer.Models.QuestTracker
 			switch (type)
 			{
 				case QuestType.OneTime:
-				case QuestType.Other:
 					return true;
 
 				case QuestType.Daily:
-					return time.Date == no.Date;
+					return (time.Date == no.Date);
 
 				case QuestType.Weekly:
 					var cal = CultureInfo.CreateSpecificCulture("ar-AE").Calendar;
 					var w_time = cal.GetWeekOfYear(time, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
 					var w_now = cal.GetWeekOfYear(no, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
 
-					return w_time == w_now && time.Year == no.Year;
+					return (w_time == w_now) && (time.Year == no.Year);
 
 				case QuestType.Monthly:
-					return time.Month == no.Month && time.Year == no.Year;
+					return (time.Month == no.Month) && (time.Year == no.Year);
+
+				case QuestType.Quarterly:
+					return ((time.Month / 4) == (no.Month / 4)) && (time.Year == no.Year);
 
 				default:
 					return false;
@@ -204,7 +242,7 @@ namespace Grabacr07.KanColleViewer.Models.QuestTracker
 		}
 		private void ReadFromStorage()
 		{
-			var baseDir = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+			var baseDir = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
 			string path = Path.Combine(baseDir, "TrackingQuest.csv");
 			if (!File.Exists(path)) return;
 

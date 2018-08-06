@@ -144,7 +144,8 @@ namespace Grabacr07.KanColleWrapper.Models
 			{ 117, new Experience(117, 1000000, 12000000) },
 			{ 118, new Experience(118, 1000000, 13000000) },
 			{ 119, new Experience(119, 1000000, 14000000) },
-			{ 120, new Experience(120, 180000000, 15000000) }
+			{ 120, new Experience(120, 165000000, 15000000) },
+			{ 121, new Experience(121, 0, 180000000) },
 		};
 
 		#endregion
@@ -329,7 +330,9 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// <param name="currentExperience">艦隊司令部の現在の経験値。</param>
 		/// <returns><paramref name="currentLevel" /> から次のレベルに上がるために必要となる経験値。</returns>
 		public static int GetAdmiralExpForNextLevel(int currentLevel, int currentExperience)
-			=> admiralTable.ContainsKey(currentLevel + 1) ? admiralTable[currentLevel + 1].Total - currentExperience : 0;
+			=> admiralTable.ContainsKey(currentLevel)
+				? admiralTable[currentLevel].Total + admiralTable[currentLevel].Next - currentExperience
+				: 0;
 
 		/// <summary>
 		/// 艦娘において、指定したレベルに上がるために必要な経験値を取得します。

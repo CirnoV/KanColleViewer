@@ -1,4 +1,4 @@
-﻿<metro:MetroWindow x:Class="Grabacr07.KanColleViewer.Views.Catalogs.ExpeditionsCatalogWindow"
+<metro:MetroWindow x:Class="Grabacr07.KanColleViewer.Views.Catalogs.ExpeditionsCatalogWindow"
 				   x:Name="GlowMetroWindow"
 				   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 				   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -197,7 +197,7 @@
 								</GridViewColumnHeader>
 								<GridViewColumn.CellTemplate>
 									<DataTemplate>
-										<TextBlock FontFamily="Segoe UI" Margin="6,3,0,3" Text="{Binding ID}"/>
+										<TextBlock FontFamily="Segoe UI" Margin="6,3,0,3" Text="{Binding DisplayId}"/>
 									</DataTemplate>
 								</GridViewColumn.CellTemplate>
 							</GridViewColumn>

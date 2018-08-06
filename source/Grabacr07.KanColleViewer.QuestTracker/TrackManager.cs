@@ -88,22 +88,24 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 			// 동기화
 			{
 				var pass = KcaQSync_Pass?.Invoke();
-				if (string.IsNullOrEmpty(pass)) return;
+				if (!string.IsNullOrEmpty(pass))
+				{
 
-				var data = string.Format(
-					"{{\"userid\":{0}}}",
-					KanColleClient.Current.Homeport.Admiral.RawData.api_member_id
-				);
+					var data = string.Format(
+						"{{\"userid\":{0}}}",
+						KanColleClient.Current.Homeport.Admiral.RawData.api_member_id
+					);
 
-				HTTPRequest.PostAsync(
-					"http://kcaqsync.swaytwig.com/api/read",
-					"pass=" + WebUtility.UrlEncode(pass) + "&data=" + WebUtility.UrlEncode(RSA.Encrypt(data)),
-					y =>
-					{
-						var json = Codeplex.Data.DynamicJson.Parse(y);
-						ApplySyncData(json.data.ToString());
-					}
-				);
+					HTTPRequest.PostAsync(
+						"http://kcaqsync.swaytwig.com/api/read",
+						"pass=" + WebUtility.UrlEncode(pass) + "&data=" + WebUtility.UrlEncode(RSA.Encrypt(data)),
+						y =>
+						{
+							var json = Codeplex.Data.DynamicJson.Parse(y);
+							ApplySyncData(json.data.ToString());
+						}
+					);
+				}
 			}
 			this.QuestsEventChanged += (s, e) =>
 			{

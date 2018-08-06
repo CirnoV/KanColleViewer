@@ -1,4 +1,4 @@
-﻿using Grabacr07.KanColleWrapper;
+using Grabacr07.KanColleWrapper;
 using MetroTrilithon.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -58,6 +58,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 				ExpeditionData temp = new ExpeditionData
 				{
 					ID = i,
+					DisplayId = KanColleClient.Current.Translations.GetExpeditionData("DisplayID", i),
 					TRName = KanColleClient.Current.Translations.GetExpeditionData("TR-Name", i),
 					FlagLv = KanColleClient.Current.Translations.GetExpeditionData("FlagLv", i),
 					NeedShip = KanColleClient.Current.Translations.GetExpeditionData("NeedShip", i),
@@ -68,6 +69,8 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 					Bo = ConvertToDecimal(KanColleClient.Current.Translations.GetExpeditionData("Bo", i)),
 					Detail = KanColleClient.Current.Translations.GetExpeditionData("Detail", i),
 				};
+				if (string.IsNullOrEmpty(temp.DisplayId)) temp.DisplayId = temp.ID.ToString();
+
 				if (temp.FlagLv != string.Empty && temp.FlagLv != "-") temp.FlagLv = "Lv. " + temp.FlagLv;
 				if (temp.Time != string.Empty)
 				{
@@ -112,6 +115,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 	public class ExpeditionData
 	{
 		public int ID { get; set; }
+		public string DisplayId { get; set; }
 		public string TRName { get; set; }
 		public string FlagLv { get; set; }
 		public string NeedShip { get; set; }

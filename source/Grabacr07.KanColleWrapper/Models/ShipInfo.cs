@@ -143,6 +143,50 @@ namespace Grabacr07.KanColleWrapper.Models
 		public int? NextRemodelingLevel => !this.RemodelingExists ? null : (int?)this.RawData.api_afterlv;
 
 		/// <summary>
+		/// 次の改造に必要なアイテムリスト。
+		/// </summary>
+		public string NextRemodelingItems =>
+			string.Join(
+				", ",
+				new string[]
+				{
+					this.RequireBlueprints > 0 ? string.Format("개장설계도 x{0}", this.RequireBlueprints) : "",
+					this.RequireCatapults > 0 ? string.Format("시제 캐터펄트 x{0}", this.RequireCatapults) : "",
+					this.RequireReports > 0 ? string.Format("전투상보 x{0}", this.RequireReports) : "",
+				}
+				.Where(x => x.Length > 0)
+			);
+
+		public int RequireBlueprints
+		{
+			get
+			{
+				return KanColleClient.Current.Master.RawData.api_mst_shipupgrade
+					.FirstOrDefault(x => x.api_current_ship_id == this.Id)
+					?.api_drawing_count ?? 0;
+			}
+		}
+		public int RequireCatapults
+		{
+			get
+			{
+				return KanColleClient.Current.Master.RawData.api_mst_shipupgrade
+					.FirstOrDefault(x => x.api_current_ship_id == this.Id)
+					?.api_catapult_count ?? 0;
+			}
+		}
+		public int RequireReports
+		{
+			get
+			{
+				return KanColleClient.Current.Master.RawData.api_mst_shipupgrade
+					.FirstOrDefault(x => x.api_current_ship_id == this.Id)
+					?.api_report_count ?? 0;
+			}
+		}
+
+
+		/// <summary>
 		/// 개장이 존재하는지 여부
 		/// </summary>
 		public bool RemodelingExists => this.RawData.api_afterlv > 0;

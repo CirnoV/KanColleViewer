@@ -21,6 +21,8 @@ using Grabacr07.KanColleViewer.QuestTracker.Models;
 using Grabacr07.KanColleViewer.QuestTracker.Models.Tracker;
 using Grabacr07.KanColleViewer.QuestTracker.Models.EventArgs;
 
+using DynamicJson = Codeplex.Data.DynamicJson;
+
 #region Alias
 using practice_battle = Grabacr07.KanColleWrapper.Models.Raw.kcsapi_sortie_battle;
 using battle_midnight_sp_midnight = Grabacr07.KanColleWrapper.Models.Raw.kcsapi_sortie_battle_midnight;
@@ -90,19 +92,17 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 				var pass = KcaQSync_Pass?.Invoke();
 				if (!string.IsNullOrEmpty(pass))
 				{
-
-					var data = string.Format(
-						"{{\"userid\":{0}}}",
-						KanColleClient.Current.Homeport.Admiral.RawData.api_member_id
-					);
-
+					var json = DynamicJson.Serialize(new {
+						userid = KanColleClient.Current.Homeport.Admiral.RawData.api_member_id,
+						pass = pass
+					});
 					HTTPRequest.PostAsync(
 						"http://kcaqsync.swaytwig.com/api/read",
-						"pass=" + WebUtility.UrlEncode(pass) + "&data=" + WebUtility.UrlEncode(RSA.Encrypt(data)),
+						"data=" + WebUtility.UrlEncode(RSA.Encrypt(json)),
 						y =>
 						{
-							var json = Codeplex.Data.DynamicJson.Parse(y);
-							ApplySyncData(json.data.ToString());
+							var result = DynamicJson.Parse(y);
+							ApplySyncData(result.data.ToString());
 						}
 					);
 				}
@@ -149,15 +149,16 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 
 					data += enc37(content.Length) + content;
 				}
-				data = string.Format(
-					"{{\"userid\":{0},\"data\":\"{1}\"}}",
-					KanColleClient.Current.Homeport.Admiral.RawData.api_member_id,
-					data
-				);
 
+				var json = DynamicJson.Serialize(new
+				{
+					userid = KanColleClient.Current.Homeport.Admiral.RawData.api_member_id,
+					pass = pass,
+					data = data
+				});
 				HTTPRequest.PostAsync(
 					"http://kcaqsync.swaytwig.com/api/write",
-					"pass=" + WebUtility.UrlEncode(pass) + "&data=" + WebUtility.UrlEncode(RSA.Encrypt(data)),
+					"data=" + WebUtility.UrlEncode(RSA.Encrypt(json)),
 					y => { }
 				);
 			};

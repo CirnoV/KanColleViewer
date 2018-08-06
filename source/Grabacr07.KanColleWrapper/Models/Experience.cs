@@ -144,7 +144,7 @@ namespace Grabacr07.KanColleWrapper.Models
 			{ 117, new Experience(117, 1000000, 12000000) },
 			{ 118, new Experience(118, 1000000, 13000000) },
 			{ 119, new Experience(119, 1000000, 14000000) },
-			{ 120, new Experience(120, 65000000, 15000000) },
+			{ 120, new Experience(120, 165000000, 15000000) },
 			{ 121, new Experience(121, 0, 180000000) },
 		};
 

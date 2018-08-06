@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Grabacr07.KanColleViewer.Views.Contents.Overview"
+<UserControl x:Class="Grabacr07.KanColleViewer.Views.Contents.Overview"
 			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
@@ -156,6 +156,9 @@
 										<Run Text="다음 개장레벨:" />
 										<Run Text="{Binding Ship.Info.NextRemodelingLevel, Mode=OneWay}" />
 										<LineBreak />
+										<Run Text="- 필요:" />
+										<Run Text="{Binding Ship.Info.NextRemodelingItems, Mode=OneWay}" />
+										<LineBreak />
 										<Run Text="남은 경험치:" />
 										<Run Text="{Binding Ship.ExpForNextRemodelingLevel, Mode=OneWay}" />
 										<LineBreak />
@@ -173,6 +176,7 @@
 																	<TextBlock Style="{DynamicResource DefaultTextStyleKey}"
 																			Foreground="White">
 																	<Run Text="다음 개장이 없습니다" />
+																	<LineBreak />
 																	<LineBreak />
 																	<LineBreak />
 																	<Run Text="누적 경험치:" />
@@ -195,6 +199,9 @@
 																		<TextBlock Style="{DynamicResource DefaultTextStyleKey}"
 																			Foreground="White">
 																		<Run Text="개장 가능합니다" />
+																		<LineBreak />
+																		<Run Text="- 필요:" />
+																		<Run Text="{Binding Ship.Info.NextRemodelingItems, Mode=OneWay}" />
 																		<LineBreak />
 																		<LineBreak />
 																		<Run Text="누적 경험치:" />

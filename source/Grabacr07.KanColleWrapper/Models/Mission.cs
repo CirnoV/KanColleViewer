@@ -15,6 +15,15 @@ namespace Grabacr07.KanColleWrapper.Models
 		public string JPTitle { get; }
 		public string JPDetail { get; }
 
+		public string DisplayId
+		{
+			get
+			{
+				var DisplayID = KanColleClient.Current.Translations.GetExpeditionData("DisplayID", this.Id);
+				return string.IsNullOrEmpty(DisplayID) ? this.Id.ToString() : DisplayID;
+			}
+		}
+
 		public string Title => KanColleClient.Current.Translations.GetTranslation(this.JPTitle, TranslationType.ExpeditionTitle, false, this.RawData, this.Id);
 		public string Detail => KanColleClient.Current.Translations.GetTranslation(this.JPDetail, TranslationType.ExpeditionDetail, false, this.RawData, this.Id);
 

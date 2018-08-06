@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Grabacr07.KanColleViewer.QuestTracker.Models.Model;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Extensions;
+using Grabacr07.KanColleViewer.QuestTracker.Models;
+using Grabacr07.KanColleViewer.QuestTracker.Extensions;
 
 using Grabacr07.KanColleWrapper.Models.Raw;
-using ShipBattleInfo = Grabacr07.KanColleViewer.QuestTracker.Models.Model.BattleCalculator.ShipBattleInfo;
+using ShipBattleInfo = Grabacr07.KanColleViewer.QuestTracker.Models.BattleCalculator.ShipBattleInfo;
 
 namespace Grabacr07.KanColleViewer.QuestTracker.Models.EventArgs
 {

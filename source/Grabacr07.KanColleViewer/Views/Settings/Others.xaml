@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Grabacr07.KanColleViewer.Views.Settings.Others"
+<UserControl x:Class="Grabacr07.KanColleViewer.Views.Settings.Others"
 			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
@@ -219,6 +219,37 @@
 					  IsChecked="{Binding Source={x:Static ms:GeneralSettings.MMCSSEnabled}, Path=Value}"
 					  Height="17" 
 					  Margin="15,0,0,10"/>
+
+			<Rectangle Style="{DynamicResource SeparatorStyleKey}" />
+
+			<TextBlock Style="{DynamicResource SettingsHeaderTextStyleKey}">
+				<Run Text="KcaQSync cloud service" />
+				<TextBlock.ToolTip>
+					<TextBlock Text="KcaQSync cloud service를 이용해 타 기기와 진행중인 임무를 동기화합니다." />
+				</TextBlock.ToolTip>
+			</TextBlock>
+
+			<Grid DataContext="{Binding ScreenshotSettings}"
+				  Margin="20,0,0,0">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+
+				<TextBlock Grid.Column="0"
+						   Grid.Row="1"
+						   Text="패스워드:" />
+				<metro:PromptTextBox Grid.Row="1"
+									 Grid.Column="1"
+									 Margin="10,0,0,0"
+									 Text="{Binding Source={x:Static ms:GeneralSettings.KcaQSync_Password}, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+									 Prompt="패스워드" />
+			</Grid>
 
 			<Rectangle Style="{DynamicResource SeparatorStyleKey}" />
 

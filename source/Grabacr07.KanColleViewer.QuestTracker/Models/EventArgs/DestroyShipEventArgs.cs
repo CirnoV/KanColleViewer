@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.Collections.Specialized;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Model;
-using Grabacr07.KanColleViewer.QuestTracker.Models.Extensions;
+using Grabacr07.KanColleViewer.QuestTracker.Models;
+using Grabacr07.KanColleViewer.QuestTracker.Extensions;
 using Grabacr07.KanColleWrapper.Models.Raw;
 
 namespace Grabacr07.KanColleViewer.QuestTracker.Models.EventArgs

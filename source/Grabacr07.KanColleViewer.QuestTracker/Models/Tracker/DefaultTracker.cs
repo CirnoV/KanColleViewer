@@ -152,9 +152,10 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 					break;
 				case QuestProgressType.Progress50:
 					if (Current >= cut80) Current = cut80 - 1;
-					else if (Current < cut50) Current = cut50;
+					if (Current < cut50) Current = cut50;
 					break;
 				case QuestProgressType.Progress80:
+					if (Current >= Maximum) Current = Maximum - 1;
 					if (Current < cut80) Current = cut80;
 					break;
 				case QuestProgressType.Complete:

@@ -161,7 +161,7 @@
 								  MaxHeight="44">
 								<Grid.ToolTip>
 									<TextBlock x:Name="QuestProgressTextTooltip"
-											   Text="{Binding QuestProgressText, Mode=OneWay}"
+											   Text="{Binding QuestProgressTooltip, Mode=OneWay}"
 											   Style="{DynamicResource EmphaticTextStyleKey}"
 											   TextAlignment="Left"
 											   FontSize="10" />

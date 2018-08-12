@@ -28,6 +28,15 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 				);
 
 		/// <summary>
+		///  Progress text to display for tooltip
+		/// </summary>
+		public override string ProgressTooltip =>
+			string.Join(
+				"\n",
+				this.Datas.Select(x => string.Format("{0} {1}/{2}", x.Name, x.Current, x.Maximum)) ?? new string[0]
+			);
+
+		/// <summary>
 		/// Value using on <see cref="CheckOverUnder"/>, to check 50% progress
 		/// </summary>
 		protected virtual int Progress50

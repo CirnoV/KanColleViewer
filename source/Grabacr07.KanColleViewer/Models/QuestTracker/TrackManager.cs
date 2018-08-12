@@ -25,7 +25,6 @@ namespace Grabacr07.KanColleViewer.Models.QuestTracker
 	internal class TrackManager
 	{
 		private string TrackerNamespace => "Grabacr07.KanColleViewer.QuestTracker.Models.Tracker";
-		private readonly Dictionary<int, DateTime> trackingTime = new Dictionary<int, DateTime>();
 		private static DateTime TokyoDateTime => TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Tokyo Standard Time");
 
 		private Grabacr07.KanColleViewer.QuestTracker.Models.TrackManager trackManager;
@@ -107,37 +106,31 @@ namespace Grabacr07.KanColleViewer.Models.QuestTracker
 
 			foreach (var quest in quests.All)
 			{
-				var tracker = trackManager?.trackingAvailable.Where(t => t.Id == quest.Id);
-				if (!tracker.Any()) continue; // 추적할 수 없는 임무
+				var tracker = trackManager?.trackingAvailable.FirstOrDefault(t => t.Id == quest.Id);
+				if (tracker == null) continue; // 추적할 수 없는 임무
 
 				try
 				{
 					// 만료된 경우 (임무가 갱신되었다던가)
-					if (trackingTime.ContainsKey(quest.Id) && !IsTrackingAvailable(quest.Type, trackingTime[quest.Id]))
-					{
-						// 임무 초기화
-						if (trackingTime.ContainsKey(quest.Id)) trackingTime.Remove(quest.Id); // 추적중이었으면 추적 시작시간 제거
-						tracker.First().ResetQuest();
-					}
+					if (!IsTrackingAvailable(tracker.Type, tracker.LastUpdated))
+						tracker.ResetQuest();
 
 					switch (quest.State)
 					{
 						case QuestState.None:
-							tracker.First().IsTracking = false;
+							tracker.IsTracking = false;
 							break;
 
 						case QuestState.TakeOn:
-							tracker.First().IsTracking = true; // quest taking
-
-							// 임무 추적 시작시간 등록
-							if (!trackingTime.ContainsKey(quest.Id))
-								trackingTime.Add(quest.Id, TrackManager.TokyoDateTime);
+							tracker.IsTracking = true;
 							break;
 
 						case QuestState.Accomplished:
-							tracker.First().IsTracking = true;
+							tracker.IsTracking = true;
 							break;
 					}
+
+					tracker.LastUpdated = TokyoDateTime;
 				}
 				catch { }
 			}
@@ -198,9 +191,7 @@ namespace Grabacr07.KanColleViewer.Models.QuestTracker
 			foreach (var tracker in trackManager?.trackingAvailable)
 			{
 				var item = new StorageData();
-
-				DateTime dateTime = TrackManager.TokyoDateTime;
-				trackingTime.TryGetValue(tracker.Id, out dateTime);
+				var dateTime = tracker.LastUpdated;
 
 				try
 				{
@@ -273,8 +264,8 @@ namespace Grabacr07.KanColleViewer.Models.QuestTracker
 							{
 								var tracker = trackManager?.trackingAvailable.Where(x => x.Id == Id).First();
 
-								trackingTime.Add(Id, trackTime);
 								// tracker.IsTracking = true;
+								tracker.LastUpdated = trackTime;
 								tracker.DeserializeData(Serialized);
 							}
 						}

@@ -102,7 +102,10 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 						y =>
 						{
 							var result = DynamicJson.Parse(y);
-							ApplySyncData(result.data.ToString());
+							ApplySyncData(
+								result.data.ToString() as string,
+								Convert.ToInt64(result.timestamp.ToString() as string)
+							);
 						}
 					);
 				}
@@ -345,7 +348,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 			};
 		}
 
-		private bool ApplySyncData(string data)
+		private bool ApplySyncData(string data, long timestamp)
 		{
 			var regex = new Regex("^[01][0-9A-Z=]+$", RegexOptions.Compiled);
 			var table = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ=";
@@ -383,6 +386,7 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 				var tracker = this.trackingAvailable.FirstOrDefault(x => x.Id == item.Id);
 				if (tracker == null) continue;
 
+				tracker.LastUpdated = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(timestamp).ToLocalTime();
 				tracker.IsTracking = item.Active; // Needed?
 				tracker.SetRawDatas(item.Count);
 			}

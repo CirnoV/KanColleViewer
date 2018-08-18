@@ -15,6 +15,7 @@ using MetroRadiance.Interop;
 using MetroTrilithon.UI.Controls;
 using mshtml;
 using SHDocVw;
+using Grabacr07.KanColleWrapper;
 using IViewObject = Grabacr07.KanColleViewer.Win32.IViewObject;
 using IServiceProvider = Grabacr07.KanColleViewer.Win32.IServiceProvider;
 //using WebBrowser = System.Windows.Controls.WebBrowser;
@@ -33,8 +34,12 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 		static KanColleHost()
 		{
 			CefSettings cefSettings = new CefSettings();
-			cefSettings.CefCommandLineArgs.Add("proxy-server", "http=127.0.0.1:37564");
-			Cef.Initialize(cefSettings);
+			cefSettings.CefCommandLineArgs.Add("proxy-server", "http=127.0.0.1:" + KanColleClient.Current.Proxy.ListeningPort.ToString());
+			cefSettings.BrowserSubprocessPath = @"lib\CefSharp.BrowserSubprocess.exe";
+			cefSettings.CachePath = @"BrowserCache";
+			cefSettings.Locale = "ko-KR";
+			Cef.Initialize(cefSettings, performDependencyCheck: false, browserProcessHandler: null);
+
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(KanColleHost), new FrameworkPropertyMetadata(typeof(KanColleHost)));
 		}
 
@@ -135,16 +140,6 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 		public KanColleHost()
 		{
 			this.Loaded += (sender, args) => this.Update();
-
-			FlashQuality init = KanColleSettings.FlashElementQuality;
-			KanColleSettings.FlashElementQuality.ValueChanged += (s, e) =>
-			{
-				if (KanColleSettings.FlashElementQuality != init)
-				{
-					init = KanColleSettings.FlashElementQuality;
-					ApplyFlashQuality(true);
-				}
-			};
 		}
 
 		public override void OnApplyTemplate()
@@ -190,6 +185,12 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 
 			try
 			{
+				if (zoomFactor == 100)
+					target.CWebBrowser.GetBrowser().SetZoomLevel(0); // reset
+				else
+					target.CWebBrowser.GetBrowser().SetZoomLevel(
+						5.46149645 * Math.Log(zoomFactor) - 25.12
+					);
 				/*
 				var provider = target.WebBrowser.Document as IServiceProvider;
 				if (provider == null) return;
@@ -219,6 +220,14 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			if (e.IsLoading == false)
 			{
 				Dispatcher.Invoke(() => {
+					try
+					{
+						var b = this.CWebBrowser.GetBrowser();
+						var h = b.GetHost();
+						h.ShowDevTools();
+					}
+					catch { }
+
 					ApplyStyleSheet();
 					firstLoaded = true;
 					Update();
@@ -231,12 +240,6 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			this.ApplyStyleSheet();
 			//WebBrowserHelper.SetScriptErrorsSuppressed(this.WebBrowser, true);
 
-			if (e.Uri.AbsoluteUri == KanColleViewer.Properties.Settings.Default.KanColleUrl.AbsoluteUri)
-			{
-				if (KanColleSettings.FlashElementQuality != FlashQuality.High)
-					this.ApplyFlashQuality(true);
-			}
-			this.ApplyStyleSheet(1);
 			this.Update();
 		}
 
@@ -249,94 +252,34 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			window.WebBrowser.Navigate(url);
 		}
 
-		private void ApplyStyleSheet(int step = 0)
+		private void ApplyStyleSheet()
 		{
 			if (!this.firstLoaded) return;
 
 			try
 			{
-				if (step == 0)
-				{
-					var script = string.Format(
-						"document.addEventListener('DOMContentLoaded', function(){{"
-							+ "var x=document.createElement('style');x.type='text/css';x.innerHTML='{0}';document.body.appendChild(x);"
-						+ "}});",
-						this.UserStyleSheet.Replace("'", "\\'").Replace("\r\n", "\\n")
-					);
-					WebBrowser.InvokeScript("eval", new object[] { script });
-					this.styleSheetApplied = true;
-				}
-				else
-				{
-					var document = this.WebBrowser.Document as HTMLDocument;
-					if (document == null) return;
+				var frame = this.CWebBrowser.GetBrowser().MainFrame;
+				if (frame == null) return;
 
-					var gameFrame = document.getElementById("game_frame");
-					if (gameFrame == null)
-					{
-						if (document.url.Contains(".swf?"))
-						{
-							gameFrame = document.body;
-						}
-					}
-
-					var target = gameFrame?.document as HTMLDocument;
-					if (target != null)
-					{
-						target.createStyleSheet().cssText = this.UserStyleSheet;
-						this.styleSheetApplied = true;
-					}
-				}
-			}
-			catch (Exception) when (Application.Instance.State == ApplicationState.Startup)
-			{
-				// about:blank だから仕方ない
-			}
-			catch (Exception ex)
-			{
-				Debug.WriteLine(ex);
-				StatusService.Current.Notify("failed to apply css: " + ex.Message);
-			}
-		}
-		private void ApplyFlashQuality(bool ReloadRequired = false)
-		{
-			if (!this.firstLoaded) return;
-
-			try
-			{
+				var css = this.UserStyleSheet.Replace("'", "\\'").Replace("\r", "").Replace("\n", "\\n");
+				frame.ExecuteJavaScriptAsync("var css = document.createElement('style');css.type='text/css';css.innerHTML='" + css + "';document.body.appendChild(css);");
+				this.styleSheetApplied = true;
 				/*
 				var document = this.WebBrowser.Document as HTMLDocument;
 				if (document == null) return;
-
-				var frames = document.frames;
-				for (var i = 0; i < frames.length; i++)
+				var gameFrame = document.getElementById("game_frame");
+				if (gameFrame == null)
 				{
-					var item = frames.item(i);
-					var provider = item as IServiceProvider;
-					if (provider == null) continue;
-
-					object ppvObject;
-					provider.QueryService(typeof(IWebBrowserApp).GUID, typeof(IWebBrowser2).GUID, out ppvObject);
-					var webBrowser = ppvObject as IWebBrowser2;
-
-					var iframeDocument = webBrowser?.Document as HTMLDocument;
-					if (iframeDocument == null) continue;
-
-					string qualityString = "high";
-					switch (KanColleSettings.FlashElementQuality.Value)
+					if (document.url.Contains(".swf?"))
 					{
-						case FlashQuality.Low: qualityString = "low"; break;
-						case FlashQuality.Medium: qualityString = "medium"; break;
-						case FlashQuality.High: qualityString = "high"; break;
+						gameFrame = document.body;
 					}
-
-					var script = "function kcsFlash_StartFlash(a){var b={id:'externalswf',width:'800',height:'480',wmode:'opaque',quality:'" + qualityString + "',bgcolor:'#000000',allowScriptAccess:'always'};"
-						+ "document.getElementById('flashWrap').innerHTML=ConstMessageInfo.InstallFlashMessage,gadgets.flash.embedFlash(a+ConstURLInfo.MainFlashURL+'?api_token='+flashInfo.apiToken+'&api_starttime='+flashInfo.apiStartTime,document.getElementById('flashWrap'),6,b),"
-						+ "document.getElementById('adFlashWrap').style.height='0px',document.getElementById('wsFlashWrap').style.height='0px',document.getElementById('flashWrap').style.height='480px',gadgets.window.adjustHeight(ConstGadgetInfo.height)};";
-					if (ReloadRequired) script += "kcsLogin_StartLogin();";
-
-					webBrowser.Navigate("javascript:" + script);
-					GCWorker.GCRequest();
+				}
+				var target = gameFrame?.document as HTMLDocument;
+				if (target != null)
+				{
+					target.createStyleSheet().cssText = this.UserStyleSheet;
+					this.styleSheetApplied = true;
 				}
 				*/
 			}
@@ -347,7 +290,7 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			catch (Exception ex)
 			{
 				Debug.WriteLine(ex);
-				StatusService.Current.Notify("failed to apply flash quality: " + ex.Message);
+				StatusService.Current.Notify("failed to apply css: " + ex.Message);
 			}
 		}
 	}

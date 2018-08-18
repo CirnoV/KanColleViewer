@@ -307,7 +307,26 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 				{
 					this._QuestProgressText = value;
 					this.RaisePropertyChanged();
-					this.RaisePropertyChanged("QuestTrackingVisible");
+					this.RaisePropertyChanged(nameof(this.QuestTrackingVisible));
+				}
+			}
+		}
+
+		#endregion
+
+		#region QuestProgressTooltip 변경통지 프로퍼티
+
+		private string _QuestProgressTooltip { get; set; }
+		public string QuestProgressTooltip
+		{
+			get { return this._QuestProgressTooltip; }
+			set
+			{
+				if (this._QuestProgressTooltip != value)
+				{
+					this._QuestProgressTooltip = value;
+					this.RaisePropertyChanged();
+					this.RaisePropertyChanged(nameof(this.QuestTrackingVisible));
 				}
 			}
 		}
@@ -326,7 +345,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 				{
 					this._QuestProgressValue = value;
 					this.RaisePropertyChanged();
-					this.RaisePropertyChanged("QuestTrackingVisible");
+					this.RaisePropertyChanged(nameof(this.QuestTrackingVisible));
 				}
 			}
 		}

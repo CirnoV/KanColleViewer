@@ -35,6 +35,7 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 		{
 			CefSettings cefSettings = new CefSettings();
 			cefSettings.CefCommandLineArgs.Add("proxy-server", "http=127.0.0.1:" + KanColleClient.Current.Proxy.ListeningPort.ToString());
+			cefSettings.CefCommandLineArgs.Add("disable-extensions", "1");
 			cefSettings.BrowserSubprocessPath = @"lib\CefSharp.BrowserSubprocess.exe";
 			cefSettings.CachePath = @"BrowserCache";
 			cefSettings.Locale = "ko-KR";

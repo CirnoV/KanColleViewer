@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -147,7 +147,7 @@ namespace Grabacr07.KanColleViewer
 				GCWorker.Current.AddTo(this).Startup();
 
 				// WebBrowser 컨트롤 IE 버전 레지스트리 패치, MMCSS 설정
-				Helper.SetRegistryFeatureBrowserEmulation();
+				// Helper.SetRegistryFeatureBrowserEmulation();
 				if (GeneralSettings.MMCSSEnabled) Helper.SetMMCSSTask();
 
 				// 번역 여부

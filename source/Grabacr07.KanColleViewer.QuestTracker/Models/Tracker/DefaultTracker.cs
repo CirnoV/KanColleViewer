@@ -28,6 +28,15 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 				);
 
 		/// <summary>
+		///  Progress text to display for tooltip
+		/// </summary>
+		public override string ProgressTooltip =>
+			string.Join(
+				"\n",
+				this.Datas.Select(x => string.Format("{0} {1}/{2}", x.Name, x.Current, x.Maximum)) ?? new string[0]
+			);
+
+		/// <summary>
 		/// Value using on <see cref="CheckOverUnder"/>, to check 50% progress
 		/// </summary>
 		protected virtual int Progress50
@@ -152,9 +161,10 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 					break;
 				case QuestProgressType.Progress50:
 					if (Current >= cut80) Current = cut80 - 1;
-					else if (Current < cut50) Current = cut50;
+					if (Current < cut50) Current = cut50;
 					break;
 				case QuestProgressType.Progress80:
+					if (Current >= Maximum) Current = Maximum - 1;
 					if (Current < cut80) Current = cut80;
 					break;
 				case QuestProgressType.Complete:

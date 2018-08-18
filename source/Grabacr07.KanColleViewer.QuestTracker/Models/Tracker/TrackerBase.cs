@@ -20,6 +20,11 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 		public bool IsTracking { get; set; }
 
 		/// <summary>
+		/// Updated when?
+		/// </summary>
+		public DateTime LastUpdated { get; set; }
+
+		/// <summary>
 		/// Quest Id
 		/// </summary>
 		public abstract int Id { get; }
@@ -46,6 +51,11 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 		///  Progress text to display
 		/// </summary>
 		public abstract string ProgressText { get; }
+
+		/// <summary>
+		///  Progress text to display for tooltip
+		/// </summary>
+		public abstract string ProgressTooltip { get; }
 
 		/// <summary>
 		/// Initialize event handler

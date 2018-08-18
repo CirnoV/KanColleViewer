@@ -115,6 +115,16 @@ namespace Grabacr07.KanColleViewer.Models
 
 		private static bool DeleteInternetCacheCore()
 		{
+			try
+			{
+				Directory.Delete(@"BrowserCache\Cache", true);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+			/*
 			// ReSharper disable InconsistentNaming
 			const int CACHEGROUP_SEARCH_ALL = 0x0;
 			const int ERROR_NO_MORE_ITEMS = 259;
@@ -168,6 +178,7 @@ namespace Grabacr07.KanColleViewer.Models
 			Marshal.FreeHGlobal(cacheEntryInfoBuffer);
 
 			return true;
+		*/
 		}
 
 

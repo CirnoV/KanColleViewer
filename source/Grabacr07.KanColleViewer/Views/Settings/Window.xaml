@@ -13,7 +13,7 @@
 			 xmlns:root="clr-namespace:Grabacr07.KanColleViewer"
 			 mc:Ignorable="d"
 			 d:DesignWidth="540"
-			 d:DesignHeight="600"
+			 d:DesignHeight="840"
 			 d:DataContext="{d:DesignInstance vms:WindowSettingsViewModel}"
 			 Background="{DynamicResource ThemeBrushKey}">
 	<UserControl.Resources>

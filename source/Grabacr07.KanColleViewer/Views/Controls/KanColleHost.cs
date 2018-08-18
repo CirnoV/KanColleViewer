@@ -50,20 +50,20 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 
 		#region CWebBrowser 依存関係プロパティ
 
-		public ChromiumWebBrowser CWebBrowser
+		public ChromiumWebBrowserEx CWebBrowser
 		{
-			get { return (ChromiumWebBrowser)this.GetValue(CWebBrowserProperty); }
+			get { return (ChromiumWebBrowserEx)this.GetValue(CWebBrowserProperty); }
 			set { this.SetValue(CWebBrowserProperty, value); }
 		}
 
 		public static readonly DependencyProperty CWebBrowserProperty =
-			DependencyProperty.Register(nameof(CWebBrowser), typeof(ChromiumWebBrowser), typeof(KanColleHost), new UIPropertyMetadata(null, CWebBrowserPropertyChangedCallback));
+			DependencyProperty.Register(nameof(CWebBrowser), typeof(ChromiumWebBrowserEx), typeof(KanColleHost), new UIPropertyMetadata(null, CWebBrowserPropertyChangedCallback));
 
 		private static void CWebBrowserPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			var instance = (KanColleHost)d;
-			var newBrowser = (ChromiumWebBrowser)e.NewValue;
-			var oldBrowser = (ChromiumWebBrowser)e.OldValue;
+			var newBrowser = (ChromiumWebBrowserEx)e.NewValue;
+			var oldBrowser = (ChromiumWebBrowserEx)e.OldValue;
 
 			if (oldBrowser != null)
 			{
@@ -220,14 +220,6 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			if (e.IsLoading == false)
 			{
 				Dispatcher.Invoke(() => {
-					try
-					{
-						var b = this.CWebBrowser.GetBrowser();
-						var h = b.GetHost();
-						h.ShowDevTools();
-					}
-					catch { }
-
 					ApplyStyleSheet();
 					firstLoaded = true;
 					Update();

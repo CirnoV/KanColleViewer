@@ -12,7 +12,7 @@ namespace Grabacr07.KanColleViewer.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.5.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -52,17 +52,6 @@ namespace Grabacr07.KanColleViewer.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("body {\r\n    margin:0;\r\n    overflow:hidden\r\n}\r\n\r\n#game_frame {\r\n    position:fixe" +
-            "d;\r\n    left:50%;\r\n    top:-16px;\r\n    margin-left:-450px;\r\n    z-index:1\r\n}\r\n\r\n" +
-            ".area-pickupgame,\r\n.area-menu\r\n{\r\n    display:none!important;\r\n}")]
-        public string OverrideStyleSheet {
-            get {
-                return ((string)(this["OverrideStyleSheet"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("https://raw.github.com/CirnoV/KCVKrTranslation/master/resources/Version.xml")]
         public global::System.Uri KCVUpdateUrl {
             get {
@@ -79,16 +68,6 @@ namespace Grabacr07.KanColleViewer.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://raw.githubusercontent.com/CirnoV/KCVKrTranslation/master/resources/sail.j" +
-            "son")]
-        public string SallyAreaSource {
-            get {
-                return ((string)(this["SallyAreaSource"]));
-            }
-        }
-        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
@@ -98,6 +77,26 @@ namespace Grabacr07.KanColleViewer.Properties {
             }
             set {
                 this["UpdateSettings"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("body {\r\n    margin:0;\r\n    overflow:hidden\r\n}\r\n\r\n#game_frame {\r\n    position:fixe" +
+            "d;\r\n    left:50%;\r\n    top:-16px;\r\n    margin-left:-600px;\r\n    z-index:1\r\n}\r\n\r\n" +
+            ".area-pickupgame,\r\n.area-menu\r\n{\r\n    display:none!important;\r\n}")]
+        public string OverrideStyleSheet {
+            get {
+                return ((string)(this["OverrideStyleSheet"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://kctadil.devcussion.net/viewer/sally.json")]
+        public string SallyAreaSource {
+            get {
+                return ((string)(this["SallyAreaSource"]));
             }
         }
     }

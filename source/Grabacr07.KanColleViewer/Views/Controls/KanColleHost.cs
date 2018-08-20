@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,27 +7,28 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Navigation;
+using Grabacr07.KanColleWrapper;
 using Grabacr07.KanColleViewer.Models;
 using Grabacr07.KanColleViewer.ViewModels;
 using MetroRadiance.Interop;
 using MetroTrilithon.UI.Controls;
-using mshtml;
-using SHDocVw;
+using Microsoft.Toolkit.Win32.UI.Controls.Interop.WinRT;
 using IViewObject = Grabacr07.KanColleViewer.Win32.IViewObject;
 using IServiceProvider = Grabacr07.KanColleViewer.Win32.IServiceProvider;
-using WebBrowser = System.Windows.Controls.WebBrowser;
+//using WebBrowser = System.Windows.Controls.WebBrowser;
+using WebView = Microsoft.Toolkit.Win32.UI.Controls.WPF.WebView;
 using KanColleSettings = Grabacr07.KanColleViewer.Models.Settings.KanColleSettings;
 
 namespace Grabacr07.KanColleViewer.Views.Controls
 {
-	[ContentProperty(nameof(WebBrowser))]
+	[ContentProperty(nameof(WebView))]
 	[TemplatePart(Name = PART_ContentHost, Type = typeof(ScrollViewer))]
 	public class KanColleHost : Control
 	{
 		private const string PART_ContentHost = "PART_ContentHost";
 
-		public static Size KanColleSize { get; } = new Size(800.0, 480.0);
-		public static Size InitialSize { get; } = new Size(800.0, 480.0);
+		public static Size KanColleSize { get; } = new Size(1200.0, 720.0);
+		public static Size InitialSize { get; } = new Size(1200.0, 720.0);
 
 		static KanColleHost()
 		{
@@ -39,35 +40,34 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 		private Dpi? systemDpi;
 		private bool firstLoaded;
 
-		#region WebBrowser 依存関係プロパティ
+		#region WebView 依存関係プロパティ
 
-		public WebBrowser WebBrowser
+		public WebView WebView
 		{
-			get { return (WebBrowser)this.GetValue(WebBrowserProperty); }
-			set { this.SetValue(WebBrowserProperty, value); }
+			get { return (WebView)this.GetValue(WebViewProperty); }
+			set { this.SetValue(WebViewProperty, value); }
 		}
 
-		public static readonly DependencyProperty WebBrowserProperty =
-			DependencyProperty.Register(nameof(WebBrowser), typeof(WebBrowser), typeof(KanColleHost), new UIPropertyMetadata(null, WebBrowserPropertyChangedCallback));
+		public static readonly DependencyProperty WebViewProperty =
+			DependencyProperty.Register(nameof(WebView), typeof(WebView), typeof(KanColleHost), new UIPropertyMetadata(null, WebViewPropertyChangedCallback));
 
-		private static void WebBrowserPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		private static void WebViewPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			var instance = (KanColleHost)d;
-			var newBrowser = (WebBrowser)e.NewValue;
-			var oldBrowser = (WebBrowser)e.OldValue;
+			var newBrowser = (WebView)e.NewValue;
+			var oldBrowser = (WebView)e.OldValue;
 
 			if (oldBrowser != null)
 			{
-				oldBrowser.Navigated -= instance.HandleNavigated;
-				oldBrowser.LoadCompleted -= instance.HandleLoadCompleted;
+				oldBrowser.NavigationCompleted -= instance.HandleNavigationCompleted;
+				oldBrowser.DOMContentLoaded -= instance.HandleDOMContentLoaded;
+				oldBrowser.NewWindowRequested -= instance.HandleNewWindowRequested;
 			}
 			if (newBrowser != null)
 			{
-				newBrowser.Navigated += instance.HandleNavigated;
-				newBrowser.LoadCompleted += instance.HandleLoadCompleted;
-
-				var events = WebBrowserHelper.GetAxWebbrowser2(newBrowser) as DWebBrowserEvents_Event;
-				if (events != null) events.NewWindow += instance.HandleWebBrowserNewWindow;
+				newBrowser.NavigationCompleted += instance.HandleNavigationCompleted;
+				newBrowser.DOMContentLoaded += instance.HandleDOMContentLoaded;
+				newBrowser.NewWindowRequested += instance.HandleNewWindowRequested;
 			}
 			if (instance.scrollViewer != null)
 			{
@@ -136,16 +136,6 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 		public KanColleHost()
 		{
 			this.Loaded += (sender, args) => this.Update();
-
-			FlashQuality init = KanColleSettings.FlashElementQuality;
-			KanColleSettings.FlashElementQuality.ValueChanged += (s, e) =>
-			{
-				if (KanColleSettings.FlashElementQuality != init)
-				{
-					init = KanColleSettings.FlashElementQuality;
-					ApplyFlashQuality(true);
-				}
-			};
 		}
 
 		public override void OnApplyTemplate()
@@ -155,13 +145,15 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			this.scrollViewer = this.GetTemplateChild(PART_ContentHost) as ScrollViewer;
 			if (this.scrollViewer != null)
 			{
-				this.scrollViewer.Content = this.WebBrowser;
+				this.scrollViewer.Content = this.WebView;
 			}
 		}
 
 		public void Update()
 		{
-			if (this.WebBrowser == null) return;
+			if (this.WebView == null) return;
+			this.WebView.IsPrivateNetworkClientServerCapabilityEnabled = true;
+			this.WebView.IsScriptNotifyAllowed = true;
 
 			var dpi = this.systemDpi ?? (this.systemDpi = this.GetSystemDpi()) ?? Dpi.Default;
 			var zoomFactor = dpi.ScaleX + (this.ZoomFactor - 1.0);
@@ -173,8 +165,8 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			size = new Size(
 				(size.Width * (zoomFactor / dpi.ScaleX)) / dpi.ScaleX,
 				(size.Height * (zoomFactor / dpi.ScaleY)) / dpi.ScaleY);
-			this.WebBrowser.Width = size.Width;
-			this.WebBrowser.Height = size.Height;
+			this.WebView.Width = size.Width;
+			this.WebView.Height = size.Height;
 
 			this.OwnerSizeChangeRequested?.Invoke(this, size);
 		}
@@ -191,16 +183,29 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 
 			try
 			{
-				var provider = target.WebBrowser.Document as IServiceProvider;
+				// https://gist.github.com/chgeuer/3514112
+				Func<WebView, double, bool> zoom = (wv, zoomPercentage) =>
+				{
+					var script = string.Format(
+						"(function () {{ document.styleSheets[0]['rules'][0].style['zoom'] = {0}; }})();", zoomPercentage);
+
+					try
+					{
+						var result = wv.InvokeScript("eval", new string[] { script });
+						return true;
+					}
+					catch (Exception ex)
+					{
+						var notReady = (uint)ex.HResult == 0x80020101;
+						if (notReady) return false;
+						throw;
+					}
+				};
+
+				var provider = target.WebView;
 				if (provider == null) return;
 
-				object ppvObject;
-				provider.QueryService(typeof(IWebBrowserApp).GUID, typeof(IWebBrowser2).GUID, out ppvObject);
-				var webBrowser = ppvObject as IWebBrowser2;
-				if (webBrowser == null) return;
-
-				object pvaIn = zoomFactor;
-				webBrowser.ExecWB(OLECMDID.OLECMDID_OPTICAL_ZOOM, OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT, ref pvaIn);
+				zoom(provider, zoomFactor / 100.0);
 			}
 			catch (Exception) when (Application.Instance.State == ApplicationState.Startup)
 			{
@@ -213,10 +218,8 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			}
 		}
 
-		private void HandleNavigated(object sender, NavigationEventArgs e)
+		private void HandleNavigationCompleted(object sender, WebViewControlNavigationCompletedEventArgs e)
 		{
-			WebBrowserHelper.SetScriptErrorsSuppressed(this.WebBrowser, true);
-
 			if (e.Uri.AbsoluteUri == KanColleViewer.Properties.Settings.Default.KanColleUrl.AbsoluteUri)
 			{
 				this.firstLoaded = true;
@@ -225,66 +228,32 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 				this.Update();
 			}
 		}
-		private void HandleLoadCompleted(object sender, NavigationEventArgs e)
+		private void HandleDOMContentLoaded(object sender, WebViewControlDOMContentLoadedEventArgs e)
 		{
-			WebBrowserHelper.SetScriptErrorsSuppressed(this.WebBrowser, true);
-
-			if (e.Uri.AbsoluteUri == KanColleViewer.Properties.Settings.Default.KanColleUrl.AbsoluteUri)
-			{
-				if (KanColleSettings.FlashElementQuality != FlashQuality.High)
-					this.ApplyFlashQuality(true);
-			}
-			this.ApplyStyleSheet(1);
+			this.ApplyStyleSheet();
 			this.Update();
 		}
-
-		private void HandleWebBrowserNewWindow(string url, int flags, string targetFrameName, ref object postData, string headers, ref bool processed)
+		private void HandleNewWindowRequested(object sender, WebViewControlNewWindowRequestedEventArgs e)
 		{
-			processed = true;
+			e.Handled = true;
 
 			var window = new BrowserWindow { DataContext = new NavigatorViewModel(), };
 			window.Show();
-			window.WebBrowser.Navigate(url);
+			window.WebBrowser.Navigate(e.Uri);
 		}
 
-		private void ApplyStyleSheet(int step = 0)
+		private void ApplyStyleSheet()
 		{
 			if (!this.firstLoaded) return;
 
 			try
 			{
-				if (step == 0)
-				{
-					var script = string.Format(
-						"document.addEventListener('DOMContentLoaded', function(){{"
-							+ "var x=document.createElement('style');x.type='text/css';x.innerHTML='{0}';document.body.appendChild(x);"
-						+ "}});",
-						this.UserStyleSheet.Replace("'", "\\'").Replace("\r\n", "\\n")
-					);
-					WebBrowser.InvokeScript("eval", new object[] { script });
-					this.styleSheetApplied = true;
-				}
-				else
-				{
-					var document = this.WebBrowser.Document as HTMLDocument;
-					if (document == null) return;
-
-					var gameFrame = document.getElementById("game_frame");
-					if (gameFrame == null)
-					{
-						if (document.url.Contains(".swf?"))
-						{
-							gameFrame = document.body;
-						}
-					}
-
-					var target = gameFrame?.document as HTMLDocument;
-					if (target != null)
-					{
-						target.createStyleSheet().cssText = this.UserStyleSheet;
-						this.styleSheetApplied = true;
-					}
-				}
+				var script = string.Format(
+					"var x=document.createElement('style');x.type='text/css';x.innerHTML='{0}';document.body.appendChild(x);",
+					this.UserStyleSheet.Replace("'", "\\'").Replace("\r", "").Replace("\n", "\\n")
+				);
+				WebView.InvokeScript("eval", new string[] { script });
+				this.styleSheetApplied = true;
 			}
 			catch (Exception) when (Application.Instance.State == ApplicationState.Startup)
 			{
@@ -294,56 +263,6 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			{
 				Debug.WriteLine(ex);
 				StatusService.Current.Notify("failed to apply css: " + ex.Message);
-			}
-		}
-		private void ApplyFlashQuality(bool ReloadRequired = false)
-		{
-			if (!this.firstLoaded) return;
-
-			try
-			{
-				var document = this.WebBrowser.Document as HTMLDocument;
-				if (document == null) return;
-
-				var frames = document.frames;
-				for (var i = 0; i < frames.length; i++)
-				{
-					var item = frames.item(i);
-					var provider = item as IServiceProvider;
-					if (provider == null) continue;
-
-					object ppvObject;
-					provider.QueryService(typeof(IWebBrowserApp).GUID, typeof(IWebBrowser2).GUID, out ppvObject);
-					var webBrowser = ppvObject as IWebBrowser2;
-
-					var iframeDocument = webBrowser?.Document as HTMLDocument;
-					if (iframeDocument == null) continue;
-
-					string qualityString = "high";
-					switch (KanColleSettings.FlashElementQuality.Value)
-					{
-						case FlashQuality.Low: qualityString = "low"; break;
-						case FlashQuality.Medium: qualityString = "medium"; break;
-						case FlashQuality.High: qualityString = "high"; break;
-					}
-
-					var script = "function kcsFlash_StartFlash(a){var b={id:'externalswf',width:'800',height:'480',wmode:'opaque',quality:'" + qualityString + "',bgcolor:'#000000',allowScriptAccess:'always'};"
-						+ "document.getElementById('flashWrap').innerHTML=ConstMessageInfo.InstallFlashMessage,gadgets.flash.embedFlash(a+ConstURLInfo.MainFlashURL+'?api_token='+flashInfo.apiToken+'&api_starttime='+flashInfo.apiStartTime,document.getElementById('flashWrap'),6,b),"
-						+ "document.getElementById('adFlashWrap').style.height='0px',document.getElementById('wsFlashWrap').style.height='0px',document.getElementById('flashWrap').style.height='480px',gadgets.window.adjustHeight(ConstGadgetInfo.height)};";
-					if (ReloadRequired) script += "kcsLogin_StartLogin();";
-
-					webBrowser.Navigate("javascript:" + script);
-					GCWorker.GCRequest();
-				}
-			}
-			catch (Exception) when (Application.Instance.State == ApplicationState.Startup)
-			{
-				// about:blank だから仕方ない
-			}
-			catch (Exception ex)
-			{
-				Debug.WriteLine(ex);
-				StatusService.Current.Notify("failed to apply flash quality: " + ex.Message);
 			}
 		}
 	}

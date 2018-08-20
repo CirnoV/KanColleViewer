@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -9,17 +9,22 @@ using Grabacr07.KanColleViewer.ViewModels.Messages;
 using Grabacr07.KanColleViewer.Win32;
 using Livet.Behaviors.Messaging;
 using Livet.Messaging;
-using mshtml;
-using SHDocVw;
 using IServiceProvider = Grabacr07.KanColleViewer.Win32.IServiceProvider;
-using WebBrowser = System.Windows.Controls.WebBrowser;
+using WebView = Microsoft.Toolkit.Win32.UI.Controls.WPF.WebView;
+using Microsoft.Toolkit.Win32.UI.Controls.Interop.WinRT;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
+using System.Windows;
+
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace Grabacr07.KanColleViewer.Views.Behaviors
 {
 	/// <summary>
 	/// 艦これの Flash 部分を画像として保存する機能を提供します。
 	/// </summary>
-	internal class ScreenshotAction : InteractionMessageAction<WebBrowser>
+	internal class ScreenshotAction : InteractionMessageAction<WebView>
 	{
 		protected override void InvokeAction(InteractionMessage message)
 		{
@@ -53,96 +58,62 @@ namespace Grabacr07.KanColleViewer.Views.Behaviors
 		{
 			const string notFoundMessage = "칸코레 Flash를 찾을 수 없습니다.";
 
-			var document = this.AssociatedObject.Document as HTMLDocument;
-			if (document == null)
+			var view = this.AssociatedObject;
+			if (view == null)
 			{
 				throw new Exception(notFoundMessage);
 			}
 
-			if (document.url.Contains(".swf?"))
-			{
-				var viewObject = document.getElementsByTagName("embed").item(0, 0) as IViewObject;
-				if (viewObject == null)
-				{
-					throw new Exception(notFoundMessage);
-				}
-
-				var width = ((HTMLEmbed)viewObject).clientWidth;
-				var height = ((HTMLEmbed)viewObject).clientHeight;
-				TakeScreenshot(width, height, viewObject, path);
-			}
-			else
-			{
-				var gameFrame = document.getElementById("game_frame").document as HTMLDocument;
-				if (gameFrame == null)
-				{
-					throw new Exception(notFoundMessage);
-				}
-
-				var frames = document.frames;
-				var find = false;
-				for (var i = 0; i < frames.length; i++)
-				{
-					var item = frames.item(i);
-					var provider = item as IServiceProvider;
-					if (provider == null) continue;
-
-					object ppvObject;
-					provider.QueryService(typeof(IWebBrowserApp).GUID, typeof(IWebBrowser2).GUID, out ppvObject);
-					var webBrowser = ppvObject as IWebBrowser2;
-
-					var iframeDocument = webBrowser?.Document as HTMLDocument;
-					if (iframeDocument == null) continue;
-
-					//flash要素が<embed>である場合と<object>である場合を判別して抽出
-					IViewObject viewObject = null;
-					int width = 0, height = 0;
-					var swf = iframeDocument.getElementById("externalswf");
-					if (swf == null) continue;
-					Func<dynamic, bool> function = target =>
-					{
-						if (target == null) return false;
-						viewObject = target as IViewObject;
-						if (viewObject == null) return false;
-						width = int.Parse(target.width);
-						height = int.Parse(target.height);
-						return true;
-					};
-					if (!function(swf as HTMLEmbed) && !function(swf as HTMLObjectElement)) continue;
-
-					find = true;
-					TakeScreenshot(width, height, viewObject, path);
-
-					break;
-				}
-
-				if (!find)
-				{
-					throw new Exception(notFoundMessage);
-				}
-			}
-
-
+			TakeScreenshot(view, path);
 		}
 
-		private static void TakeScreenshot(int width, int height, IViewObject viewObject, string path)
+		private void TakeScreenshot(WebView elem, string path)
 		{
-			var image = new Bitmap(width, height, PixelFormat.Format24bppRgb);
-			var rect = new RECT { left = 0, top = 0, width = width, height = height, };
-			var tdevice = new DVTARGETDEVICE { tdSize = 0, };
+			var size = elem.RenderSize;
+			int width = (int)elem.Width;
+			int height = (int)elem.Height;
 
-			using (var graphics = Graphics.FromImage(image))
+			RenderTargetBitmap renderBitmap = new RenderTargetBitmap(
+				(int)size.Width,
+				(int)size.Height,
+				96, 96,
+				PixelFormats.Pbgra32
+			);
+
+			elem.Measure(size); //Important
+			elem.Arrange(new Rect(size)); //Important
+
+			DrawingVisual visual = new DrawingVisual();
+			using (DrawingContext context = visual.RenderOpen())
 			{
-				var hdc = graphics.GetHdc();
-				viewObject.Draw(1, 0, IntPtr.Zero, tdevice, IntPtr.Zero, hdc, rect, null, IntPtr.Zero, IntPtr.Zero);
-				graphics.ReleaseHdc(hdc);
+				VisualBrush brush = new VisualBrush(elem);
+				brush.Stretch = Stretch.Uniform;
+				context.DrawRectangle(
+					brush,
+					null,
+					new Rect(
+						new System.Windows.Point(),
+						new System.Windows.Size(elem.Width, elem.Height)
+					)
+				);
 			}
+			renderBitmap.Render(visual);
 
-			var format = Path.GetExtension(path) == ".jpg"
-				? ImageFormat.Jpeg 
-				: ImageFormat.Png;
+			using (MemoryStream ms = new MemoryStream())
+			{
+				BitmapEncoder encoder = new PngBitmapEncoder();
+				encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+				encoder.Save(ms);
 
-			image.Save(path, format);
+				using (var image = Bitmap.FromStream(ms))
+				{
+					var format = Path.GetExtension(path) == ".jpg"
+						? ImageFormat.Jpeg
+						: ImageFormat.Png;
+
+					image.Save(path, format);
+				}
+			}
 		}
 	}
 }

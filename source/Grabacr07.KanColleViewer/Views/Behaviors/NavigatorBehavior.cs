@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,10 +7,12 @@ using System.Windows.Controls;
 using System.Windows.Interactivity;
 using System.Windows.Navigation;
 using Grabacr07.KanColleViewer.Models;
+using Microsoft.Toolkit.Win32.UI.Controls.WPF;
+using Microsoft.Toolkit.Win32.UI.Controls.Interop.WinRT;
 
 namespace Grabacr07.KanColleViewer.Views.Behaviors
 {
-	public class NavigatorBehavior : Behavior<WebBrowser>
+	public class NavigatorBehavior : Behavior<WebView>
 	{
 		#region Navigator 依存関係プロパティ
 
@@ -50,16 +52,16 @@ namespace Grabacr07.KanColleViewer.Views.Behaviors
 		protected override void OnAttached()
 		{
 			base.OnAttached();
-			this.AssociatedObject.LoadCompleted += this.AssociatedObjectOnLoadCompleted;
+			this.AssociatedObject.DOMContentLoaded += this.AssociatedObjectOnLoadCompleted;
 		}
 
 		protected override void OnDetaching()
 		{
 			base.OnDetaching();
-			this.AssociatedObject.LoadCompleted -= this.AssociatedObjectOnLoadCompleted;
+			this.AssociatedObject.DOMContentLoaded -= this.AssociatedObjectOnLoadCompleted;
 		}
 
-		private void AssociatedObjectOnLoadCompleted(object sender, NavigationEventArgs navigationEventArgs)
+		private void AssociatedObjectOnLoadCompleted(object sender, WebViewControlDOMContentLoadedEventArgs navigationEventArgs)
 		{
 			if (this.Navigator != null)
 			{

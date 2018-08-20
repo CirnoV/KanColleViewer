@@ -21,6 +21,7 @@
 				   xmlns:contents="clr-namespace:Grabacr07.KanColleViewer.Views.Contents"
 				   xmlns:settings="clr-namespace:Grabacr07.KanColleViewer.Models.Settings"
 				   xmlns:ms="clr-namespace:Grabacr07.KanColleViewer.Models.Settings"
+				   xmlns:Toolkit="clr-namespace:Microsoft.Toolkit.Win32.UI.Controls.WPF;assembly=Microsoft.Toolkit.Win32.UI.Controls"
 				   mc:Ignorable="d"
 				   d:DataContext="{d:DesignInstance viewModels:KanColleWindowViewModel}"
 				   Title="{Binding Title}"
@@ -307,7 +308,9 @@
 							<behaviors:ZoomAction />
 						</livet:InteractionMessageTrigger>
 					</i:Interaction.Triggers>
-					<WebBrowser Source="about:blank">
+					<Toolkit:WebView Source="about:blank"
+									 x:Name="browser"
+									 AllowDrop="True">
 						<i:Interaction.Behaviors>
 							<behaviors:NavigatorBehavior Navigator="{Binding Navigator}" />
 							<mtti:TaskbarThumbnailBehavior />
@@ -318,7 +321,7 @@
 								<behaviors:ScreenshotAction />
 							</livet:InteractionMessageTrigger>
 						</i:Interaction.Triggers>
-					</WebBrowser>
+					</Toolkit:WebView>
 				</controls:KanColleHost>
 				<DockPanel x:Name="BottomToolbarArea"
 						   DockPanel.Dock="Bottom"

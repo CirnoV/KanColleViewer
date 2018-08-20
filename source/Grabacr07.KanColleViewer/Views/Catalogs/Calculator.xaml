@@ -124,6 +124,13 @@
 
 			<StackPanel>
 				<TextBlock Margin="0,5,0,5">
+					<TextBlock TextWrapping="WrapWithOverflow"
+							   Foreground="#FFFF3434">
+						<Run Text="※칸코레2.0 이후 해역이 변경되어 노드별로 경험치가 달라지게되었습니다. 따라서 경험치 계산기의 계산이 정확하지 않을 수 있습니다." />
+					</TextBlock>
+				</TextBlock>
+
+				<TextBlock Margin="0,5,0,5">
 					<TextBlock Text="※목표 레벨은 개조레벨로 자동설정됩니다!" Foreground="#FFFF6B6B"/>
 					<LineBreak/>
 					<TextBlock Margin="0,3,0,0" FontSize="10" Text="  개조가 모두 끝난 칸무스는 현재레벨+1로 목표가 설정됩니다."/>

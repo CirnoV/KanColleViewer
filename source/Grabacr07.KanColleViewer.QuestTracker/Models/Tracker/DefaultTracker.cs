@@ -59,8 +59,6 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 			}
 		}
 
-		private QuestProgressType lastProgress = QuestProgressType.None;
-
 		public DefaultTracker()
 		{
 			this.Datas = new TrackingValue[0];
@@ -147,25 +145,31 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models.Tracker
 		private void CheckOverUnder(QuestProgressType progress)
 		{
 			if (this.Datas.Length != 1) return;
-			if (lastProgress == progress) return;
-			lastProgress = progress;
 
-			int Current = this.Datas[0].Current;
-			int Maximum = this.Datas[0].Maximum;
-			int cut50 = this.Progress50, cut80 = this.Progress80;
+			var Current = this.Datas[0].Current;
+			var Maximum = this.Datas[0].Maximum;
+			var cut50 = this.Progress50;
+			var cut80 = this.Progress80;
 
 			switch (progress)
 			{
 				case QuestProgressType.None:
-					if (Current >= cut50) Current = cut50 - 1;
+					if (Current >= cut50)
+						Current = cut50 - 1;
 					break;
 				case QuestProgressType.Progress50:
-					if (Current >= cut80) Current = cut80 - 1;
-					if (Current < cut50) Current = cut50;
+					if (Current >= cut80)
+						Current = cut80 - 1;
+
+					if (Current < cut50)
+						Current = cut50;
 					break;
 				case QuestProgressType.Progress80:
-					if (Current >= Maximum) Current = Maximum - 1;
-					if (Current < cut80) Current = cut80;
+					if (Current >= Maximum)
+						Current = Maximum - 1;
+
+					if (Current < cut80)
+						Current = cut80;
 					break;
 				case QuestProgressType.Complete:
 					Current = Maximum;

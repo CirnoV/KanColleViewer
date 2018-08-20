@@ -179,6 +179,7 @@
     <Compile Include="Models\GCWorker.cs" />
     <Compile Include="Models\HQRecord.cs" />
     <Compile Include="Models\IZoomFactor.cs" />
+    <Compile Include="Models\Migration\cef_Migration.cs" />
     <Compile Include="Models\NotifierHost.cs" />
     <Compile Include="Models\ProductInfo.cs" />
     <Compile Include="Models\Migration\_XmlFileReader.cs" />
@@ -206,7 +207,6 @@
     <Compile Include="Models\TaskbarProgress.cs" />
     <Compile Include="Models\Volume.cs" />
     <Compile Include="Models\Migration\_KanColleClientSettings.cs" />
-    <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\AkashiTimerViewModel.cs" />
     <Compile Include="ViewModels\Catalogs\CalculatorViewModel.cs" />
     <Compile Include="ViewModels\Catalogs\DictionaryViewModel.cs" />

@@ -294,7 +294,6 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 				StatusService.Current.Notify("failed to apply css: " + ex.Message);
 			}
 		}
-
 		private void ApplyPromisePolyfill()
 		{
 			var patch = new Action<IWebBrowser2>(browser =>
@@ -308,58 +307,36 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 					inject('https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js');
 					inject('https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js');
 
+					var communicator = document.createElement('div');
+					communicator.style.display = 'none';
+					communicator.id = 'communicator';
+					document.body.appendChild(communicator);
+
 					var timer = setInterval(function(){
 						if(!window.Promise) return;
 						clearInterval(timer);
 
 						var els = document.querySelectorAll('canvas');
 						for(var i=0; i<els.length; i++) els[i].parentNode.removeChild(els[i]);
+
+						PIXI.settings.RENDER_OPTIONS.preserveDrawingBuffer = true;
 						KCS.init();
 					}, 100);
+
+					window.takeScreenshot = function(mimetype){
+						var canvas = document.querySelector('canvas');
+						communicator.innerHTML = canvas.toDataURL(mimetype);
+					};
 				";
-				browser.Navigate("javascript:" + script.Replace("\r", "").Replace("\n", "").Replace("\t", ""));
+				browser.Navigate("javascript:void(function(){" + script.Replace("\r", "").Replace("\n", "").Replace("\t", "") + "}())");
 			});
 
 			try
 			{
-				var document = this.WebBrowser.Document as HTMLDocument;
-				if (document == null) return;
+				var subBrowser = Helper.GetGameFrame(this.WebBrowser);
+				if (subBrowser == null) return;
 
-				var frames = document.frames;
-				for (var i = 0; i < frames.length; i++)
-				{
-					var item = frames.item(i);
-					var provider = item as IServiceProvider;
-					if (provider == null) continue;
-
-					object ppvObject;
-					provider.QueryService(typeof(IWebBrowserApp).GUID, typeof(IWebBrowser2).GUID, out ppvObject);
-					var webBrowser = ppvObject as IWebBrowser2;
-
-					var iframeDocument = webBrowser?.Document as HTMLDocument;
-					if (iframeDocument == null) continue;
-
-					if (iframeDocument.getElementById("htmlWrap") != null)
-					{
-						var subframes = iframeDocument.frames;
-						for (var j = 0; j < subframes.length; j++)
-						{
-							var subitem = subframes.item(j);
-							var subprovider = subitem as IServiceProvider;
-							if (subprovider == null) continue;
-
-							object subppvObject;
-							subprovider.QueryService(typeof(IWebBrowserApp).GUID, typeof(IWebBrowser2).GUID, out subppvObject);
-							var subBrowser = subppvObject as IWebBrowser2;
-
-							var subiframeDocument = subBrowser?.Document as HTMLDocument;
-							if (subiframeDocument == null) continue;
-
-							if (subiframeDocument.url.Contains("/kcs2/"))
-								patch(subBrowser);
-						}
-					}
-				}
+				patch(subBrowser);
 			}
 			catch { }
 		}

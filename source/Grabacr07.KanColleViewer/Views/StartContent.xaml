@@ -283,10 +283,10 @@
 						<Paragraph Language="ko-KR">
 							<Run Text="「제독업무도 바빠！」는 칸코레를 편하게 즐기기 위한 툴입니다." />
 							<LineBreak />
-							<Run Text="칸코레는 내장되어있는 Internet Explorer (IE)로 작동합니다. 칸코레서버에 어떠한 부담도 주지않도록 설계,개발하고, 통신내용의 변경 및 서버정보의 전송, Flash추출, 매크로,치트등의 기능은 일절 포함되어 있지 않습니다." />
+							<Run Text="칸코레는 내장되어있는 Internet Explorer (IE)로 작동합니다. 칸코레서버에 어떠한 부담도 주지않도록 설계,개발하고, 통신내용의 변경 및 서버정보의 전송, 데이터 추출, 매크로,치트등의 기능은 일절 포함되어 있지 않습니다." />
 						</Paragraph>
 						<Paragraph Language="ko-KR">
-							<Run Text="게임이 제대로 표시되지 않거나 스크립트 오류가 반복되면 IE의 캐시를 삭제해보세요. 개선되지않으면 IE의 설정이나 'IE에서 Flash사용이 가능한가' 등의 것들을 확인하주시기 바랍니다." />
+							<Run Text="게임이 제대로 표시되지 않거나 스크립트 오류가 반복되면 IE의 캐시를 삭제해보세요. 개선되지않으면 IE의 설정 등의 것들을 확인하주시기 바랍니다." />
 						</Paragraph>
 						<Paragraph>
 							<InlineUIContainer>

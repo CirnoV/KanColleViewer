@@ -244,9 +244,19 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 				if (step == 0)
 				{
 					var script = string.Format(
-						"document.addEventListener('DOMContentLoaded', function(){{"
-							+ "var x=document.createElement('style');x.type='text/css';x.innerHTML='{0}';document.body.appendChild(x);"
-						+ "}});",
+						@"document.addEventListener('DOMContentLoaded', function(){{
+							var x = document.createElement('style');
+							x.type = 'text/css';
+							x.innerHTML = '{0}';
+							document.body.appendChild(x);
+							setInterval(function(){
+								var iframes = document.getElementsByTagName('iframe');
+								for(var i=0; i<iframes.length; i++){
+									if(iframes[i].src.indexOf('/ifr?')<0)
+										iframes[i].parentNode.removeChild(iframes[i]);
+								}
+							}, 1000);
+						}});",
 						this.UserStyleSheet.Replace("'", "\\'").Replace("\r\n", "\\n")
 					);
 					WebBrowser.InvokeScript("eval", new object[] { script });

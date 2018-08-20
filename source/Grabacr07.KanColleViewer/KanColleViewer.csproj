@@ -101,6 +101,9 @@
     <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="NAudio, Version=1.8.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.8.4\lib\net35\NAudio.dll</HintPath>
+    </Reference>
     <Reference Include="Nekoxy, Version=1.5.3.21, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nekoxy.1.5.3.21\lib\net45\Nekoxy.dll</HintPath>
     </Reference>
@@ -175,7 +178,6 @@
     <Compile Include="Models\ExpeditionResultData.cs" />
     <Compile Include="Models\ExpeditionPossible.cs" />
     <Compile Include="Models\ExpeditionExtension.cs" />
-    <Compile Include="Models\FlashQuality.cs" />
     <Compile Include="Models\GCWorker.cs" />
     <Compile Include="Models\HQRecord.cs" />
     <Compile Include="Models\IZoomFactor.cs" />
@@ -205,7 +207,6 @@
     <Compile Include="Models\Migration\_Settings.cs" />
     <Compile Include="Models\SupportedImageFormat.cs" />
     <Compile Include="Models\TaskbarProgress.cs" />
-    <Compile Include="Models\Volume.cs" />
     <Compile Include="Models\Migration\_KanColleClientSettings.cs" />
     <Compile Include="ViewModels\AkashiTimerViewModel.cs" />
     <Compile Include="ViewModels\Catalogs\CalculatorViewModel.cs" />

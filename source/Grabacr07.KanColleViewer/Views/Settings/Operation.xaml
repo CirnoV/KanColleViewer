@@ -8,7 +8,7 @@
 			 xmlns:vms="clr-namespace:Grabacr07.KanColleViewer.ViewModels.Settings"
 			 mc:Ignorable="d"
 			 d:DesignWidth="500"
-			 d:DesignHeight="880"
+			 d:DesignHeight="800"
 			 d:DataContext="{d:DesignInstance vms:SettingsViewModel}">
 	<UserControl.Resources>
 		<ResourceDictionary>

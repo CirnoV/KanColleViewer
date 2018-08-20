@@ -1,4 +1,4 @@
-<UserControl x:Class="Grabacr07.KanColleViewer.Views.Settings.Browser"
+﻿<UserControl x:Class="Grabacr07.KanColleViewer.Views.Settings.Browser"
 			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
@@ -72,7 +72,6 @@
 						   Foreground="{DynamicResource ActiveForegroundBrushKey}" />
 			</DockPanel>
 
-			<!--
 			<Rectangle Height="1"
 					   Style="{DynamicResource SeparatorRectangleStyleKey}" />
 			<TextBlock Text="GPU 렌더링 활성화" Style="{DynamicResource SettingsHeaderTextStyleKey}" />
@@ -80,7 +79,6 @@
 					  IsChecked="{Binding Source={x:Static ms:KanColleSettings.GPURenderEnable}, Path=Value}"
 					  Height="17" Margin="15,0,0,10"/>
 			<TextBlock Text="※프로그램 재시작후 적용됩니다." Height="17" Margin="15,0,0,10"/>
-			-->
 		</StackPanel>
 	</ScrollViewer>
 </UserControl>

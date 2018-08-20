@@ -147,8 +147,11 @@ namespace Grabacr07.KanColleViewer
 				GCWorker.Current.AddTo(this).Startup();
 
 				// WebBrowser 컨트롤 IE 버전 레지스트리 패치, MMCSS 설정
-				// Helper.SetRegistryFeatureBrowserEmulation();
+				Helper.SetRegistryFeatureBrowserEmulation();
 				if (GeneralSettings.MMCSSEnabled) Helper.SetMMCSSTask();
+
+				// CEF 제거 마이그레이션
+				Models.Migration.cef_Migration.Migration();
 
 				// 번역 여부
 				KanColleClient.Current.Translations.EnableTranslations = KanColleSettings.EnableTranslations;

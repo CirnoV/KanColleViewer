@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -86,8 +86,6 @@ namespace Grabacr07.KanColleViewer.ViewModels.Settings
 		#endregion
 
 
-		public IReadOnlyCollection<DisplayViewModel<FlashQuality>> FlashQualityCollection { get; }
-
 		private SettingsViewModel()
 		{
 			this.ScreenshotSettings = new ScreenshotSettingsViewModel().AddTo(this);
@@ -101,13 +99,6 @@ namespace Grabacr07.KanColleViewer.ViewModels.Settings
 				.Subscribe(nameof(this.BrowserZoomFactor.Current), () => GeneralSettings.BrowserZoomFactor.Value = this.BrowserZoomFactor.Current)
 				.AddTo(this);
 			GeneralSettings.BrowserZoomFactor.Subscribe(x => this.BrowserZoomFactor.Current = x).AddTo(this);
-
-			this.FlashQualityCollection = new List<DisplayViewModel<FlashQuality>>
-			{
-				DisplayViewModel.Create(FlashQuality.Low,    "낮음"),
-				DisplayViewModel.Create(FlashQuality.Medium, "중간"),
-				DisplayViewModel.Create(FlashQuality.High,   "높음"),
-			};
 
 			this.Cultures = new[] { new CultureViewModel { DisplayName = "(auto)" } }
 				.Concat(ResourceService.Current.SupportedCultures

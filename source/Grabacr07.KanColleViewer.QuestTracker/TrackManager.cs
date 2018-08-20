@@ -102,6 +102,8 @@ namespace Grabacr07.KanColleViewer.QuestTracker.Models
 						y =>
 						{
 							var result = DynamicJson.Parse(y);
+							if (result.status.ToString() == "error") return;
+
 							ApplySyncData(
 								result.data.ToString() as string,
 								Convert.ToInt64(result.timestamp.ToString() as string)

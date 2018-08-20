@@ -21,7 +21,6 @@
 				   xmlns:contents="clr-namespace:Grabacr07.KanColleViewer.Views.Contents"
 				   xmlns:settings="clr-namespace:Grabacr07.KanColleViewer.Models.Settings"
 				   xmlns:ms="clr-namespace:Grabacr07.KanColleViewer.Models.Settings"
-				   xmlns:cefSharp="clr-namespace:CefSharp.Wpf"
 				   mc:Ignorable="d"
 				   d:DataContext="{d:DesignInstance viewModels:KanColleWindowViewModel}"
 				   Title="{Binding Title}"
@@ -308,7 +307,7 @@
 							<behaviors:ZoomAction />
 						</livet:InteractionMessageTrigger>
 					</i:Interaction.Triggers>
-					<cefSharp:ChromiumWebBrowserEx x:Name="browser" AllowDrop="True">
+					<WebBrowser Source="about:blank">
 						<i:Interaction.Behaviors>
 							<behaviors:NavigatorBehavior Navigator="{Binding Navigator}" />
 							<mtti:TaskbarThumbnailBehavior />
@@ -319,7 +318,7 @@
 								<behaviors:ScreenshotAction />
 							</livet:InteractionMessageTrigger>
 						</i:Interaction.Triggers>
-					</cefSharp:ChromiumWebBrowserEx>
+					</WebBrowser>
 				</controls:KanColleHost>
 				<DockPanel x:Name="BottomToolbarArea"
 						   DockPanel.Dock="Bottom"

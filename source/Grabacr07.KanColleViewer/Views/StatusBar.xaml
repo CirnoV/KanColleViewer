@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Grabacr07.KanColleViewer.Views.StatusBar"
+<UserControl x:Class="Grabacr07.KanColleViewer.Views.StatusBar"
 			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -128,7 +128,7 @@
 									BorderThickness="1"
 									Background="#FF005AFF" />
 							<TextBlock Margin="4,4,0,0"
-									   Text="{Binding Mission.Id, Mode=OneWay, StringFormat=[{0}]}" />
+									   Text="{Binding Mission.DisplayId, Mode=OneWay, StringFormat=[{0}]}" />
 							<TextBlock Margin="3,4,0,0"
 									   Text="{Binding Remaining, Mode=OneWay}" />
 						</StackPanel>

@@ -68,6 +68,7 @@ namespace Grabacr07.KanColleViewer.Models
 		public static void SetRegistryFeatureBrowserEmulation()
 		{
 			const string key = @"HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION";
+			const string NInputkey = @"HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_NINPUT_LEGACYMODE";
 			const string GPUkey = @"HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_GPU_RENDERING";
 
 			int GPUSettingValue = 0;
@@ -78,6 +79,7 @@ namespace Grabacr07.KanColleViewer.Models
 			{
 				var valueName = Process.GetCurrentProcess().ProcessName + ".exe";
 				Registry.SetValue(key, valueName, Properties.Settings.Default.FeatureBrowserEmulation, RegistryValueKind.DWord);
+				Registry.SetValue(NInputkey, valueName, 0, RegistryValueKind.DWord);
 
 				if (Registry.GetValue(GPUkey, valueName, null) == null)
 				{

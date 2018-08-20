@@ -206,6 +206,7 @@
     <Compile Include="Models\TaskbarProgress.cs" />
     <Compile Include="Models\Volume.cs" />
     <Compile Include="Models\Migration\_KanColleClientSettings.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\AkashiTimerViewModel.cs" />
     <Compile Include="ViewModels\Catalogs\CalculatorViewModel.cs" />
     <Compile Include="ViewModels\Catalogs\DictionaryViewModel.cs" />

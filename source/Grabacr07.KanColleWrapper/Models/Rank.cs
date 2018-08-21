@@ -1,4 +1,8 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
 namespace Grabacr07.KanColleWrapper.Models
 {
 	public static class Rank
@@ -8,26 +12,26 @@ namespace Grabacr07.KanColleWrapper.Models
 			switch (rank)
 			{
 				case 1:
-					return "원수";
+					return "元帥";
 				case 2:
-					return "대장";
+					return "大将";
 				case 3:
-					return "중장";
+					return "中将";
 				case 4:
-					return "소장";
+					return "少将";
 				case 5:
-					return "대령";
+					return "大佐";
 				case 6:
-					return "중령";
+					return "中佐";
 				case 7:
-					return "신참중령";
+					return "新米中佐";
 				case 8:
-					return "소령";
+					return "少佐";
 				case 9:
-					return "중견소령";
+					return "中堅少佐";
 				case 10:
 				default:
-					return "신참소령";
+					return "新米少佐";
 			}
 		}
 	}

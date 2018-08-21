@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,15 +24,14 @@ namespace Grabacr07.KanColleViewer.ViewModels.Settings
 			protected set { throw new NotImplementedException(); }
 		}
 
-        public ScreenshotSettingsViewModel ScreenshotSettings { get; }
+
+		public ScreenshotSettingsViewModel ScreenshotSettings { get; }
 
 		public WindowSettingsViewModel WindowSettings { get; }
 
-        public NetworkSettingsViewModel NetworkSettings { get; }
+		public NetworkSettingsViewModel NetworkSettings { get; }
 
 		public UserStyleSheetSettingsViewModel UserStyleSheetSettings { get; }
-
-		public OptimizeSettingsViewModel OptimizeSettings { get; }
 
 		public NavigatorViewModel Navigator { get; set; }
 
@@ -85,14 +84,12 @@ namespace Grabacr07.KanColleViewer.ViewModels.Settings
 
 		#endregion
 
-
 		private SettingsViewModel()
 		{
 			this.ScreenshotSettings = new ScreenshotSettingsViewModel().AddTo(this);
 			this.WindowSettings = new WindowSettingsViewModel().AddTo(this);
 			this.NetworkSettings = new NetworkSettingsViewModel().AddTo(this);
 			this.UserStyleSheetSettings = new UserStyleSheetSettingsViewModel().AddTo(this);
-			this.OptimizeSettings = new Settings.OptimizeSettingsViewModel().AddTo(this);
 
 			this.BrowserZoomFactor = new BrowserZoomFactor { Current = GeneralSettings.BrowserZoomFactor };
 			this.BrowserZoomFactor

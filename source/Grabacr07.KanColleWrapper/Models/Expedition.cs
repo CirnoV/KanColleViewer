@@ -1,9 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grabacr07.KanColleWrapper.Internal;
-using Grabacr07.KanColleWrapper.Models.Raw;
 
 namespace Grabacr07.KanColleWrapper.Models
 {
@@ -93,24 +92,6 @@ namespace Grabacr07.KanColleWrapper.Models
 
 		#endregion
 
-		#region ExpeditionResult 変更通知プロパティ
-
-		private ExpeditionResult _ExpeditionResult;
-		public ExpeditionResult ExpeditionResult
-		{
-			get { return this._ExpeditionResult; }
-			private set
-			{
-				if (this._ExpeditionResult != value)
-				{
-					this._ExpeditionResult = value;
-					this.RaisePropertyChanged();
-				}
-			}
-		}
-
-		#endregion
-
 		/// <summary>
 		/// 艦隊が遠征から帰ったときに発生します。
 		/// </summary>
@@ -138,9 +119,6 @@ namespace Grabacr07.KanColleWrapper.Models
 				this.UpdateCore();
 			}
 		}
-
-		internal void Done(kcsapi_mission_result mission)
-			=> this.ExpeditionResult = new ExpeditionResult(mission);
 
 		private void UpdateCore()
 		{

@@ -95,9 +95,6 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="TrotiNet, Version=0.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Nekoxy.1.5.1.19\lib\net45\TrotiNet.dll</HintPath>
-      <HintPath>..\..\packages\Nekoxy.1.5.2.20\lib\net45\TrotiNet.dll</HintPath>
-      <Private>True</Private>
       <HintPath>..\..\packages\Nekoxy.1.5.3.21\lib\net45\TrotiNet.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />

@@ -79,6 +79,9 @@
 						HorizontalAlignment="Right"
 						VerticalAlignment="Top"
 						WindowChrome.IsHitTestVisibleInChrome="True">
+				<metro:CaptionButton IsChecked="{Binding Settings.TopMost.Value, Mode=TwoWay}"
+									 ToolTip="{Binding Resources.Settings_Window_TopMost, Source={x:Static models:ResourceService.Current}, Mode=OneWay}"
+									 Style="{DynamicResource PinButtonStyleKey}" />
 				<metro:SystemButtons />
 			</StackPanel>
 
@@ -99,7 +102,7 @@
 					  Margin="8"
 					  IsExpanded="{Binding IsOpenFilterSettings, Mode=TwoWay}">
 				<Expander.Header>
-					<TextBlock Text="필터 설정"
+					<TextBlock Text="フィルター設定"
 							   Style="{DynamicResource HeaderTextStyleKey}"
 							   Foreground="{DynamicResource ActiveForegroundBrushKey}" />
 				</Expander.Header>
@@ -122,13 +125,13 @@
 							</Grid.RowDefinitions>
 
 							<TextBlock Margin="0,2">
-								<Run Text="함종" />
+								<Run Text="艦種" />
 								<Run Text=":" />
 							</TextBlock>
 
 							<CheckBox Grid.Row="0"
 									  Grid.Column="2"
-									  Content="모두선택"
+									  Content="すべて選択"
 									  IsChecked="{Binding CheckAllShipTypes, Mode=TwoWay}"
 									  Margin="0,2" />
 
@@ -164,14 +167,14 @@
 									</Style>
 								</WrapPanel.Resources>
 								<!-- これっきりボタン -->
-								<metro2:CallMethodButton Content="구축함">
+								<metro2:CallMethodButton Content="駆逐艦">
 									<metro2:CallMethodButton.MethodParameter>
 										<x:Array Type="s:Int32">
 											<s:Int32>2</s:Int32>
 										</x:Array>
 									</metro2:CallMethodButton.MethodParameter>
 								</metro2:CallMethodButton>
-								<metro2:CallMethodButton Content="경순・뇌순">
+								<metro2:CallMethodButton Content="軽巡・雷巡">
 									<metro2:CallMethodButton.MethodParameter>
 										<x:Array Type="s:Int32">
 											<s:Int32>3</s:Int32>
@@ -179,7 +182,7 @@
 										</x:Array>
 									</metro2:CallMethodButton.MethodParameter>
 								</metro2:CallMethodButton>
-								<metro2:CallMethodButton Content="중순・항순">
+								<metro2:CallMethodButton Content="重巡・航巡">
 									<metro2:CallMethodButton.MethodParameter>
 										<x:Array Type="s:Int32">
 											<s:Int32>5</s:Int32>
@@ -187,7 +190,7 @@
 										</x:Array>
 									</metro2:CallMethodButton.MethodParameter>
 								</metro2:CallMethodButton>
-								<metro2:CallMethodButton Content="전함">
+								<metro2:CallMethodButton Content="戦艦">
 									<metro2:CallMethodButton.MethodParameter>
 										<x:Array Type="s:Int32">
 											<s:Int32>8</s:Int32>
@@ -197,7 +200,7 @@
 										</x:Array>
 									</metro2:CallMethodButton.MethodParameter>
 								</metro2:CallMethodButton>
-								<metro2:CallMethodButton Content="항공모함">
+								<metro2:CallMethodButton Content="航空母艦">
 									<metro2:CallMethodButton.MethodParameter>
 										<x:Array Type="s:Int32">
 											<s:Int32>7</s:Int32>
@@ -206,7 +209,7 @@
 										</x:Array>
 									</metro2:CallMethodButton.MethodParameter>
 								</metro2:CallMethodButton>
-								<metro2:CallMethodButton Content="잠수함">
+								<metro2:CallMethodButton Content="潜水艦">
 									<metro2:CallMethodButton.MethodParameter>
 										<x:Array Type="s:Int32">
 											<s:Int32>13</s:Int32>
@@ -214,7 +217,7 @@
 										</x:Array>
 									</metro2:CallMethodButton.MethodParameter>
 								</metro2:CallMethodButton>
-								<metro2:CallMethodButton Content="항전・항순">
+								<metro2:CallMethodButton Content="航戦・航巡">
 									<metro2:CallMethodButton.MethodParameter>
 										<x:Array Type="s:Int32">
 											<s:Int32>6</s:Int32>
@@ -260,31 +263,17 @@
 									</Grid.ColumnDefinitions>
 									<TextBlock Margin="0,2"
 											   HorizontalAlignment="Right">
-										<Run Text="레벨 범위" />
+										<Run Text="レベル" />
 										<Run Text=":" />
 									</TextBlock>
-									<StackPanel Grid.Column="2">
-										<WrapPanel>
-											<metro:PromptTextBox Grid.Column="1"
-												 Text="{Binding MinLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-												 Prompt=" 최소 "
-												 VerticalAlignment="Center"
-												 VerticalContentAlignment="Center">
-											</metro:PromptTextBox>
-											<TextBlock Margin="5,3,5,5" Text="~"/>
-											<metro:PromptTextBox Grid.Column="1"
-												 Text="{Binding MaxLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-												 Prompt=" 최대 "
-												 VerticalAlignment="Center"
-												 VerticalContentAlignment="Center">
-											</metro:PromptTextBox>
-										</WrapPanel>
-										<WrapPanel Margin="0,3,0,0">
-											<metro2:CallMethodButton Margin="0,0,5,0" Content="모두" MethodName="SetLevelRange" MethodParameter="1-165"/>
-											<metro2:CallMethodButton Margin="0,0,5,0" Content="Lv. 1" MethodName="SetLevelRange" MethodParameter="1-1"/>
-											<metro2:CallMethodButton Margin="0,0,5,0" Content="Lv. 2 이상" MethodName="SetLevelRange" MethodParameter="2-165"/>
-										</WrapPanel>
-									</StackPanel>
+									<WrapPanel Grid.Column="2">
+										<RadioButton Content="すべて"
+													 IsChecked="{Binding Both, Mode=TwoWay}" />
+										<RadioButton Content="Lv.2 以上"
+													 IsChecked="{Binding Level2OrMore, Mode=TwoWay}" />
+										<RadioButton Content="Lv.1"
+													 IsChecked="{Binding Level1, Mode=TwoWay}" />
+									</WrapPanel>
 								</Grid>
 
 								<Grid DataContext="{Binding ShipLockFilter}">
@@ -296,15 +285,15 @@
 									</Grid.ColumnDefinitions>
 									<TextBlock Margin="0,2"
 											   HorizontalAlignment="Right">
-										<Run Text="자물쇠" />
+										<Run Text="ロック" />
 										<Run Text=":" />
 									</TextBlock>
 									<WrapPanel Grid.Column="2">
-										<RadioButton Content="모두"
+										<RadioButton Content="すべて"
 													 IsChecked="{Binding Both, Mode=TwoWay}" />
-										<RadioButton Content="채움"
+										<RadioButton Content="ロックしている"
 													 IsChecked="{Binding Locked, Mode=TwoWay}" />
-										<RadioButton Content="안채움"
+										<RadioButton Content="ロックしていない"
 													 IsChecked="{Binding Unlocked, Mode=TwoWay}" />
 									</WrapPanel>
 								</Grid>
@@ -318,11 +307,11 @@
 									</Grid.ColumnDefinitions>
 									<TextBlock Margin="0,2"
 											   HorizontalAlignment="Right">
-										<Run Text="원정" />
+										<Run Text="遠征" />
 										<Run Text=":" />
 									</TextBlock>
 									<WrapPanel Grid.Column="2">
-										<CheckBox Content="원정중인 칸무스를 제외"
+										<CheckBox Content="遠征中の艦を除外する"
 												  IsChecked="{Binding WithoutExpedition, Mode=TwoWay}" />
 									</WrapPanel>
 								</Grid>
@@ -338,14 +327,18 @@
 									</Grid.ColumnDefinitions>
 									<TextBlock Margin="0,2"
 											   HorizontalAlignment="Right">
-										<Run Text="속력" />
+										<Run Text="速力" />
 										<Run Text=":" />
 									</TextBlock>
 									<WrapPanel Grid.Column="2">
-										<CheckBox Content="초고속" IsChecked="{Binding Fastest, Mode=TwoWay}" />
-										<CheckBox Content="고속+" IsChecked="{Binding Faster, Mode=TwoWay}" />
-										<CheckBox Content="고속" IsChecked="{Binding Fast, Mode=TwoWay}" />
-										<CheckBox Content="저속" IsChecked="{Binding Slow, Mode=TwoWay}" />
+										<CheckBox Content="最速"
+												  IsChecked="{Binding Fastest, Mode=TwoWay}" />
+										<CheckBox Content="高速+"
+												  IsChecked="{Binding Faster, Mode=TwoWay}" />
+										<CheckBox Content="高速"
+												  IsChecked="{Binding Fast, Mode=TwoWay}" />
+										<CheckBox Content="低速"
+												  IsChecked="{Binding Slow, Mode=TwoWay}" />
 									</WrapPanel>
 								</Grid>
 
@@ -358,15 +351,15 @@
 									</Grid.ColumnDefinitions>
 									<TextBlock Margin="0,2"
 											   HorizontalAlignment="Right">
-										<Run Text="개조" />
+										<Run Text="改造" />
 										<Run Text=":" />
 									</TextBlock>
 									<WrapPanel Grid.Column="2">
-										<RadioButton Content="모두"
+										<RadioButton Content="すべて"
 													 IsChecked="{Binding Both, Mode=TwoWay}" />
-										<RadioButton Content="개조완료"
+										<RadioButton Content="改造完了"
 													 IsChecked="{Binding AlreadyRemodeling, Mode=TwoWay}" />
-										<RadioButton Content="개조미완"
+										<RadioButton Content="改造未完"
 													 IsChecked="{Binding NotAlreadyRemodeling, Mode=TwoWay}" />
 									</WrapPanel>
 								</Grid>
@@ -380,38 +373,16 @@
 									</Grid.ColumnDefinitions>
 									<TextBlock Margin="0,2"
 											   HorizontalAlignment="Right">
-										<Run Text="근대화개수" />
+										<Run Text="近代化改修" />
 										<Run Text=":" />
 									</TextBlock>
 									<WrapPanel Grid.Column="2">
-										<RadioButton Content="모두"
+										<RadioButton Content="すべて"
 													 IsChecked="{Binding Both, Mode=TwoWay}" />
-										<RadioButton Content="개수완료"
+										<RadioButton Content="改修完了"
 													 IsChecked="{Binding MaxModernized, Mode=TwoWay}" />
-										<RadioButton Content="개수미완"
+										<RadioButton Content="改修未完"
 													 IsChecked="{Binding NotMaxModernized, Mode=TwoWay}" />
-									</WrapPanel>
-								</Grid>
-
-								<Grid DataContext="{Binding DaihatsueFilter}">
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="Auto"
-														  SharedSizeGroup="FilterName" />
-										<ColumnDefinition Width="10" />
-										<ColumnDefinition Width="*" />
-									</Grid.ColumnDefinitions>
-									<TextBlock Margin="0,2"
-											   HorizontalAlignment="Right">
-										<Run Text="대발동정" />
-										<Run Text=":" />
-									</TextBlock>
-									<WrapPanel Grid.Column="2">
-										<RadioButton Content="모두"
-													 IsChecked="{Binding Both, Mode=TwoWay}" />
-										<RadioButton Content="장착가능"
-													 IsChecked="{Binding CanEquip, Mode=TwoWay}" />
-										<RadioButton Content="불가능"
-													 IsChecked="{Binding CannotEquip, Mode=TwoWay}" />
 									</WrapPanel>
 								</Grid>
 							</StackPanel>
@@ -426,15 +397,15 @@
 									</Grid.ColumnDefinitions>
 									<TextBlock Margin="0,2"
 											   HorizontalAlignment="Right">
-										<Run Text="데미지" />
+										<Run Text="損傷" />
 										<Run Text=":" />
 									</TextBlock>
 									<WrapPanel Grid.Column="2">
-										<RadioButton Content="모두"
+										<RadioButton Content="すべて"
 													 IsChecked="{Binding Both, Mode=TwoWay}" />
-										<RadioButton Content="손상됨"
+										<RadioButton Content="損傷あり"
 													 IsChecked="{Binding Damaged, Mode=TwoWay}" />
-										<RadioButton Content="손상되지않음"
+										<RadioButton Content="損傷なし"
 													 IsChecked="{Binding Undamaged, Mode=TwoWay}" />
 									</WrapPanel>
 								</Grid>
@@ -448,38 +419,16 @@
 									</Grid.ColumnDefinitions>
 									<TextBlock Margin="0,2"
 											   HorizontalAlignment="Right">
-										<Run Text="컨디션" />
+										<Run Text="condition" />
 										<Run Text=":" />
 									</TextBlock>
 									<WrapPanel Grid.Column="2">
-										<RadioButton Content="모두"
+										<RadioButton Content="すべて"
 													 IsChecked="{Binding Both, Mode=TwoWay}" />
-										<RadioButton Content="50이상"
+										<RadioButton Content="50 以上"
 													 IsChecked="{Binding Brilliant, Mode=TwoWay}" />
-										<RadioButton Content="49이하"
+										<RadioButton Content="50 未満"
 													 IsChecked="{Binding Unbrilliant, Mode=TwoWay}" />
-									</WrapPanel>
-								</Grid>
-
-								<Grid DataContext="{Binding ShipExSlotFilter}">
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="Auto"
-														  SharedSizeGroup="FilterName" />
-										<ColumnDefinition Width="10" />
-										<ColumnDefinition Width="*" />
-									</Grid.ColumnDefinitions>
-									<TextBlock Margin="0,2"
-											   HorizontalAlignment="Right">
-										<Run Text="확장슬롯" />
-										<Run Text=":" />
-									</TextBlock>
-									<WrapPanel Grid.Column="2">
-										<RadioButton Content="전부"
-													 IsChecked="{Binding Both, Mode=TwoWay}" />
-										<RadioButton Content="장착안됨"
-													 IsChecked="{Binding Unequiped, Mode=TwoWay}" />
-										<RadioButton Content="장착됨"
-													 IsChecked="{Binding Equiped, Mode=TwoWay}" />
 									</WrapPanel>
 								</Grid>
 							</StackPanel>
@@ -493,7 +442,7 @@
 							Visibility="{Binding ShipSallyAreaFilter.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
 						<DockPanel>
 							<TextBlock Margin="0,2">
-								<Run Text="출격해역" />
+								<Run Text="出撃海域" />
 								<Run Text=":" />
 							</TextBlock>
 							<ItemsControl ItemsSource="{Binding ShipSallyAreaFilter.SallyAreas}">
@@ -512,54 +461,6 @@
 							</ItemsControl>
 						</DockPanel>
 					</Border>
-					<Border BorderThickness="1"
-							BorderBrush="{DynamicResource BorderBrushKey}"
-							Margin="0,8,0,0"
-							Padding="5">
-						<Grid>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto"/>
-								<ColumnDefinition Width="300"/>
-								<ColumnDefinition Width="20"/>
-								<ColumnDefinition Width="Auto"/>
-								<ColumnDefinition Width="10"/>
-								<ColumnDefinition Width="*"/>
-							</Grid.ColumnDefinitions>
-							<TextBlock Margin="0,3">
-								<Run Text="칸무스 검색" />
-							</TextBlock>
-
-							<metro:PromptTextBox DataContext="{Binding ShipNameSearchFilter}" Grid.Column="1"
-												 Text="{Binding NameString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-												 Prompt="칸무스 이름을 입력하고 Enter를 눌러 검색"
-												 VerticalAlignment="Center"
-												 VerticalContentAlignment="Center"
-												 Margin="10,0,0,0">
-								<metro:PromptTextBox.InputBindings>
-									<KeyBinding Key="Enter"
-												Command="{Binding SearchCommand}" />
-								</metro:PromptTextBox.InputBindings>
-							</metro:PromptTextBox>
-							
-							<TextBlock Grid.Column="3" Margin="0,2"
-											   HorizontalAlignment="Right">
-										<Run Text="소속 함대" />
-										<Run Text=":" />
-							</TextBlock>
-							<WrapPanel DataContext="{Binding ShipFleetFilter}" Grid.Column="5" Margin="0,2,0,0">
-								<RadioButton Margin="0,0,10,0" Content="전체"
-													 IsChecked="{Binding AllFleet, Mode=TwoWay}" />
-								<RadioButton Margin="0,0,10,0" Content="제 1함대"
-													 IsChecked="{Binding FirstFleet, Mode=TwoWay}" />
-								<RadioButton Margin="0,0,10,0" Content="제 2함대"
-													 IsChecked="{Binding SecondFleet, Mode=TwoWay}" />
-								<RadioButton Margin="0,0,10,0" Content="제 3함대"
-													 IsChecked="{Binding ThirdFleet, Mode=TwoWay}" />
-								<RadioButton Margin="0,0,10,0" Content="제 4함대"
-													 IsChecked="{Binding FourthFleet, Mode=TwoWay}" />
-							</WrapPanel>
-						</Grid>
-					</Border>
 				</StackPanel>
 			</Expander>
 
@@ -568,7 +469,7 @@
 					  Margin="8,0"
 					  IsExpanded="{Binding IsOpenSortSettings, Mode=TwoWay}">
 				<Expander.Header>
-					<TextBlock Text="정렬 설정"
+					<TextBlock Text="並べ替え設定"
 							   Style="{DynamicResource HeaderTextStyleKey}"
 							   Foreground="{DynamicResource ActiveForegroundBrushKey}" />
 				</Expander.Header>
@@ -580,19 +481,19 @@
 					<DockPanel LastChildFill="False">
 						<metro2:CallMethodButton DockPanel.Dock="Right"
 												 MethodName="Update"
-												 Content="갱신"
+												 Content="更新"
 												 Margin="8,3,3,3"
 												 Padding="12,4" />
 
 						<metro2:CallMethodButton DockPanel.Dock="Right"
 												 MethodTarget="{Binding SortWorker}"
 												 MethodName="Clear"
-												 Content="클리어"
+												 Content="クリア"
 												 Margin="8,3,0,3"
 												 Padding="12,4" />
 
 						<TextBlock DockPanel.Dock="Top"
-								   Text="칸무스를 해당 순서로 정렬합니다"
+								   Text="艦娘を以下の順序で並べ替えます。"
 								   Style="{DynamicResource DefaultTextStyleKey}"
 								   Margin="3,2,0,8" />
 
@@ -624,7 +525,7 @@
 										<metro:PromptComboBox DockPanel.Dock="Bottom"
 															  ItemsSource="{Binding SelectableColumns}"
 															  SelectedItem="{Binding Current, Mode=TwoWay}"
-															  Prompt="정렬 방법"
+															  Prompt="並べ替え方法"
 															  Width="120"
 															  Margin="1,4,0,0">
 											<metro:PromptComboBox.ItemsPanel>
@@ -640,11 +541,10 @@
 											</metro:PromptComboBox.ItemTemplate>
 										</metro:PromptComboBox>
 										<RadioButton DockPanel.Dock="Left"
-													 Content="오름차순"
+													 Content="昇順"
 													 IsChecked="{Binding IsAscending, Mode=TwoWay}" />
 										<RadioButton DockPanel.Dock="Left"
-													 Content="내림차순"
-
+													 Content="降順"
 													 IsChecked="{Binding IsDescending, Mode=OneWay}"
 													 Margin="12,0,0,0" />
 									</DockPanel>
@@ -742,7 +642,7 @@
 								<GridViewColumn.Header>
 									<metro2:SortButton MethodName="Sort"
 													   MethodParameter="{x:Static viewModels:ShipCatalogSortWorker.StypeColumn}">
-										<TextBlock Text="함종" />
+										<TextBlock Text="艦種" />
 									</metro2:SortButton>
 								</GridViewColumn.Header>
 								<GridViewColumn.CellTemplate>
@@ -755,25 +655,16 @@
 
 							<GridViewColumn Width="102">
 								<GridViewColumn.Header>
-									<TextBlock Text="함명" />
-									<!--<metro2:SortButton MethodName="Sort"
+									<metro2:SortButton MethodName="Sort"
 													   MethodParameter="{x:Static viewModels:ShipCatalogSortWorker.NameColumn}">
-										
-									</metro2:SortButton>-->
+										<TextBlock Text="艦名" />
+									</metro2:SortButton>
 								</GridViewColumn.Header>
 								<GridViewColumn.CellTemplate>
 									<DataTemplate>
 										<TextBlock Text="{Binding Ship.Info.Name, Mode=OneWay}"
 												   Foreground="{DynamicResource ActiveForegroundBrushKey}"
-												   Margin="0,3">
-											<TextBlock.ToolTip>
-												<TextBlock>
-																<Run Text="{Binding Ship.Info.JPName, Mode=OneWay}"
-																	 Style="{DynamicResource EmphaticTextElementStyleKey}"
-																	 FontSize="15"/>
-												</TextBlock>
-											</TextBlock.ToolTip>
-										</TextBlock>
+												   Margin="0,3" />
 									</DataTemplate>
 								</GridViewColumn.CellTemplate>
 							</GridViewColumn>
@@ -782,7 +673,7 @@
 								<GridViewColumn.Header>
 									<metro2:SortButton MethodName="Sort"
 													   MethodParameter="{x:Static viewModels:ShipCatalogSortWorker.LevelColumn}">
-										<TextBlock Text="레벨" />
+										<TextBlock Text="レベル" />
 									</metro2:SortButton>
 								</GridViewColumn.Header>
 								<GridViewColumn.CellTemplate>
@@ -795,81 +686,7 @@
 												 Foreground="{DynamicResource ActiveForegroundBrushKey}" />
 											<Run Text="" />
 											<Run Text="{Binding Ship.ExpForNextLevel, StringFormat=Next:{0}, Mode=OneWay}" />
-											<TextBlock.ToolTip>
-												<TextBlock>
-													<Run Text="누적 경험치:" />
-													<Run Text="{Binding Ship.Exp, Mode=OneWay}" />
-												</TextBlock>
-											</TextBlock.ToolTip>
 										</TextBlock>
-									</DataTemplate>
-								</GridViewColumn.CellTemplate>
-							</GridViewColumn>
-
-							<GridViewColumn Width="92">
-								<GridViewColumn.Header>
-									<TextBlock Text="개조레벨" />
-								</GridViewColumn.Header>
-								<GridViewColumn.CellTemplate>
-									<DataTemplate>
-										<Grid x:Name="LvBorder"
-											  Margin="-2,0">
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="Auto" />
-												<ColumnDefinition Width="Auto" />
-												<ColumnDefinition Width="Auto" />
-												<ColumnDefinition Width="Auto" />
-											</Grid.ColumnDefinitions>
-
-											<TextBlock FontSize="9"
-													   Margin="0,3,3,3">
-												<Run Text="Lv."
-													 x:Name="Lvtext" />
-												<Run Text="{Binding Ship.RemodelLevel, Mode=OneWay}"
-													 FontSize="12"
-													 x:Name="NextLv"
-													 Foreground="{DynamicResource ActiveForegroundBrushKey}" />
-											</TextBlock>
-
-											<Image x:Name="BlueprintImage"
-												   Source="http://wolfgangkurz.github.io/KanColleAssets/useitem/blueprint.png"
-												   Grid.Column="1"
-												   Margin="2,0"
-												   VerticalAlignment="Center"
-												   Width="18"
-												   Height="18"
-												   Visibility="{Binding Ship.NeedBlueprint, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-											<Image x:Name="CatapultImage"
-												   Source="http://wolfgangkurz.github.io/KanColleAssets/useitem/catapult.png"
-												   Grid.Column="2"
-												   Margin="2,0"
-												   VerticalAlignment="Center"
-												   Width="18"
-												   Height="18"
-												   Visibility="{Binding Ship.NeedCatapult, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-											<Image x:Name="ReportImage"
-												   Source="http://wolfgangkurz.github.io/KanColleAssets/useitem/action_report.png"
-												   Grid.Column="3"
-												   Margin="2,0"
-												   VerticalAlignment="Center"
-												   Width="18"
-												   Height="18"
-												   Visibility="{Binding Ship.NeedReport, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-										</Grid>
-										<DataTemplate.Triggers>
-											<DataTrigger Binding="{Binding Ship.RemodelLevel}" Value="0">
-												<Setter TargetName="Lvtext" Property="Text" Value="" />
-												<Setter TargetName="NextLv" Property="Text" Value="" />
-												<Setter TargetName="BlueprintImage" Property="Visibility" Value="Collapsed" />
-												<Setter TargetName="CatapultImage" Property="Visibility" Value="Collapsed" />
-											</DataTrigger>
-											<DataTrigger Binding="{Binding Ship.RemodelLevel}" Value="-1">
-												<Setter TargetName="Lvtext" Property="Text" Value="" />
-												<Setter TargetName="NextLv" Property="Text" Value="개조가능" />
-												<Setter TargetName="NextLv" Property="Foreground" Value="White" />
-												<Setter TargetName="LvBorder" Property="Background" Value="#FF384CD1" />
-											</DataTrigger>
-										</DataTemplate.Triggers>
 									</DataTemplate>
 								</GridViewColumn.CellTemplate>
 							</GridViewColumn>
@@ -901,24 +718,8 @@
 							<GridViewColumn Width="64">
 								<GridViewColumn.Header>
 									<metro2:SortButton MethodName="Sort"
-													   MethodParameter="{x:Static viewModels:ShipCatalogSortWorker.HPColumn}">
-										<TextBlock Text="최대 HP" />
-									</metro2:SortButton>
-								</GridViewColumn.Header>
-								<GridViewColumn.CellTemplate>
-									<DataTemplate>
-										<TextBlock Margin="0,3"
-												   Text="{Binding Ship.HP.Maximum, Mode=OneWay}"
-												   Foreground="{DynamicResource ActiveForegroundBrushKey}"/>
-									</DataTemplate>
-								</GridViewColumn.CellTemplate>
-							</GridViewColumn>
-
-							<GridViewColumn Width="64">
-								<GridViewColumn.Header>
-									<metro2:SortButton MethodName="Sort"
 													   MethodParameter="{x:Static viewModels:ShipCatalogSortWorker.FirepowerColumn}">
-										<TextBlock Text="화력" />
+										<TextBlock Text="火力" />
 									</metro2:SortButton>
 								</GridViewColumn.Header>
 								<GridViewColumn.CellTemplate>
@@ -935,7 +736,7 @@
 								<GridViewColumn.Header>
 									<metro2:SortButton MethodName="Sort"
 													   MethodParameter="{x:Static viewModels:ShipCatalogSortWorker.TorpedoColumn}">
-										<TextBlock Text="뇌장" />
+										<TextBlock Text="雷装" />
 									</metro2:SortButton>
 								</GridViewColumn.Header>
 								<GridViewColumn.CellTemplate>
@@ -948,45 +749,11 @@
 								</GridViewColumn.CellTemplate>
 							</GridViewColumn>
 
-							<GridViewColumn Width="70">
-								<GridViewColumn.Header>
-									<metro2:SortButton MethodName="Sort"
-													   MethodParameter="{x:Static viewModels:ShipCatalogSortWorker.YasenFpColumn}">
-										<TextBlock Text="화력+뇌장" />
-									</metro2:SortButton>
-								</GridViewColumn.Header>
-								<GridViewColumn.CellTemplate>
-									<DataTemplate>
-										<kcvc:Modernizable Status="{Binding Ship.YasenFp, Mode=OneWay}"
-														   Background="#663399"
-														   MinWidth="70"
-														   Margin="-5,0" />
-									</DataTemplate>
-								</GridViewColumn.CellTemplate>
-							</GridViewColumn>
-
-							<GridViewColumn Width="64">
-								<GridViewColumn.Header>
-									<metro2:SortButton MethodName="Sort"
-													   MethodParameter="{x:Static viewModels:ShipCatalogSortWorker.ArmerColumn}">
-										<TextBlock Text="장갑" />
-									</metro2:SortButton>
-								</GridViewColumn.Header>
-								<GridViewColumn.CellTemplate>
-									<DataTemplate>
-										<kcvc:Modernizable Status="{Binding Ship.Armer, Mode=OneWay}"
-														   Background="#7FD8981A"
-														   MinWidth="64"
-														   Margin="-5,0" />
-									</DataTemplate>
-								</GridViewColumn.CellTemplate>
-							</GridViewColumn>
-
 							<GridViewColumn Width="64">
 								<GridViewColumn.Header>
 									<metro2:SortButton MethodName="Sort"
 													   MethodParameter="{x:Static viewModels:ShipCatalogSortWorker.AAColumn}">
-										<TextBlock Text="대공" />
+										<TextBlock Text="対空" />
 									</metro2:SortButton>
 								</GridViewColumn.Header>
 								<GridViewColumn.CellTemplate>
@@ -1002,14 +769,14 @@
 							<GridViewColumn Width="64">
 								<GridViewColumn.Header>
 									<metro2:SortButton MethodName="Sort"
-													   MethodParameter="{x:Static viewModels:ShipCatalogSortWorker.ASWColumn}">
-										<TextBlock Text="대잠" />
+													   MethodParameter="{x:Static viewModels:ShipCatalogSortWorker.ArmerColumn}">
+										<TextBlock Text="装甲" />
 									</metro2:SortButton>
 								</GridViewColumn.Header>
 								<GridViewColumn.CellTemplate>
 									<DataTemplate>
-										<kcvc:Modernizable Status="{Binding Ship.ASW, Mode=OneWay}"
-														   Background="#8BA2B0"
+										<kcvc:Modernizable Status="{Binding Ship.Armer, Mode=OneWay}"
+														   Background="#7FD8981A"
 														   MinWidth="64"
 														   Margin="-5,0" />
 									</DataTemplate>
@@ -1020,7 +787,7 @@
 								<GridViewColumn.Header>
 									<metro2:SortButton MethodName="Sort"
 													   MethodParameter="{x:Static viewModels:ShipCatalogSortWorker.LuckColumn}">
-										<TextBlock Text="운" />
+										<TextBlock Text="運" />
 									</metro2:SortButton>
 								</GridViewColumn.Header>
 								<GridViewColumn.CellTemplate>
@@ -1037,8 +804,8 @@
 								<GridViewColumn.Header>
 									<metro2:SortButton MethodName="Sort"
 													   MethodParameter="{x:Static viewModels:ShipCatalogSortWorker.ViewRangeColumn}">
-										<TextBlock Text="색적"
-												   ToolTip="장비+칸무스 스텟" />
+										<TextBlock Text="索敵"
+												   ToolTip="装備によるステータス上昇を含んだ値です" />
 									</metro2:SortButton>
 								</GridViewColumn.Header>
 								<GridViewColumn.CellTemplate>
@@ -1054,8 +821,25 @@
 								<GridViewColumn.Header>
 									<metro2:SortButton MethodName="Sort"
 													   MethodParameter="{x:Static viewModels:ShipCatalogSortWorker.ASWColumn}">
-										<TextBlock Text="속력"
-												   ToolTip="장비에 의한 스테이터스 상승을 포함한 수치" />
+										<TextBlock Text="対潜"
+												   ToolTip="装備によるステータス上昇を含んだ値です" />
+									</metro2:SortButton>
+								</GridViewColumn.Header>
+								<GridViewColumn.CellTemplate>
+									<DataTemplate>
+										<TextBlock Text="{Binding Ship.ASW, Mode=OneWay}"
+												   Foreground="{DynamicResource ActiveForegroundBrushKey}"
+												   Margin="0,3" />
+									</DataTemplate>
+								</GridViewColumn.CellTemplate>
+							</GridViewColumn>
+
+							<GridViewColumn Width="45">
+								<GridViewColumn.Header>
+									<metro2:SortButton MethodName="Sort"
+													   MethodParameter="{x:Static viewModels:ShipCatalogSortWorker.ASWColumn}">
+										<TextBlock Text="速力"
+												   ToolTip="装備によるステータス上昇を含んだ値です" />
 									</metro2:SortButton>
 								</GridViewColumn.Header>
 								<GridViewColumn.CellTemplate>
@@ -1067,14 +851,23 @@
 												   Padding="5,3"
 												   MinWidth="45" />
 										<DataTemplate.Triggers>
-											<DataTrigger Binding="{Binding Ship.Speed}" Value="Fastest">
-												<Setter TargetName="Text" Property="Background" Value="RoyalBlue" />
+											<DataTrigger Binding="{Binding Ship.Speed}"
+														 Value="Fastest">
+												<Setter TargetName="Text"
+														Property="Background"
+														Value="RoyalBlue" />
 											</DataTrigger>
-											<DataTrigger Binding="{Binding Ship.Speed}" Value="Faster">
-												<Setter TargetName="Text" Property="Background" Value="SteelBlue" />
+											<DataTrigger Binding="{Binding Ship.Speed}"
+														 Value="Faster">
+												<Setter TargetName="Text"
+														Property="Background"
+														Value="SteelBlue" />
 											</DataTrigger>
-											<DataTrigger Binding="{Binding Ship.Speed}" Value="Slow">
-												<Setter TargetName="Text" Property="Opacity" Value="0.5" />
+											<DataTrigger Binding="{Binding Ship.Speed}"
+														 Value="Slow">
+												<Setter TargetName="Text"
+														Property="Opacity"
+														Value="0.5" />
 											</DataTrigger>
 										</DataTemplate.Triggers>
 									</DataTemplate>
@@ -1083,7 +876,7 @@
 
 							<GridViewColumn Width="{Binding ShipSallyAreaFilter.ColumnWidth}">
 								<GridViewColumn.Header>
-									<TextBlock Text="출격해역" />
+									<TextBlock Text="出撃海域" />
 								</GridViewColumn.Header>
 								<GridViewColumn.CellTemplate>
 									<DataTemplate>
@@ -1104,8 +897,8 @@
 								<GridViewColumn.Header>
 									<metro2:SortButton MethodName="Sort"
 													   MethodParameter="{x:Static viewModels:ShipCatalogSortWorker.TimeToRepairColumn}">
-										<TextBlock Text="수리시간"
-												   ToolTip="입거에 걸리는 시간입니다" />
+										<TextBlock Text="修復時間"
+												   ToolTip="入渠にかかる時間です" />
 									</metro2:SortButton>
 								</GridViewColumn.Header>
 								<GridViewColumn.CellTemplate>
@@ -1119,7 +912,7 @@
 
 							<GridViewColumn Width="96">
 								<GridViewColumn.Header>
-									<TextBlock Text="장비" />
+									<TextBlock Text="装備" />
 								</GridViewColumn.Header>
 								<GridViewColumn.CellTemplate>
 									<DataTemplate DataType="{x:Type contentsVm:ShipViewModel}">
@@ -1134,6 +927,7 @@
 												<ItemsControl.ItemTemplate>
 													<DataTemplate>
 														<Border x:Name="Elements"
+																ToolTip="{Binding Item.NameWithLevel}"
 																Background="Transparent"
 																Height="20"
 																Padding="0,1">
@@ -1141,645 +935,6 @@
 																<kcvc:SlotItemIcon Type="{Binding Item.Info.IconType}"
 																				   Margin="0,0,4,0" />
 															</Viewbox>
-															<Border.ToolTip>
-																<StackPanel Orientation="Vertical">
-																	<StackPanel Orientation="Horizontal"
-																				Margin="0,0,0,10">
-																		<kcvc:SlotItemIcon Type="{Binding Item.Info.IconType}"
-																						   Margin="0,0,3,0"
-																						   Width="20"
-																						   Height="20"
-																						   VerticalAlignment="Center" />
-																		<TextBlock VerticalAlignment="Center">
-																			<Run Text="{Binding Item.Info.Name, Mode=OneWay}" />
-																			<Run>
-																				<Run.Style>
-																					<Style TargetType="{x:Type Run}">
-																						<Setter Property="Text" Value="{Binding Item.Proficiency, Mode=OneWay, StringFormat=+{0}}" />
-																						<Setter Property="Foreground" Value="#FFD49C0F" />
-																						<Style.Triggers>
-																							<DataTrigger Binding="{Binding Item.Proficiency, Mode=OneWay}" Value="0">
-																								<Setter Property="Text" Value="" />
-																							</DataTrigger>
-																							<DataTrigger Binding="{Binding Item.Proficiency, Mode=OneWay, Converter={StaticResource RangeToBooleanConverter}, ConverterParameter=1-3}" Value="True">
-																								<Setter Property="Foreground" Value="#FF98B3CE" />
-																							</DataTrigger>
-																						</Style.Triggers>
-																					</Style>
-																				</Run.Style>
-																			</Run>
-																			<Run Text="{Binding Item.LevelText, Mode=OneWay}"
-																				 Foreground="#FF45A9A5" />
-																		</TextBlock>
-																	</StackPanel>
-											
-																	<TextBlock Margin="0,2,0,0">
-																		<Run Text="화력:" />
-																		<Run Text="{Binding Item.Info.Firepower, Mode=OneWay}">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.Info.Firepower}" Value="0">
-																							<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-																		<Run Foreground="#FF45A9A5">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Text" Value="{Binding Item.ImprovementStats.Firepower, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.ImprovementStats.Firepower}" Value="0">
-																							<Setter Property="Text" Value="" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Style.Triggers>
-																					<MultiDataTrigger>
-																						<MultiDataTrigger.Conditions>
-																							<Condition Binding="{Binding Item.Info.Firepower}" Value="0" />
-																							<Condition Binding="{Binding Item.ImprovementStats.Firepower}" Value="0" />
-																						</MultiDataTrigger.Conditions>
-																						<MultiDataTrigger.Setters>
-																							<Setter Property="Visibility" Value="Collapsed" />
-																						</MultiDataTrigger.Setters>
-																					</MultiDataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-											
-																	<TextBlock Margin="0,2,0,0">
-																		<Run Text="뇌장:" />
-																		<Run Text="{Binding Item.Info.Torpedo, Mode=OneWay}">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.Info.Torpedo}" Value="0">
-																							<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-																		<Run Foreground="#FF45A9A5">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Text" Value="{Binding Item.ImprovementStats.Torpedo, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.ImprovementStats.Torpedo}" Value="0">
-																							<Setter Property="Text" Value="" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Style.Triggers>
-																					<MultiDataTrigger>
-																						<MultiDataTrigger.Conditions>
-																							<Condition Binding="{Binding Item.Info.Torpedo}" Value="0" />
-																							<Condition Binding="{Binding Item.ImprovementStats.Torpedo}" Value="0" />
-																						</MultiDataTrigger.Conditions>
-																						<MultiDataTrigger.Setters>
-																							<Setter Property="Visibility" Value="Collapsed" />
-																						</MultiDataTrigger.Setters>
-																					</MultiDataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-																	<TextBlock Margin="0,2,0,0">
-																		<Run Text="뇌격 명중:" />
-																		<Run Foreground="#FF45A9A5"
-																			 Text="{Binding Item.ImprovementStats.TorpedoHit, Mode=OneWay, StringFormat={}+{0:N2}}" />
-
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Style.Triggers>
-																					<DataTrigger Binding="{Binding Item.ImprovementStats.TorpedoHit}" Value="0">
-																						<Setter Property="Visibility" Value="Collapsed" />
-																					</DataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-
-																	<TextBlock Margin="0,2,0,0">
-																		<Run Text="대공:" />
-																		<Run Text="{Binding Item.Info.AA, Mode=OneWay}">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.Info.AA}" Value="0">
-																							<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-																		<Run Foreground="#FF45A9A5">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Text" Value="{Binding Item.ImprovementStats.AA, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.ImprovementStats.AA}" Value="0">
-																							<Setter Property="Text" Value="" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Style.Triggers>
-																					<MultiDataTrigger>
-																						<MultiDataTrigger.Conditions>
-																							<Condition Binding="{Binding Item.Info.AA}" Value="0" />
-																							<Condition Binding="{Binding Item.ImprovementStats.AA}" Value="0" />
-																						</MultiDataTrigger.Conditions>
-																						<MultiDataTrigger.Setters>
-																							<Setter Property="Visibility" Value="Collapsed" />
-																						</MultiDataTrigger.Setters>
-																					</MultiDataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-																	<TextBlock Margin="0,2,0,0">
-																		<Run Text="함대 방공:" />
-																		<Run Foreground="#FF45A9A5"
-																			 Text="{Binding Item.ImprovementStats.FleetAA, Mode=OneWay, StringFormat={}+{0:N2}}" />
-
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Style.Triggers>
-																					<DataTrigger Binding="{Binding Item.ImprovementStats.FleetAA}" Value="0">
-																						<Setter Property="Visibility" Value="Collapsed" />
-																					</DataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-
-																	<TextBlock Margin="0,2,0,0">
-																		<Run Text="장갑:" />
-																		<Run Text="{Binding Item.Info.Armer, Mode=OneWay}">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.Info.Armer}" Value="0">
-																							<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-																		<Run Foreground="#FF45A9A5">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Text" Value="{Binding Item.ImprovementStats.Armor, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.ImprovementStats.Armor}" Value="0">
-																							<Setter Property="Text" Value="" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Style.Triggers>
-																					<MultiDataTrigger>
-																						<MultiDataTrigger.Conditions>
-																							<Condition Binding="{Binding Item.Info.Armer}" Value="0" />
-																							<Condition Binding="{Binding Item.ImprovementStats.Armor}" Value="0" />
-																						</MultiDataTrigger.Conditions>
-																						<MultiDataTrigger.Setters>
-																							<Setter Property="Visibility" Value="Collapsed" />
-																						</MultiDataTrigger.Setters>
-																					</MultiDataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-																	<TextBlock Margin="0,2,0,0">
-																		<Run Text="폭장:" />
-																		<Run Text="{Binding Item.Info.Bomb, Mode=OneWay}">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.Info.Bomb}" Value="0">
-																							<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-																		<Run Foreground="#FF45A9A5">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Text" Value="{Binding Item.ImprovementStats.Bomb, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.ImprovementStats.Bomb}" Value="0">
-																							<Setter Property="Text" Value="" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Style.Triggers>
-																					<MultiDataTrigger>
-																						<MultiDataTrigger.Conditions>
-																							<Condition Binding="{Binding Item.Info.Bomb}" Value="0" />
-																							<Condition Binding="{Binding Item.ImprovementStats.Bomb}" Value="0" />
-																						</MultiDataTrigger.Conditions>
-																						<MultiDataTrigger.Setters>
-																							<Setter Property="Visibility" Value="Collapsed" />
-																						</MultiDataTrigger.Setters>
-																					</MultiDataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-
-																	<TextBlock Margin="0,2,0,0">
-																		<Run Text="대잠:" />
-																		<Run Text="{Binding Item.Info.ASW, Mode=OneWay}">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.Info.ASW}" Value="0">
-																							<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-																		<Run Foreground="#FF45A9A5">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Text" Value="{Binding Item.ImprovementStats.ASW, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.ImprovementStats.ASW}" Value="0">
-																							<Setter Property="Text" Value="" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Style.Triggers>
-																					<MultiDataTrigger>
-																						<MultiDataTrigger.Conditions>
-																							<Condition Binding="{Binding Item.Info.ASW}" Value="0" />
-																							<Condition Binding="{Binding Item.ImprovementStats.ASW}" Value="0" />
-																						</MultiDataTrigger.Conditions>
-																						<MultiDataTrigger.Setters>
-																							<Setter Property="Visibility" Value="Collapsed" />
-																						</MultiDataTrigger.Setters>
-																					</MultiDataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-																	<TextBlock Margin="0,2,0,0">
-																		<Run Text="대잠 명중:" />
-																		<Run Foreground="#FF45A9A5"
-																			 Text="{Binding Item.ImprovementStats.ASWHit, Mode=OneWay, StringFormat={}+{0:N2}}" />
-
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Style.Triggers>
-																					<DataTrigger Binding="{Binding Item.ImprovementStats.ASWHit}" Value="0">
-																						<Setter Property="Visibility" Value="Collapsed" />
-																					</DataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-
-																	<TextBlock Margin="0,2,0,0">
-																		<InlineUIContainer>
-																			<TextBlock>
-																				<TextBlock.Style>
-																					<Style TargetType="{x:Type TextBlock}">
-																						<Setter Property="Text" Value="명중:" />
-																						<Style.Triggers>
-																							<DataTrigger Binding="{Binding Item.Info.Type, Mode=OneWay}" Value="局地戦闘機">
-																								<Setter Property="Text" Value="대폭:" />
-																							</DataTrigger>
-																						</Style.Triggers>
-																					</Style>
-																				</TextBlock.Style>
-																			</TextBlock>
-																		</InlineUIContainer>
-																		<Run Text="{Binding Item.Info.Hit, Mode=OneWay}">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.Info.Hit}" Value="0">
-																							<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-																		<Run Foreground="#FF45A9A5">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Text" Value="{Binding Item.ImprovementStats.Hit, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.ImprovementStats.Hit}" Value="0">
-																							<Setter Property="Text" Value="" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Style.Triggers>
-																					<MultiDataTrigger>
-																						<MultiDataTrigger.Conditions>
-																							<Condition Binding="{Binding Item.Info.Hit}" Value="0" />
-																							<Condition Binding="{Binding Item.ImprovementStats.Hit}" Value="0" />
-																						</MultiDataTrigger.Conditions>
-																						<MultiDataTrigger.Setters>
-																							<Setter Property="Visibility" Value="Collapsed" />
-																						</MultiDataTrigger.Setters>
-																					</MultiDataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-																	<TextBlock Margin="0,2,0,0">
-																		<InlineUIContainer>
-																			<TextBlock>
-																				<TextBlock.Style>
-																					<Style TargetType="{x:Type TextBlock}">
-																						<Setter Property="Text" Value="회피:" />
-																						<Style.Triggers>
-																							<DataTrigger Binding="{Binding Item.Info.Type, Mode=OneWay}" Value="局地戦闘機">
-																								<Setter Property="Text" Value="영격:" />
-																							</DataTrigger>
-																						</Style.Triggers>
-																					</Style>
-																				</TextBlock.Style>
-																			</TextBlock>
-																		</InlineUIContainer>
-																		<Run Text="{Binding Item.Info.Evade, Mode=OneWay}">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.Info.Evade}" Value="0">
-																							<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-																		<Run Foreground="#FF45A9A5">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Text" Value="{Binding Item.ImprovementStats.Evade, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.ImprovementStats.Evade}" Value="0">
-																							<Setter Property="Text" Value="" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Style.Triggers>
-																					<MultiDataTrigger>
-																						<MultiDataTrigger.Conditions>
-																							<Condition Binding="{Binding Item.Info.Evade}" Value="0" />
-																							<Condition Binding="{Binding Item.ImprovementStats.Evade}" Value="0" />
-																						</MultiDataTrigger.Conditions>
-																						<MultiDataTrigger.Setters>
-																							<Setter Property="Visibility" Value="Collapsed" />
-																						</MultiDataTrigger.Setters>
-																					</MultiDataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-
-																	<TextBlock Margin="0,2,0,0">
-																		<Run Text="색적:" />
-																		<Run Text="{Binding Item.Info.ViewRange, Mode=OneWay}">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.Info.ViewRange}" Value="0">
-																							<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-																		<Run Foreground="#FF45A9A5">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Text" Value="{Binding Item.ImprovementStats.LoS, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.ImprovementStats.LoS}" Value="0">
-																							<Setter Property="Text" Value="" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Style.Triggers>
-																					<MultiDataTrigger>
-																						<MultiDataTrigger.Conditions>
-																							<Condition Binding="{Binding Item.Info.ViewRange}" Value="0" />
-																							<Condition Binding="{Binding Item.ImprovementStats.LoS}" Value="0" />
-																						</MultiDataTrigger.Conditions>
-																						<MultiDataTrigger.Setters>
-																							<Setter Property="Visibility" Value="Collapsed" />
-																						</MultiDataTrigger.Setters>
-																					</MultiDataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-
-																	<TextBlock Margin="0,10,0,0">
-																		<Run Text="원정 보너스: +" />
-																		<Run Text="{Binding Item.Info.ExpeditionBonus, Mode=OneWay}">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.Info.ExpeditionBonus}" Value="0">
-																							<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-																		<Run Foreground="#FF45A9A5">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Text" Value="{Binding Item.ImprovementStats.ExpeditionBonus, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.ImprovementStats.ExpeditionBonus}" Value="0">
-																							<Setter Property="Text" Value="" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-																		<Run Text="%" />
-
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Style.Triggers>
-																					<MultiDataTrigger>
-																						<MultiDataTrigger.Conditions>
-																							<Condition Binding="{Binding Item.Info.ExpeditionBonus}" Value="0" />
-																							<Condition Binding="{Binding Item.ImprovementStats.ExpeditionBonus}" Value="0" />
-																						</MultiDataTrigger.Conditions>
-																						<MultiDataTrigger.Setters>
-																							<Setter Property="Visibility" Value="Collapsed" />
-																						</MultiDataTrigger.Setters>
-																					</MultiDataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-																	<TextBlock Margin="0,10,0,0">
-																		<Run Text="포대형 특화 계수: 포격전 화력 x (" />
-																		<Run Text="{Binding Item.Info.TurrentEfficacy, Mode=OneWay, StringFormat={}{0:N2}}">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.Info.TurrentEfficacy}" Value="0">
-																							<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-																		<Run Foreground="#FF45A9A5">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Text" Value="{Binding Item.ImprovementStats.TurrentEfficacy, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.ImprovementStats.TurrentEfficacy}" Value="0">
-																							<Setter Property="Text" Value="" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-																		<Run Text=")" />
-
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Style.Triggers>
-																					<MultiDataTrigger>
-																						<MultiDataTrigger.Conditions>
-																							<Condition Binding="{Binding Item.Info.TurrentEfficacy}" Value="0" />
-																							<Condition Binding="{Binding Item.ImprovementStats.TurrentEfficacy}" Value="0" />
-																						</MultiDataTrigger.Conditions>
-																						<MultiDataTrigger.Setters>
-																							<Setter Property="Visibility" Value="Collapsed" />
-																						</MultiDataTrigger.Setters>
-																					</MultiDataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-
-																	<TextBlock Margin="0,10,0,0">
-																		<Run Text="항속거리:" />
-																		<Run Text="{Binding Item.Info.Distance, Mode=OneWay}">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.Info.Distance}" Value="0">
-																							<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Style.Triggers>
-																					<DataTrigger Binding="{Binding Item.Info.IsNumerable}" Value="False">
-																						<Setter Property="Visibility" Value="Collapsed" />
-																					</DataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-																	<TextBlock Margin="0,2,0,0">
-																		<Run Text="배치비용:" />
-																		<Run Text="{Binding Item.Info.AirBaseCost, Mode=OneWay}">
-																			<Run.Style>
-																				<Style TargetType="{x:Type Run}">
-																					<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																					<Style.Triggers>
-																						<DataTrigger Binding="{Binding Item.Info.AirBaseCost}" Value="0">
-																							<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																						</DataTrigger>
-																					</Style.Triggers>
-																				</Style>
-																			</Run.Style>
-																		</Run>
-
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Style.Triggers>
-																					<DataTrigger Binding="{Binding Item.Info.IsNumerable}" Value="False">
-																						<Setter Property="Visibility" Value="Collapsed" />
-																					</DataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-																</StackPanel>
-
-															</Border.ToolTip>
 														</Border>
 														<DataTemplate.Triggers>
 															<DataTrigger Binding="{Binding Equipped}"
@@ -1797,649 +952,11 @@
 												<Rectangle Width="1"
 														   Style="{DynamicResource SeparatorRectangleStyleKey}"
 														   Margin="12,1,0,1" />
-												<Border Padding="4,1">
+												<Border ToolTip="{Binding Ship.ExSlot.Item.NameWithLevel}"
+														Padding="4,1">
 													<Viewbox>
 														<kcvc:SlotItemIcon Type="{Binding Ship.ExSlot.Item.Info.IconType}" />
 													</Viewbox>
-													<Border.ToolTip>
-														<StackPanel Orientation="Vertical"
-																	DataContext="{Binding Ship.ExSlot}">
-															<StackPanel Orientation="Horizontal"
-																		Margin="0,0,0,10">
-																<kcvc:SlotItemIcon Type="{Binding Item.Info.IconType}"
-																				   Margin="0,0,3,0"
-																				   Width="20"
-																				   Height="20"
-																				   VerticalAlignment="Center" />
-																<TextBlock VerticalAlignment="Center">
-																	<Run Text="{Binding Item.Info.Name, Mode=OneWay}" />
-																	<Run>
-																		<Run.Style>
-																			<Style TargetType="{x:Type Run}">
-																				<Setter Property="Text" Value="{Binding Item.Proficiency, Mode=OneWay, StringFormat=+{0}}" />
-																				<Setter Property="Foreground" Value="#FFD49C0F" />
-																				<Style.Triggers>
-																					<DataTrigger Binding="{Binding Item.Proficiency, Mode=OneWay}" Value="0">
-																						<Setter Property="Text" Value="" />
-																					</DataTrigger>
-																					<DataTrigger Binding="{Binding Item.Proficiency, Mode=OneWay, Converter={StaticResource RangeToBooleanConverter}, ConverterParameter=1-3}" Value="True">
-																						<Setter Property="Foreground" Value="#FF98B3CE" />
-																					</DataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</Run.Style>
-																	</Run>
-																	<Run Text="{Binding Item.LevelText, Mode=OneWay}"
-																		 Foreground="#FF45A9A5" />
-																</TextBlock>
-															</StackPanel>
-											
-															<TextBlock Margin="0,2,0,0">
-																<Run Text="화력:" />
-																<Run Text="{Binding Item.Info.Firepower, Mode=OneWay}">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.Info.Firepower}" Value="0">
-																					<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-																<Run Foreground="#FF45A9A5">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Text" Value="{Binding Item.ImprovementStats.Firepower, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.ImprovementStats.Firepower}" Value="0">
-																					<Setter Property="Text" Value="" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-
-																<TextBlock.Style>
-																	<Style TargetType="{x:Type TextBlock}">
-																		<Style.Triggers>
-																			<MultiDataTrigger>
-																				<MultiDataTrigger.Conditions>
-																					<Condition Binding="{Binding Item.Info.Firepower}" Value="0" />
-																					<Condition Binding="{Binding Item.ImprovementStats.Firepower}" Value="0" />
-																				</MultiDataTrigger.Conditions>
-																				<MultiDataTrigger.Setters>
-																					<Setter Property="Visibility" Value="Collapsed" />
-																				</MultiDataTrigger.Setters>
-																			</MultiDataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-											
-															<TextBlock Margin="0,2,0,0">
-																<Run Text="뇌장:" />
-																<Run Text="{Binding Item.Info.Torpedo, Mode=OneWay}">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.Info.Torpedo}" Value="0">
-																					<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-																<Run Foreground="#FF45A9A5">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Text" Value="{Binding Item.ImprovementStats.Torpedo, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.ImprovementStats.Torpedo}" Value="0">
-																					<Setter Property="Text" Value="" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-
-																<TextBlock.Style>
-																	<Style TargetType="{x:Type TextBlock}">
-																		<Style.Triggers>
-																			<MultiDataTrigger>
-																				<MultiDataTrigger.Conditions>
-																					<Condition Binding="{Binding Item.Info.Torpedo}" Value="0" />
-																					<Condition Binding="{Binding Item.ImprovementStats.Torpedo}" Value="0" />
-																				</MultiDataTrigger.Conditions>
-																				<MultiDataTrigger.Setters>
-																					<Setter Property="Visibility" Value="Collapsed" />
-																				</MultiDataTrigger.Setters>
-																			</MultiDataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-															<TextBlock Margin="0,2,0,0">
-																<Run Text="뇌격 명중:" />
-																<Run Foreground="#FF45A9A5"
-																	 Text="{Binding Item.ImprovementStats.TorpedoHit, Mode=OneWay, StringFormat={}+{0:N2}}" />
-
-																<TextBlock.Style>
-																	<Style TargetType="{x:Type TextBlock}">
-																		<Style.Triggers>
-																			<DataTrigger Binding="{Binding Item.ImprovementStats.TorpedoHit}" Value="0">
-																				<Setter Property="Visibility" Value="Collapsed" />
-																			</DataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-
-															<TextBlock Margin="0,2,0,0">
-																<Run Text="대공:" />
-																<Run Text="{Binding Item.Info.AA, Mode=OneWay}">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.Info.AA}" Value="0">
-																					<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-																<Run Foreground="#FF45A9A5">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Text" Value="{Binding Item.ImprovementStats.AA, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.ImprovementStats.AA}" Value="0">
-																					<Setter Property="Text" Value="" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-
-																<TextBlock.Style>
-																	<Style TargetType="{x:Type TextBlock}">
-																		<Style.Triggers>
-																			<MultiDataTrigger>
-																				<MultiDataTrigger.Conditions>
-																					<Condition Binding="{Binding Item.Info.AA}" Value="0" />
-																					<Condition Binding="{Binding Item.ImprovementStats.AA}" Value="0" />
-																				</MultiDataTrigger.Conditions>
-																				<MultiDataTrigger.Setters>
-																					<Setter Property="Visibility" Value="Collapsed" />
-																				</MultiDataTrigger.Setters>
-																			</MultiDataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-															<TextBlock Margin="0,2,0,0">
-																<Run Text="함대 방공:" />
-																<Run Foreground="#FF45A9A5"
-																	 Text="{Binding Item.ImprovementStats.FleetAA, Mode=OneWay, StringFormat={}+{0:N2}}" />
-
-																<TextBlock.Style>
-																	<Style TargetType="{x:Type TextBlock}">
-																		<Style.Triggers>
-																			<DataTrigger Binding="{Binding Item.ImprovementStats.FleetAA}" Value="0">
-																				<Setter Property="Visibility" Value="Collapsed" />
-																			</DataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-
-															<TextBlock Margin="0,2,0,0">
-																<Run Text="장갑:" />
-																<Run Text="{Binding Item.Info.Armer, Mode=OneWay}">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.Info.Armer}" Value="0">
-																					<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-																<Run Foreground="#FF45A9A5">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Text" Value="{Binding Item.ImprovementStats.Armor, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.ImprovementStats.Armor}" Value="0">
-																					<Setter Property="Text" Value="" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-
-																<TextBlock.Style>
-																	<Style TargetType="{x:Type TextBlock}">
-																		<Style.Triggers>
-																			<MultiDataTrigger>
-																				<MultiDataTrigger.Conditions>
-																					<Condition Binding="{Binding Item.Info.Armer}" Value="0" />
-																					<Condition Binding="{Binding Item.ImprovementStats.Armor}" Value="0" />
-																				</MultiDataTrigger.Conditions>
-																				<MultiDataTrigger.Setters>
-																					<Setter Property="Visibility" Value="Collapsed" />
-																				</MultiDataTrigger.Setters>
-																			</MultiDataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-															<TextBlock Margin="0,2,0,0">
-																<Run Text="폭장:" />
-																<Run Text="{Binding Item.Info.Bomb, Mode=OneWay}">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.Info.Bomb}" Value="0">
-																					<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-																<Run Foreground="#FF45A9A5">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Text" Value="{Binding Item.ImprovementStats.Bomb, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.ImprovementStats.Bomb}" Value="0">
-																					<Setter Property="Text" Value="" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-
-																<TextBlock.Style>
-																	<Style TargetType="{x:Type TextBlock}">
-																		<Style.Triggers>
-																			<MultiDataTrigger>
-																				<MultiDataTrigger.Conditions>
-																					<Condition Binding="{Binding Item.Info.Bomb}" Value="0" />
-																					<Condition Binding="{Binding Item.ImprovementStats.Bomb}" Value="0" />
-																				</MultiDataTrigger.Conditions>
-																				<MultiDataTrigger.Setters>
-																					<Setter Property="Visibility" Value="Collapsed" />
-																				</MultiDataTrigger.Setters>
-																			</MultiDataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-
-															<TextBlock Margin="0,2,0,0">
-																<Run Text="대잠:" />
-																<Run Text="{Binding Item.Info.ASW, Mode=OneWay}">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.Info.ASW}" Value="0">
-																					<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-																<Run Foreground="#FF45A9A5">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Text" Value="{Binding Item.ImprovementStats.ASW, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.ImprovementStats.ASW}" Value="0">
-																					<Setter Property="Text" Value="" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-
-																<TextBlock.Style>
-																	<Style TargetType="{x:Type TextBlock}">
-																		<Style.Triggers>
-																			<MultiDataTrigger>
-																				<MultiDataTrigger.Conditions>
-																					<Condition Binding="{Binding Item.Info.ASW}" Value="0" />
-																					<Condition Binding="{Binding Item.ImprovementStats.ASW}" Value="0" />
-																				</MultiDataTrigger.Conditions>
-																				<MultiDataTrigger.Setters>
-																					<Setter Property="Visibility" Value="Collapsed" />
-																				</MultiDataTrigger.Setters>
-																			</MultiDataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-															<TextBlock Margin="0,2,0,0">
-																<Run Text="대잠 명중:" />
-																<Run Foreground="#FF45A9A5"
-																	 Text="{Binding Item.ImprovementStats.ASWHit, Mode=OneWay, StringFormat={}+{0:N2}}" />
-
-																<TextBlock.Style>
-																	<Style TargetType="{x:Type TextBlock}">
-																		<Style.Triggers>
-																			<DataTrigger Binding="{Binding Item.ImprovementStats.ASWHit}" Value="0">
-																				<Setter Property="Visibility" Value="Collapsed" />
-																			</DataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-
-															<TextBlock Margin="0,2,0,0">
-																<InlineUIContainer>
-																	<TextBlock>
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Setter Property="Text" Value="명중:" />
-																				<Style.Triggers>
-																					<DataTrigger Binding="{Binding Item.Info.Type, Mode=OneWay}" Value="局地戦闘機">
-																						<Setter Property="Text" Value="대폭:" />
-																					</DataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-																</InlineUIContainer>
-																<Run Text="{Binding Item.Info.Hit, Mode=OneWay}">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.Info.Hit}" Value="0">
-																					<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-																<Run Foreground="#FF45A9A5">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Text" Value="{Binding Item.ImprovementStats.Hit, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.ImprovementStats.Hit}" Value="0">
-																					<Setter Property="Text" Value="" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-
-																<TextBlock.Style>
-																	<Style TargetType="{x:Type TextBlock}">
-																		<Style.Triggers>
-																			<MultiDataTrigger>
-																				<MultiDataTrigger.Conditions>
-																					<Condition Binding="{Binding Item.Info.Hit}" Value="0" />
-																					<Condition Binding="{Binding Item.ImprovementStats.Hit}" Value="0" />
-																				</MultiDataTrigger.Conditions>
-																				<MultiDataTrigger.Setters>
-																					<Setter Property="Visibility" Value="Collapsed" />
-																				</MultiDataTrigger.Setters>
-																			</MultiDataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-															<TextBlock Margin="0,2,0,0">
-																<InlineUIContainer>
-																	<TextBlock>
-																		<TextBlock.Style>
-																			<Style TargetType="{x:Type TextBlock}">
-																				<Setter Property="Text" Value="회피:" />
-																				<Style.Triggers>
-																					<DataTrigger Binding="{Binding Item.Info.Type, Mode=OneWay}" Value="局地戦闘機">
-																						<Setter Property="Text" Value="영격:" />
-																					</DataTrigger>
-																				</Style.Triggers>
-																			</Style>
-																		</TextBlock.Style>
-																	</TextBlock>
-																</InlineUIContainer>
-																<Run Text="{Binding Item.Info.Evade, Mode=OneWay}">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.Info.Evade}" Value="0">
-																					<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-																<Run Foreground="#FF45A9A5">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Text" Value="{Binding Item.ImprovementStats.Evade, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.ImprovementStats.Evade}" Value="0">
-																					<Setter Property="Text" Value="" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-
-																<TextBlock.Style>
-																	<Style TargetType="{x:Type TextBlock}">
-																		<Style.Triggers>
-																			<MultiDataTrigger>
-																				<MultiDataTrigger.Conditions>
-																					<Condition Binding="{Binding Item.Info.Evade}" Value="0" />
-																					<Condition Binding="{Binding Item.ImprovementStats.Evade}" Value="0" />
-																				</MultiDataTrigger.Conditions>
-																				<MultiDataTrigger.Setters>
-																					<Setter Property="Visibility" Value="Collapsed" />
-																				</MultiDataTrigger.Setters>
-																			</MultiDataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-
-															<TextBlock Margin="0,2,0,0">
-																<Run Text="색적:" />
-																<Run Text="{Binding Item.Info.ViewRange, Mode=OneWay}">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.Info.ViewRange}" Value="0">
-																					<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-																<Run Foreground="#FF45A9A5">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Text" Value="{Binding Item.ImprovementStats.LoS, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.ImprovementStats.LoS}" Value="0">
-																					<Setter Property="Text" Value="" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-
-																<TextBlock.Style>
-																	<Style TargetType="{x:Type TextBlock}">
-																		<Style.Triggers>
-																			<MultiDataTrigger>
-																				<MultiDataTrigger.Conditions>
-																					<Condition Binding="{Binding Item.Info.ViewRange}" Value="0" />
-																					<Condition Binding="{Binding Item.ImprovementStats.LoS}" Value="0" />
-																				</MultiDataTrigger.Conditions>
-																				<MultiDataTrigger.Setters>
-																					<Setter Property="Visibility" Value="Collapsed" />
-																				</MultiDataTrigger.Setters>
-																			</MultiDataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-
-															<TextBlock Margin="0,10,0,0">
-																<Run Text="원정 보너스: +" />
-																<Run Text="{Binding Item.Info.ExpeditionBonus, Mode=OneWay}">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.Info.ExpeditionBonus}" Value="0">
-																					<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-																<Run Foreground="#FF45A9A5">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Text" Value="{Binding Item.ImprovementStats.ExpeditionBonus, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.ImprovementStats.ExpeditionBonus}" Value="0">
-																					<Setter Property="Text" Value="" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-																<Run Text="%" />
-
-																<TextBlock.Style>
-																	<Style TargetType="{x:Type TextBlock}">
-																		<Style.Triggers>
-																			<MultiDataTrigger>
-																				<MultiDataTrigger.Conditions>
-																					<Condition Binding="{Binding Item.Info.ExpeditionBonus}" Value="0" />
-																					<Condition Binding="{Binding Item.ImprovementStats.ExpeditionBonus}" Value="0" />
-																				</MultiDataTrigger.Conditions>
-																				<MultiDataTrigger.Setters>
-																					<Setter Property="Visibility" Value="Collapsed" />
-																				</MultiDataTrigger.Setters>
-																			</MultiDataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-															<TextBlock Margin="0,10,0,0">
-																<Run Text="포대형 특화 계수: 포격전 화력 x (" />
-																<Run Text="{Binding Item.Info.TurrentEfficacy, Mode=OneWay, StringFormat={}{0:N2}}">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.Info.TurrentEfficacy}" Value="0">
-																					<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-																<Run Foreground="#FF45A9A5">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Text" Value="{Binding Item.ImprovementStats.TurrentEfficacy, Mode=OneWay, StringFormat={}+{0:N2}}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.ImprovementStats.TurrentEfficacy}" Value="0">
-																					<Setter Property="Text" Value="" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-																<Run Text=")" />
-
-																<TextBlock.Style>
-																	<Style TargetType="{x:Type TextBlock}">
-																		<Style.Triggers>
-																			<MultiDataTrigger>
-																				<MultiDataTrigger.Conditions>
-																					<Condition Binding="{Binding Item.Info.TurrentEfficacy}" Value="0" />
-																					<Condition Binding="{Binding Item.ImprovementStats.TurrentEfficacy}" Value="0" />
-																				</MultiDataTrigger.Conditions>
-																				<MultiDataTrigger.Setters>
-																					<Setter Property="Visibility" Value="Collapsed" />
-																				</MultiDataTrigger.Setters>
-																			</MultiDataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-
-															<TextBlock Margin="0,10,0,0">
-																<Run Text="항속거리:" />
-																<Run Text="{Binding Item.Info.Distance, Mode=OneWay}">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.Info.Distance}" Value="0">
-																					<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-
-																<TextBlock.Style>
-																	<Style TargetType="{x:Type TextBlock}">
-																		<Style.Triggers>
-																			<DataTrigger Binding="{Binding Item.Info.IsNumerable}" Value="False">
-																				<Setter Property="Visibility" Value="Collapsed" />
-																			</DataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-															<TextBlock Margin="0,2,0,0">
-																<Run Text="배치비용:" />
-																<Run Text="{Binding Item.Info.AirBaseCost, Mode=OneWay}">
-																	<Run.Style>
-																		<Style TargetType="{x:Type Run}">
-																			<Setter Property="Foreground" Value="{DynamicResource ActiveForegroundBrushKey}" />
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Item.Info.AirBaseCost}" Value="0">
-																					<Setter Property="Foreground" Value="{DynamicResource InactiveForegroundBrushKey}" />
-																				</DataTrigger>
-																			</Style.Triggers>
-																		</Style>
-																	</Run.Style>
-																</Run>
-
-																<TextBlock.Style>
-																	<Style TargetType="{x:Type TextBlock}">
-																		<Style.Triggers>
-																			<DataTrigger Binding="{Binding Item.Info.IsNumerable}" Value="False">
-																				<Setter Property="Visibility" Value="Collapsed" />
-																			</DataTrigger>
-																		</Style.Triggers>
-																	</Style>
-																</TextBlock.Style>
-															</TextBlock>
-														</StackPanel>
-													</Border.ToolTip>
 												</Border>
 											</DockPanel>
 										</DockPanel>
@@ -2459,17 +976,11 @@
 					Margin="8"
 					Padding="20"
 					Visibility="{Binding IsReloading, Converter={StaticResource BooleanToVisibilityConverter}}">
-				<TextBlock Style="{DynamicResource EmphaticTextStyleKey}"
+				<TextBlock Text="一覧を生成しています..."
+						   Style="{DynamicResource EmphaticTextStyleKey}"
 						   FontSize="16"
 						   Background="{DynamicResource ThemeBrushKey}"
-						   HorizontalAlignment="Center"
-						   TextAlignment="Center">
-					<metro:ProgressRing IsActive="True"
-										Margin="3,8"
-										HorizontalAlignment="Center" />
-					<LineBreak />
-					<Run Text="화면을 갱신중입니다..." />
-				</TextBlock>
+						   HorizontalAlignment="Center" />
 			</Border>
 		</Grid>
 	</Grid>

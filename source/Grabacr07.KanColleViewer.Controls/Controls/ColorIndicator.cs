@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,7 +12,6 @@ namespace Grabacr07.KanColleViewer.Controls
 	/// <summary>
 	/// 
 	/// </summary>
-	[TemplatePart(Name = "PART_PreviousIndicator", Type = typeof(FrameworkElement))]
 	public class ColorIndicator : ProgressBar
 	{
 		static ColorIndicator()
@@ -23,6 +22,7 @@ namespace Grabacr07.KanColleViewer.Controls
 		}
 
 		#region LimitedValue 依存関係プロパティ
+
 		public LimitedValue LimitedValue
 		{
 			get { return (LimitedValue)this.GetValue(LimitedValueProperty); }
@@ -38,19 +38,11 @@ namespace Grabacr07.KanColleViewer.Controls
 
 			source.ChangeColor(value);
 		}
+
 		#endregion
 
-		#region Previous 종속성 프로퍼티
-		public double Previous
-		{
-			get { return (double)this.GetValue(PreviousProperty); }
-			set { this.SetValue(PreviousProperty, value); }
-		}
-		public static readonly DependencyProperty PreviousProperty =
-			DependencyProperty.Register(nameof(Previous), typeof(double), typeof(ColorIndicator), new UIPropertyMetadata(0.0));
-		#endregion
+		#region Columns 依存関係プロパティ
 
-		#region Columns 종속성 프로퍼티
 		public int Columns
 		{
 			get { return (int)this.GetValue(ColumnsProperty); }
@@ -58,59 +50,14 @@ namespace Grabacr07.KanColleViewer.Controls
 		}
 		public static readonly DependencyProperty ColumnsProperty =
 			DependencyProperty.Register(nameof(Columns), typeof(int), typeof(ColorIndicator), new UIPropertyMetadata(4));
+
 		#endregion
 
-		#region FullColor 종속성 프로퍼티
-		public Color FullColor
-		{
-			get { return (Color)this.GetValue(FullColorProperty); }
-			set { this.SetValue(FullColorProperty, value); }
-		}
-		public static readonly DependencyProperty FullColorProperty =
-			DependencyProperty.Register(nameof(FullColor), typeof(Color), typeof(ColorIndicator), new UIPropertyMetadata(Color.FromRgb(40, 144, 16)));
-		#endregion
-
-		#region PreviousIndicator process
-		private FrameworkElement _track, _previousindicator;
-		public override void OnApplyTemplate()
-		{
-			base.OnApplyTemplate();
-
-			if (_track != null)
-				_track.SizeChanged -= OnTrackSizeChanged;
-
-			_track = GetTemplateChild("PART_Track") as FrameworkElement;
-			_previousindicator = GetTemplateChild("PART_PreviousIndicator") as FrameworkElement;
-
-			if (_track != null)
-				_track.SizeChanged += OnTrackSizeChanged;
-		}
-		private void OnTrackSizeChanged(object sender, SizeChangedEventArgs e)
-		{
-			if (_track != null && _previousindicator != null)
-			{
-				double min = Minimum;
-				double max = Maximum;
-				double val = Previous;
-
-				// When indeterminate or maximum == minimum, have the indicator stretch the 
-				// whole length of track
-				double percent = IsIndeterminate || max <= min ? 1.0 : (val - min) / (max - min);
-				_previousindicator.Width = percent * _track.ActualWidth;
-			}
-		}
-		#endregion
-
-		/// <summary>
-		/// Calls after new <see cref="LimitedValue"/> given.
-		/// </summary>
-		/// <param name="value"></param>
 		private void ChangeColor(LimitedValue value)
 		{
 			this.Maximum = value.Maximum;
 			this.Minimum = value.Minimum;
 			this.Value = value.Current;
-			this.Previous = value.Previous < this.Minimum ? this.Minimum : (value.Previous > this.Maximum ? this.Maximum : value.Previous);
 
 			Color color;
 			var percentage = value.Maximum == 0 ? 0.0 : value.Current / (double)value.Maximum;
@@ -125,12 +72,7 @@ namespace Grabacr07.KanColleViewer.Controls
 			else if (percentage <= 0.75) color = Color.FromRgb(240, 240, 0);
 
 			// 0.75 より大きいとき、「小破未満」
-			else if (percentage < 1.0) color = Color.FromRgb(64, 200, 32);
-
-			// 1 (100%)
-			// else color = Color.FromRgb(40, 160, 240); // Blue one
-			// else color = Color.FromRgb(40, 144, 16); // Deep green one
-			else color = FullColor;
+			else color = Color.FromRgb(64, 200, 32);
 
 			this.Foreground = new SolidColorBrush(color);
 		}

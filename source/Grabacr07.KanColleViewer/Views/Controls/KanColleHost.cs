@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -11,12 +11,10 @@ using Grabacr07.KanColleViewer.Models;
 using Grabacr07.KanColleViewer.ViewModels;
 using MetroRadiance.Interop;
 using MetroTrilithon.UI.Controls;
-using mshtml;
+using MSHTML;
 using SHDocVw;
-using IViewObject = Grabacr07.KanColleViewer.Win32.IViewObject;
 using IServiceProvider = Grabacr07.KanColleViewer.Win32.IServiceProvider;
 using WebBrowser = System.Windows.Controls.WebBrowser;
-using KanColleSettings = Grabacr07.KanColleViewer.Models.Settings.KanColleSettings;
 
 namespace Grabacr07.KanColleViewer.Views.Controls
 {
@@ -26,8 +24,8 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 	{
 		private const string PART_ContentHost = "PART_ContentHost";
 
-		public static Size KanColleSize { get; } = new Size(1200.0, 720.0);
-		public static Size InitialSize { get; } = new Size(1200.0, 720.0);
+		public static Size KanColleSize { get; } = new Size(800.0, 480.0);
+		public static Size InitialSize { get; } = new Size(960.0, 572.0);
 
 		static KanColleHost()
 		{
@@ -58,14 +56,11 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 
 			if (oldBrowser != null)
 			{
-				oldBrowser.Navigated -= instance.HandleNavigated;
 				oldBrowser.LoadCompleted -= instance.HandleLoadCompleted;
 			}
 			if (newBrowser != null)
 			{
-				newBrowser.Navigated += instance.HandleNavigated;
 				newBrowser.LoadCompleted += instance.HandleLoadCompleted;
-
 				var events = WebBrowserHelper.GetAxWebbrowser2(newBrowser) as DWebBrowserEvents_Event;
 				if (events != null) events.NewWindow += instance.HandleWebBrowserNewWindow;
 			}
@@ -203,26 +198,12 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			}
 		}
 
-		private void HandleNavigated(object sender, NavigationEventArgs e)
-		{
-			WebBrowserHelper.SetScriptErrorsSuppressed(this.WebBrowser, true);
-
-			if (e.Uri.AbsoluteUri == KanColleViewer.Properties.Settings.Default.KanColleUrl.AbsoluteUri)
-			{
-				this.firstLoaded = true;
-
-				this.ApplyStyleSheet();
-				this.ApplyPromisePolyfill();
-				this.Update();
-			}
-		}
 		private void HandleLoadCompleted(object sender, NavigationEventArgs e)
 		{
+			this.ApplyStyleSheet();
 			WebBrowserHelper.SetScriptErrorsSuppressed(this.WebBrowser, true);
 
-			this.ApplyPromisePolyfill();
-
-			this.ApplyStyleSheet(1);
+			this.firstLoaded = true;
 			this.Update();
 		}
 
@@ -235,53 +216,29 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			window.WebBrowser.Navigate(url);
 		}
 
-		private void ApplyStyleSheet(int step = 0)
+		private void ApplyStyleSheet()
 		{
 			if (!this.firstLoaded) return;
 
 			try
 			{
-				if (step == 0)
+				var document = this.WebBrowser.Document as HTMLDocument;
+				if (document == null) return;
+
+				var gameFrame = document.getElementById("game_frame");
+				if (gameFrame == null)
 				{
-					var script = string.Format(
-						@"document.addEventListener('DOMContentLoaded', function(){{
-							var x = document.createElement('style');
-							x.type = 'text/css';
-							x.innerHTML = '{0}';
-							document.body.appendChild(x);
-							setInterval(function(){
-								var iframes = document.getElementsByTagName('iframe');
-								for(var i=0; i<iframes.length; i++){
-									if(iframes[i].src.indexOf('/ifr?')<0)
-										iframes[i].parentNode.removeChild(iframes[i]);
-								}
-							}, 1000);
-						}});",
-						this.UserStyleSheet.Replace("'", "\\'").Replace("\r\n", "\\n")
-					);
-					WebBrowser.InvokeScript("eval", new object[] { script });
-					this.styleSheetApplied = true;
+					if (document.url.Contains(".swf?"))
+					{
+						gameFrame = document.body;
+					}
 				}
-				else
+
+				var target = gameFrame?.document as HTMLDocument;
+				if (target != null)
 				{
-					var document = this.WebBrowser.Document as HTMLDocument;
-					if (document == null) return;
-
-					var gameFrame = document.getElementById("game_frame");
-					if (gameFrame == null)
-					{
-						if (document.url.Contains(".swf?"))
-						{
-							gameFrame = document.body;
-						}
-					}
-
-					var target = gameFrame?.document as HTMLDocument;
-					if (target != null)
-					{
-						target.createStyleSheet().cssText = this.UserStyleSheet;
-						this.styleSheetApplied = true;
-					}
+					target.createStyleSheet().cssText = this.UserStyleSheet;
+					this.styleSheetApplied = true;
 				}
 			}
 			catch (Exception) when (Application.Instance.State == ApplicationState.Startup)
@@ -293,52 +250,6 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 				Debug.WriteLine(ex);
 				StatusService.Current.Notify("failed to apply css: " + ex.Message);
 			}
-		}
-		private void ApplyPromisePolyfill()
-		{
-			var patch = new Action<IWebBrowser2>(browser =>
-			{
-				var script =
-					@"var inject = function(src){
-						var el = document.createElement('script');
-						el.setAttribute('src',src);
-						document.body.appendChild(el);
-					};
-					inject('https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js');
-					inject('https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js');
-
-					var communicator = document.createElement('div');
-					communicator.style.display = 'none';
-					communicator.id = 'communicator';
-					document.body.appendChild(communicator);
-
-					var timer = setInterval(function(){
-						if(!window.Promise) return;
-						clearInterval(timer);
-
-						var els = document.querySelectorAll('canvas');
-						for(var i=0; i<els.length; i++) els[i].parentNode.removeChild(els[i]);
-
-						PIXI.settings.RENDER_OPTIONS.preserveDrawingBuffer = true;
-						KCS.init();
-					}, 100);
-
-					window.takeScreenshot = function(mimetype){
-						var canvas = document.querySelector('canvas');
-						communicator.innerHTML = canvas.toDataURL(mimetype);
-					};
-				";
-				browser.Navigate("javascript:void(function(){" + script.Replace("\r", "").Replace("\n", "").Replace("\t", "") + "}())");
-			});
-
-			try
-			{
-				var subBrowser = Helper.GetGameFrame(this.WebBrowser);
-				if (subBrowser == null) return;
-
-				patch(subBrowser);
-			}
-			catch { }
 		}
 	}
 }

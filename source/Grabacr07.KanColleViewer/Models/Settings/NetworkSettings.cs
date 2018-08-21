@@ -13,7 +13,7 @@ namespace Grabacr07.KanColleViewer.Models.Settings
 		public class Proxy : IProxySettings
 		{
 			public static SerializableProperty<ProxyType> Type { get; }
-				= new SerializableProperty<ProxyType>(GetKey(), Providers.Local, ProxyType.DirectAccess);
+				= new SerializableProperty<ProxyType>(GetKey(), Providers.Local, ProxyType.SystemProxy);
 
 			public static SerializableProperty<string> Host { get; }
 				= new SerializableProperty<string>(GetKey(), Providers.Local, null);

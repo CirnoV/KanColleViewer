@@ -25,48 +25,12 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// <summary>
 		/// 艦の名称を取得します。
 		/// </summary>
-		public string Name => KanColleClient.Current.Translations.GetTranslation(RawData.api_name, TranslationType.Ships, false, this.RawData);
-
-		/// <summary>
-		/// 艦の名称を取得します。
-		/// </summary>
-		public string JPName => RawData.api_name;
+		public string Name => this.RawData.api_name;
 
 		/// <summary>
 		/// 艦種を取得します。
 		/// </summary>
 		public ShipType ShipType => this.shipType ?? (this.shipType = KanColleClient.Current.Master.ShipTypes[this.RawData.api_stype]) ?? ShipType.Dummy;
-
-		public bool IsAirCraft
-		{
-			get
-			{
-				switch (this.ShipType.Id)
-				{
-					case 6:
-						return true;
-					case 7:
-						return true;
-					case 10:
-						return true;
-					case 11:
-						return true;
-					case 14:
-						return true;
-					case 16:
-						return true;
-					case 18:
-						return true;
-					case 20:
-						return true;
-					case 22:
-						return true;
-
-				}
-				return false;
-			}
-		}
-
 
 		/// <summary>
 		/// 各装備スロットの最大搭載機数を取得します。
@@ -130,66 +94,13 @@ namespace Grabacr07.KanColleWrapper.Models
 		/// </summary>
 		public int SlotCount => this.RawData.api_slot_num;
 
-		/// <summary>
-		/// 함선 속도
-		/// </summary>
-		public ShipSpeed Speed => ShipSpeedConverter.FromInt32(this.RawData.api_soku);
-
 		#endregion
 
 		/// <summary>
 		/// 次の改造が実施できるレベルを取得します。
 		/// </summary>
-		public int? NextRemodelingLevel => !this.RemodelingExists ? null : (int?)this.RawData.api_afterlv;
+		public int? NextRemodelingLevel => this.RawData.api_afterlv == 0 ? null : (int?)this.RawData.api_afterlv;
 
-		/// <summary>
-		/// 次の改造に必要なアイテムリスト。
-		/// </summary>
-		public string NextRemodelingItems =>
-			string.Join(
-				", ",
-				new string[]
-				{
-					this.RequireBlueprints > 0 ? string.Format("개장설계도 x{0}", this.RequireBlueprints) : "",
-					this.RequireCatapults > 0 ? string.Format("시제 캐터펄트 x{0}", this.RequireCatapults) : "",
-					this.RequireReports > 0 ? string.Format("전투상보 x{0}", this.RequireReports) : "",
-				}
-				.Where(x => x.Length > 0)
-			);
-
-		public int RequireBlueprints
-		{
-			get
-			{
-				return KanColleClient.Current.Master.RawData.api_mst_shipupgrade
-					.FirstOrDefault(x => x.api_current_ship_id == this.Id)
-					?.api_drawing_count ?? 0;
-			}
-		}
-		public int RequireCatapults
-		{
-			get
-			{
-				return KanColleClient.Current.Master.RawData.api_mst_shipupgrade
-					.FirstOrDefault(x => x.api_current_ship_id == this.Id)
-					?.api_catapult_count ?? 0;
-			}
-		}
-		public int RequireReports
-		{
-			get
-			{
-				return KanColleClient.Current.Master.RawData.api_mst_shipupgrade
-					.FirstOrDefault(x => x.api_current_ship_id == this.Id)
-					?.api_report_count ?? 0;
-			}
-		}
-
-
-		/// <summary>
-		/// 개장이 존재하는지 여부
-		/// </summary>
-		public bool RemodelingExists => this.RawData.api_afterlv > 0;
 
 		internal ShipInfo(kcsapi_mst_ship rawData) : base(rawData) { }
 

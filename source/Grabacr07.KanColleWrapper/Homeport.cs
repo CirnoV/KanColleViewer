@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -83,7 +83,6 @@ namespace Grabacr07.KanColleWrapper
 				this.Repairyard.Update(x.Data.api_ndock);
 				this.Organization.Update(x.Data.api_deck_port);
 				this.Organization.Combined = x.Data.api_combined_flag != 0;
-				this.Organization.CombinedType = (CombinedFleetType)x.Data.api_combined_flag;
 				this.Materials.Update(x.Data.api_material);
 			});
 			proxy.api_get_member_basic.TryParse<kcsapi_basic>().Subscribe(x => this.UpdateAdmiral(x.Data));

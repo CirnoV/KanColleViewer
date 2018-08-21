@@ -66,7 +66,6 @@ namespace Grabacr07.KanColleViewer.Views.Behaviors
 				this.Navigator.Source = navigationEventArgs.Uri;
 				this.Navigator.CanGoBack = this.AssociatedObject.CanGoBack;
 				this.Navigator.CanGoForward = this.AssociatedObject.CanGoForward;
-				this.Navigator.CookieNavigate();
 			}
 		}
 

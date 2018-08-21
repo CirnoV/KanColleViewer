@@ -1,9 +1,9 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 
-[assembly: AssemblyTitle("제독업무도 바빠！ 작업표시줄 인디케이터 플러그인")]
-[assembly: AssemblyDescription("제독업무도 바빠！ 작업표시줄 인디케이터 플러그인")]
+[assembly: AssemblyTitle("提督業も忙しい！ タスク バー インジケーター プラグイン")]
+[assembly: AssemblyDescription("提督業も忙しい！ タスク バー インジケーター プラグイン")]
 [assembly: AssemblyCompany("grabacr.net")]
 [assembly: AssemblyProduct("KanColleViewer")]
 [assembly: AssemblyCopyright("Copyright © 2016 Grabacr07")]
@@ -15,4 +15,4 @@ using System.Windows;
 	ResourceDictionaryLocation.None,
 	ResourceDictionaryLocation.SourceAssembly)]
 
-[assembly: AssemblyVersion("1.2.1")]
+[assembly: AssemblyVersion("1.2.0")]

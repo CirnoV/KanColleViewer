@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
@@ -18,8 +18,8 @@ namespace Grabacr07.KanColleViewer.Plugins
 	[Export(typeof(ITaskbarProgress))]
 	[Export(typeof(ISettings))]
 	[ExportMetadata("Guid", guid)]
-	[ExportMetadata("Title", "작업표시줄 원정 모니터")]
-	[ExportMetadata("Description", "원정의 상황을 작업표시줄에 표시합니다")]
+	[ExportMetadata("Title", "タスク バー遠征モニター")]
+	[ExportMetadata("Description", "遠征の状況をタスク バー インジケーターに報告します。")]
 	[ExportMetadata("Version", "1.1")]
 	[ExportMetadata("Author", "@Grabacr07")]
 	public class ExpeditionProgress : IPlugin, ITaskbarProgress, ISettings, IDisposableHolder
@@ -32,7 +32,7 @@ namespace Grabacr07.KanColleViewer.Plugins
 
 		public string Id => guid + "-1";
 
-		public string DisplayName => "원정상황";
+		public string DisplayName => "遠征状況";
 
 		public TaskbarItemProgressState State { get; private set; }
 
@@ -105,7 +105,7 @@ namespace Grabacr07.KanColleViewer.Plugins
 		{
 			if (!this.initialized) return;
 
-			if (this.wrappers == null || this.wrappers.Length == 0)
+			if (this.wrappers.Length == 0)
 			{
 				this.State = TaskbarItemProgressState.None;
 				this.Value = .0;

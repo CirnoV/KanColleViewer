@@ -5,23 +5,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Grabacr07.KanColleViewer.Models;
-using Grabacr07.KanColleViewer.Plugins.Properties;
 
 namespace Grabacr07.KanColleViewer.Plugins
 {
 	internal class BalloonNotifier : NotifierBase
 	{
-		private static readonly Settings settings = Settings.Default;
-
 		private NotifyIcon notifyIcon;
 		private EventHandler activatedAction;
-		private CustomSound sound = new CustomSound();
 
 		public override bool IsSupported => !Toast.IsSupported;
-
-        // For modernNotify
-        private Image icon = null;
-        private ModernNotify.ModernNotify modernNotify;
 
 		protected override void InitializeCore()
 		{
@@ -35,8 +27,6 @@ namespace Grabacr07.KanColleViewer.Plugins
 			if (streamResourceInfo == null)
 				return;
 
-            modernNotify = ModernNotify.ModernNotify.Instance;
-
 			System.Windows.Application.Current.Dispatcher.Invoke(() =>
 			{
 				using (var stream = streamResourceInfo.Stream)
@@ -47,42 +37,26 @@ namespace Grabacr07.KanColleViewer.Plugins
 						Icon = new Icon(stream),
 						Visible = true,
 					};
-                    icon = this.notifyIcon.Icon.ToBitmap();
 				}
 			});
 		}
 
 		protected override void NotifyCore(string header, string body, Action activated, Action<Exception> failed)
 		{
-            if (settings.UseModern)
-            {
-                modernNotify.Notify(new ModernNotify.NotifyData()
-                {
-                    Title = header,
-                    Content = body,
-                    Icon = icon,
-                    Activated = activated,
-                    Failed = failed
-                });
-            }
-            else
-            {
-                if (this.notifyIcon == null) return;
+			if (this.notifyIcon == null) return;
 
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                {
-                    if (activated != null)
-                    {
-                        this.notifyIcon.BalloonTipClicked -= this.activatedAction;
+			System.Windows.Application.Current.Dispatcher.Invoke(() =>
+			{
+				if (activated != null)
+				{
+					this.notifyIcon.BalloonTipClicked -= this.activatedAction;
 
-                        this.activatedAction = (sender, args) => activated();
-                        this.notifyIcon.BalloonTipClicked += this.activatedAction;
-                    }
+					this.activatedAction = (sender, args) => activated();
+					this.notifyIcon.BalloonTipClicked += this.activatedAction;
+				}
 
-                    this.notifyIcon.ShowBalloonTip(1000, header, body, ToolTipIcon.None);
-                });
-                this.sound.SoundOutput(header, false);
-            }
+				this.notifyIcon.ShowBalloonTip(1000, header, body, ToolTipIcon.None);
+			});
 		}
 
 		public override void Dispose()

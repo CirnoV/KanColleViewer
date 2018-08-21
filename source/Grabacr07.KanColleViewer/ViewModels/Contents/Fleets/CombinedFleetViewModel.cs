@@ -1,11 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grabacr07.KanColleWrapper.Models;
 using Livet;
 using Livet.EventListeners;
-using System.Windows;
 
 namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 {
@@ -13,62 +12,13 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 	{
 		public CombinedFleet Source { get; }
 
-		public string Name => this.Source?.Name.Replace(Environment.NewLine, " + ") ?? "";
+		public string Name => this.Source.Name;
 
 		public FleetStateViewModel State { get; }
 
-		public ViewModel QuickStateView
-			=> this.Source.State.Situation.HasFlag(FleetSituation.Sortie)
-				? this.State.Sortie
-				: this.State.Homeport as QuickStateViewViewModel;
-
-		/// <summary>
-		/// 艦隊に所属している艦娘のコレクションを取得します。
-		/// </summary>
-		public FleetViewModel[] Fleets
-			=> this.Source.Fleets
-				.Select(x => new FleetViewModel(x))
-				.ToArray();
-
-		#region 보급량
-
-		public int UsedFuel => this.Source.Fleets
-			.Select(z => z.Ships.Select(x => x.UsedFuel).Sum(x => x))
-			.Sum(z => z);
-
-		public int UsedAmmo => this.Source.Fleets
-			.Select(z => z.Ships.Select(x => x.UsedBull).Sum(x => x))
-			.Sum(z => z);
-
-		public int UsedBauxite => this.Source.Fleets
-			.Sum(z => z.Ships.Sum(x => x.Slots.Sum(y => y.Lost * 5)));
-
-		#endregion
-
-		#region FleetViewModel과의 호환성
-		public int Id => 1;
-		public Expedition Expedition => this.Source?.Fleets[0].Expedition;
-		public Visibility IsFirstFleet => Visibility.Collapsed;
-
-		public Visibility vTotal => Visibility.Collapsed;
-		public string TotalLv => "";
-		public Visibility vFlag => Visibility.Collapsed;
-		public string FlagLv => "";
-		public Visibility vFlagType => Visibility.Collapsed;
-		public string FlagType => "";
-		public Visibility vNeed => Visibility.Collapsed;
-		public string ShipTypeString => "";
-		public Visibility vDrum => Visibility.Collapsed;
-		public Visibility nDrum => Visibility.Collapsed;
-		public Visibility vResource => Visibility.Collapsed;
-		public Visibility vFuel => Visibility.Collapsed;
-		public int nFuelLoss => 0;
-		public Visibility vArmo => Visibility.Collapsed;
-		public int nArmoLoss => 0;
-		public List<int> ResultList => new List<int>();
-		public int ExpeditionId { get; set; }
-		public bool IsPassed => false;
-		#endregion
+		public ViewModel QuickStateView => this.Source.State.Situation.HasFlag(FleetSituation.Sortie)
+			? this.State.Sortie
+			: this.State.Homeport as QuickStateViewViewModel;
 
 		public CombinedFleetViewModel(CombinedFleet fleet)
 		{
@@ -80,18 +30,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents.Fleets
 			});
 			this.CompositeDisposable.Add(new PropertyChangedEventListener(fleet.State)
 			{
-				{ nameof(fleet.State.Situation), (sender, args) =>
-					this.RaisePropertyChanged(nameof(this.QuickStateView))
-				},
-				{ nameof(fleet.State.UsedFuel), (sender,args) =>
-					this.RaisePropertyChanged(nameof(this.UsedFuel))
-				},
-				{ nameof(fleet.State.UsedBull), (sender,args) =>
-					this.RaisePropertyChanged(nameof(this.UsedAmmo))
-				},
-				{ nameof(fleet.State.UsedBauxite), (sender,args) =>
-					this.RaisePropertyChanged(nameof(this.UsedBauxite))
-				}
+				{ nameof(fleet.State.Situation), (sender, args) => this.RaisePropertyChanged(nameof(this.QuickStateView)) },
 			});
 
 			this.State = new FleetStateViewModel(fleet.State);

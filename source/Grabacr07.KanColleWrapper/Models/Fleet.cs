@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -228,7 +228,9 @@ namespace Grabacr07.KanColleWrapper.Models
 		}
 
 		internal void RaiseShipsUpdated()
-			=> this.RaisePropertyChanged(nameof(this.ShipsUpdated));
+		{
+			this.RaisePropertyChanged(nameof(this.ShipsUpdated));
+		}
 
 		public override string ToString()
 		{

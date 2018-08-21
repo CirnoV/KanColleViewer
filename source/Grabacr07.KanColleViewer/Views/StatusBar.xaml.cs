@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Grabacr07.KanColleViewer.Views
 {
 	/// <summary>
-	/// StatusBar.xaml의 상호작용 로직
+	/// StatusBar.xaml の相互作用ロジック
 	/// </summary>
 	partial class StatusBar
 	{

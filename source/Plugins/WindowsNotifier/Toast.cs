@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -11,8 +11,6 @@ namespace Grabacr07.KanColleViewer.Plugins
 	/// </summary>
 	public class Toast
 	{
-		private CustomSound sound = new CustomSound();
-
 		#region static members
 
 		/// <summary>
@@ -51,28 +49,13 @@ namespace Grabacr07.KanColleViewer.Plugins
 				ToastHeadline = header,
 				ToastBody = body,
 #if DEBUG
-				ShortcutFileName = "제독업무도 바빠！ (debug).lnk",
+				ShortcutFileName = "提督業も忙しい！ (debug).lnk",
 #else
-				ShortcutFileName = "제독업무도 바빠！.lnk", 
+				ShortcutFileName = "提督業も忙しい！.lnk", 
 #endif
 				ShortcutTargetFilePath = Assembly.GetEntryAssembly().Location,
 				AppId = AppId,
 			};
-
-			if (!string.IsNullOrEmpty(sound.FileCheck(header)))
-			{
-				this.request.ToastAudio = ToastAudio.Silent;
-			}
-
-            if (KanColleViewer.Models.Settings.KanColleSettings.NotifyMuteOnMute)
-            {
-                //if (KanColleViewer.Models.Volume.GetInstance().IsMute)
-				if(KanColleViewer.ViewModels.VolumeViewModel.IsMuted())
-                {
-                    // 칸코레 뷰어가 음소거 상태라면 알람도 음소거
-                    this.request.ToastAudio = ToastAudio.Silent;
-                }
-            }
 		}
 
 		public void Show()

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -24,14 +24,10 @@ namespace Grabacr07.KanColleWrapper
 		string ViewRangeCalcType { get; }
 		bool IsViewRangeCalcIncludeFirstFleet { get; }
 		bool IsViewRangeCalcIncludeSecondFleet { get; }
-		
-		bool AutoTranslateEnable { get; }
+
 		/// <summary>
 		/// 艦隊ステータスにおいて、旗艦が工作艦かどうかを確認するかどうかを示す値を取得します。
 		/// </summary>
 		bool CheckFlagshipIsRepairShip { get; }
-
-		bool QuestOnAnyTabs { get; }
-		bool QuestNoTakeOnTab { get; }
 	}
 }

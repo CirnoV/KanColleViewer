@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
@@ -30,12 +30,8 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 		public ShipRemodelingFilter ShipRemodelingFilter { get; }
 		public ShipExpeditionFilter ShipExpeditionFilter { get; }
 		public ShipSallyAreaFilter ShipSallyAreaFilter { get; }
-		public ShipNameSearchFilter ShipNameSearchFilter { get; private set; }
 		public ShipDamagedFilter ShipDamagedFilter { get; }
 		public ShipConditionFilter ShipConditionFilter { get; }
-		public ShipExSlotFilter ShipExSlotFilter { get; }
-		public ShipFleetFilter ShipFleetFilter { get; }
-		public DaihatsueFilter DaihatsueFilter { get; }
 
 		public bool CheckAllShipTypes
 		{
@@ -125,14 +121,14 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 
 		public ShipCatalogWindowViewModel()
 		{
-			this.Title = "소유 칸무스 목록";
+			this.Title = "所属艦娘一覧";
 			this.IsOpenFilterSettings = true;
 			this.Settings = new ShipCatalogWindowSettings();
 
 			this.SortWorker = new ShipCatalogSortWorker();
 
 			this.ShipTypes = KanColleClient.Current.Master.ShipTypes
-				.Where(kvp => !(kvp.Value.Id == 15 && kvp.Value.Name == "보급함")) // おそらく敵艦用と思われる補給艦を除外
+				.Where(kvp => !(kvp.Value.Id == 15 && kvp.Value.Name == "補給艦")) // おそらく敵艦用と思われる補給艦を除外
 				.Select(kvp => new ShipTypeViewModel(kvp.Value)
 				{
 					IsSelected = true,
@@ -147,12 +143,8 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 			this.ShipRemodelingFilter = new ShipRemodelingFilter(this.Update);
 			this.ShipExpeditionFilter = new ShipExpeditionFilter(this.Update);
 			this.ShipSallyAreaFilter = new ShipSallyAreaFilter(this.Update);
-			this.ShipNameSearchFilter = new ShipNameSearchFilter(this.Update);
 			this.ShipDamagedFilter = new ShipDamagedFilter(this.Update);
 			this.ShipConditionFilter = new ShipConditionFilter(this.Update);
-			this.ShipExSlotFilter = new ShipExSlotFilter(this.Update);
-			this.ShipFleetFilter = new ShipFleetFilter(this.Update);
-			this.DaihatsueFilter = new DaihatsueFilter(this.Update);
 
 			this.updateSource
 				.Do(_ => this.IsReloading = true)
@@ -179,31 +171,22 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 		{
 			return Observable.Start(() =>
 			{
-				try
-				{
-					var list = this.homeport.Organization.Ships
-						.Select(kvp => kvp.Value)
-						.Where(x => this.ShipTypes.Where(t => t.IsSelected).Any(t => x.Info.ShipType.Id == t.Id))
-						.Where(this.ShipLevelFilter.Predicate)
-						.Where(this.ShipLockFilter.Predicate)
-						.Where(this.ShipSpeedFilter.Predicate)
-						.Where(this.ShipModernizeFilter.Predicate)
-						.Where(this.ShipRemodelingFilter.Predicate)
-						.Where(this.ShipExpeditionFilter.Predicate)
-						.Where(this.ShipSallyAreaFilter.Predicate)
-						.Where(this.ShipNameSearchFilter.Predicate)
-						.Where(this.ShipDamagedFilter.Predicate)
-						.Where(this.ShipConditionFilter.Predicate)
-						.Where(this.ShipExSlotFilter.Predicate)
-						.Where(this.ShipFleetFilter.Predicate)
-						.Where(this.DaihatsueFilter.Predicate)
-						.ToArray();
+				var list = this.homeport.Organization.Ships
+					.Select(kvp => kvp.Value)
+					.Where(x => this.ShipTypes.Where(t => t.IsSelected).Any(t => x.Info.ShipType.Id == t.Id))
+					.Where(this.ShipLevelFilter.Predicate)
+					.Where(this.ShipLockFilter.Predicate)
+					.Where(this.ShipSpeedFilter.Predicate)
+					.Where(this.ShipModernizeFilter.Predicate)
+					.Where(this.ShipRemodelingFilter.Predicate)
+					.Where(this.ShipExpeditionFilter.Predicate)
+					.Where(this.ShipSallyAreaFilter.Predicate)
+					.Where(this.ShipDamagedFilter.Predicate)
+					.Where(this.ShipConditionFilter.Predicate);
 
-					this.Ships = this.SortWorker.Sort(list)
-						.Select((x, i) => new ShipViewModel(i + 1, x, areas.FirstOrDefault(y => y.Area == x.SallyArea)))
-						.ToList();
-				}
-				catch { }
+				this.Ships = this.SortWorker.Sort(list)
+					.Select((x, i) => new ShipViewModel(i + 1, x, areas.FirstOrDefault(y => y.Area == x.SallyArea)))
+					.ToList();
 			});
 		}
 

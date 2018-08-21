@@ -5,15 +5,13 @@ using System.Threading.Tasks;
 using Grabacr07.KanColleWrapper;
 using Livet.EventListeners;
 
-using Grabacr07.KanColleViewer.ViewModels.Contents.Fleets;
-
 namespace Grabacr07.KanColleViewer.ViewModels.Contents
 {
 	public class ShipyardViewModel : TabItemViewModel
 	{
 		public override string Name
 		{
-			get { return Properties.Resources.Shipyard; }
+			get { return "工廠"; }
 			protected set { throw new NotImplementedException(); }
 		}
 
@@ -57,10 +55,8 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 
 		public CreatedSlotItemViewModel CreatedSlotItem { get; }
 
-        public FleetsViewModel Fleets { get; }
 
-
-		public ShipyardViewModel(FleetsViewModel fleets)
+		public ShipyardViewModel()
 		{
 			this.CreatedSlotItem = new CreatedSlotItemViewModel();
 
@@ -76,8 +72,6 @@ namespace Grabacr07.KanColleViewer.ViewModels.Contents
 				{ nameof(Dockyard.CreatedSlotItem), (sender, args) => this.UpdateSlotItem() },
 			});
 			this.UpdateBuildingDocks();
-
-            this.Fleets = fleets;
 		}
 
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,28 +12,16 @@ namespace Grabacr07.KanColleWrapper.Models
 	{
 		public int Id { get; }
 
-		public string JPTitle { get; }
-		public string JPDetail { get; }
+		public string Title { get; }
 
-		public string DisplayId
-		{
-			get
-			{
-				var DisplayID = KanColleClient.Current.Translations.GetExpeditionData("DisplayID", this.Id);
-				return string.IsNullOrEmpty(DisplayID) ? this.Id.ToString() : DisplayID;
-			}
-		}
-
-		public string Title => KanColleClient.Current.Translations.GetTranslation(this.JPTitle, TranslationType.ExpeditionTitle, false, this.RawData, this.Id);
-		public string Detail => KanColleClient.Current.Translations.GetTranslation(this.JPDetail, TranslationType.ExpeditionDetail, false, this.RawData, this.Id);
+		public string Detail { get; }
 
 		public Mission(kcsapi_mission mission)
 			: base(mission)
 		{
 			this.Id = mission.api_id;
-
-			this.JPTitle = mission.api_name;
-			this.JPDetail = mission.api_details;
+			this.Title = mission.api_name;
+			this.Detail = mission.api_details;
 		}
 	}
 }

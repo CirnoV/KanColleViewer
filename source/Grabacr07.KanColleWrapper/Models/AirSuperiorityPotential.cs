@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,7 +10,7 @@ namespace Grabacr07.KanColleWrapper.Models
 		Default = Maximum,
 
 		Minimum = InternalProficiencyMinValue | Fighter,
-		Maximum = InternalProficiencyMaxValue | Fighter | Attacker | SeaplaneBomber | JetFightingBomber,
+		Maximum = InternalProficiencyMaxValue | Fighter | Attacker | SeaplaneBomber,
 
 		/// <summary>艦上戦闘機、水上戦闘機。</summary>
 		Fighter = 0x0001,
@@ -20,9 +20,6 @@ namespace Grabacr07.KanColleWrapper.Models
 
 		/// <summary>水上爆撃機。</summary>
 		SeaplaneBomber = 0x0004,
-
-		/// <summary>噴式戦闘爆撃機。</summary>
-		JetFightingBomber = 0x0008,
 
 		/// <summary>内部熟練度最小値による計算。</summary>
 		InternalProficiencyMinValue = 0x0100,
@@ -60,20 +57,14 @@ namespace Grabacr07.KanColleWrapper.Models
 			{
 				case SlotItemType.艦上戦闘機:
 				case SlotItemType.水上戦闘機:
-				case SlotItemType.噴式戦闘機:
 					return new FighterCalculator();
 
 				case SlotItemType.艦上攻撃機:
 				case SlotItemType.艦上爆撃機:
-				case SlotItemType.噴式攻撃機:
-					// case SlotItemType.噴式偵察機: ??
 					return new AttackerCalculator();
 
 				case SlotItemType.水上爆撃機:
 					return new SeaplaneBomberCalculator();
-
-				case SlotItemType.噴式戦闘爆撃機:
-					return new JetFightingBomberCaluculator();
 
 				default:
 					return EmptyCalculator.Instance;
@@ -126,11 +117,6 @@ namespace Grabacr07.KanColleWrapper.Models
 		{
 			public override AirSuperiorityCalculationOptions Options => AirSuperiorityCalculationOptions.Attacker;
 
-			protected override double GetAirSuperiority(SlotItem slotItem, int onslot)
-			{
-				return (slotItem.Info.AA + slotItem.Level * 0.25) * Math.Sqrt(onslot);
-			}
-
 			protected override double GetProficiencyBonus(SlotItem slotItem, AirSuperiorityCalculationOptions options)
 			{
 				var proficiency = slotItem.GetProficiency();
@@ -148,18 +134,6 @@ namespace Grabacr07.KanColleWrapper.Models
 				return Math.Sqrt(proficiency.GetInternalValue(options) / 10.0) + proficiency.SeaplaneBomberBonus;
 			}
 		}
-
-		private class JetFightingBomberCaluculator : AirSuperiorityCalculator
-		{
-			public override AirSuperiorityCalculationOptions Options => AirSuperiorityCalculationOptions.JetFightingBomber;
-
-			protected override double GetProficiencyBonus(SlotItem slotItem, AirSuperiorityCalculationOptions options)
-			{
-				var proficiency = slotItem.GetProficiency();
-				return Math.Sqrt(proficiency.GetInternalValue(options) / 10.0);
-			}
-		}
-
 
 		private class EmptyCalculator : AirSuperiorityCalculator
 		{

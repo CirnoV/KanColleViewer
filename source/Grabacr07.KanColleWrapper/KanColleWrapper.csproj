@@ -52,24 +52,12 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Livet, Version=1.3.0.0, Culture=neutral, PublicKeyToken=b0b1d3f711ef38cb, processorArchitecture=MSIL">
-      <HintPath>..\packages\LivetCask.1.3.1.0\lib\net45\Livet.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\LivetCask.1.3.1.0\lib\net45\Microsoft.Expression.Interactions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Nekoxy, Version=1.5.3.21, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nekoxy.1.5.3.21\lib\net45\Nekoxy.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -93,10 +81,6 @@
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\LivetCask.1.3.1.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -109,8 +93,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Internal\SlotItemExtensions.cs" />
-    <Compile Include="Models\AirBase.cs" />
     <Compile Include="Models\AirSuperiorityPotential.cs" />
     <Compile Include="Annotations\DarkAttribute.cs" />
     <Compile Include="Annotations\ElementalAttribute.cs" />
@@ -120,14 +102,9 @@
     <Compile Include="DisposableNotifier.cs" />
     <Compile Include="Dockyard.cs" />
     <Compile Include="EnumerableEx.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="Models\ASWCalculator.cs" />
     <Compile Include="Models\CombinedFleet.cs" />
-    <Compile Include="Models\CombinedFleetType.cs" />
-    <Compile Include="Models\ExpeditionResult.cs" />
     <Compile Include="Models\FleetSpeed.cs" />
     <Compile Include="Models\FleetState.cs" />
-    <Compile Include="Models\LogDataList.cs" />
     <Compile Include="Models\MapArea.cs" />
     <Compile Include="Models\MapCell.cs" />
     <Compile Include="Models\MapInfo.cs" />
@@ -138,39 +115,21 @@
     <Compile Include="Models\ConditionRejuvenatedEventArgs.cs" />
     <Compile Include="Models\CreatedSlotItem.cs" />
     <Compile Include="Models\FleetCondition.cs" />
-    <Compile Include="Models\QuestNameTable.cs" />
-    <Compile Include="Models\Raw\Battle\battle_result.cs" />
-    <Compile Include="Models\Raw\Battle\combined_airbattle.cs" />
-    <Compile Include="Models\Raw\Battle\combined_battle.cs" />
-    <Compile Include="Models\Raw\Battle\combined_battle_each.cs" />
-    <Compile Include="Models\Raw\Battle\combined_battle_ec_nighttoday.cs" />
-    <Compile Include="Models\Raw\Battle\combined_battle_midnight.cs" />
-    <Compile Include="Models\Raw\Battle\combined_battle_midnight_ec.cs" />
-    <Compile Include="Models\Raw\Battle\CommonTypes.cs" />
-    <Compile Include="Models\Raw\Battle\ICommonBattleMembers.cs" />
-    <Compile Include="Models\Raw\Battle\ICommonEachBattleMembers.cs" />
-    <Compile Include="Models\Raw\Battle\ICommonFirstBattleMembers.cs" />
-    <Compile Include="Models\Raw\Battle\map_start_next.cs" />
-    <Compile Include="Models\Raw\Battle\member_mapinfo.cs" />
-    <Compile Include="Models\Raw\Battle\sortie_airbattle.cs" />
-    <Compile Include="Models\Raw\Battle\sortie_battle.cs" />
-    <Compile Include="Models\Raw\Battle\sortie_battle_midnight.cs" />
-    <Compile Include="Models\Raw\kcsapi_airbase_corps.cs" />
-    <Compile Include="Models\Raw\kcsapi_data_enemyinfo.cs" />
-    <Compile Include="Models\Raw\kcsapi_empty_result.cs" />
     <Compile Include="Models\Raw\kcsapi_mst_mapcell.cs" />
-    <Compile Include="Models\Raw\kcsapi_mst_shipgraph.cs" />
-    <Compile Include="Models\Raw\kcsapi_mst_shipupgrade.cs" />
     <Compile Include="Models\Raw\kcsapi_require_info.cs" />
     <Compile Include="Models\Raw\kcsapi_ship_deck.cs" />
     <Compile Include="Models\Raw\kcsapi_mst_maparea.cs" />
     <Compile Include="Models\Raw\kcsapi_mst_mapinfo.cs" />
     <Compile Include="Models\Raw\kcsapi_remodel_slot.cs" />
     <Compile Include="Models\Raw\kcsapi_hensei_combined.cs" />
+    <Compile Include="Models\Raw\kcsapi_combined_battle_battleresult.cs" />
+    <Compile Include="Models\Raw\kcsapi_combined_battle_airbattle.cs" />
+    <Compile Include="Models\Raw\kcsapi_combined_battle.cs" />
     <Compile Include="Models\Raw\kcsapi_battle.cs" />
     <Compile Include="Models\Raw\kcsapi_destroyitem2.cs" />
     <Compile Include="Models\Raw\kcsapi_destroyship.cs" />
     <Compile Include="Models\Raw\kcsapi_kdock_getship.cs" />
+    <Compile Include="Models\Raw\kcsapi_map_start.cs" />
     <Compile Include="Models\Raw\kcsapi_mission.cs" />
     <Compile Include="Models\Raw\kcsapi_mission_result.cs" />
     <Compile Include="Models\Raw\kcsapi_powerup.cs" />
@@ -178,16 +137,11 @@
     <Compile Include="Models\Raw\kcsapi_remodel_slotlist_detail.cs" />
     <Compile Include="Models\Raw\kcsapi_slot_deprive.cs" />
     <Compile Include="Models\Raw\kcsapi_slot_exchange_index.cs" />
-    <Compile Include="Models\ResourceModel.cs" />
-    <Compile Include="Models\ShipFitClass.cs" />
     <Compile Include="Models\ShipSituation.cs" />
     <Compile Include="Models\ShipSlot.cs" />
     <Compile Include="Models\SlotItemEquipType.cs" />
-    <Compile Include="Models\SlotItemStat.cs" />
     <Compile Include="Models\SlotItemType.cs" />
-    <Compile Include="Models\TranslationType.cs" />
     <Compile Include="Models\ViewRange.cs" />
-    <Compile Include="Models\WebTranslator.cs" />
     <Compile Include="Notifier.cs" />
     <Compile Include="Organization.cs" />
     <Compile Include="KanColleProxy.Endpoints.cs">
@@ -204,6 +158,7 @@
     <Compile Include="Models\QuestState.cs" />
     <Compile Include="Models\QuestType.cs" />
     <Compile Include="Models\Raw\kcsapi_charge.cs" />
+    <Compile Include="Models\Raw\kcsapi_battleresult.cs" />
     <Compile Include="Models\Raw\kcsapi_createitem.cs" />
     <Compile Include="Models\Raw\kcsapi_createship.cs" />
     <Compile Include="Models\Raw\kcsapi_mst_slotitem_equiptype.cs" />
@@ -269,10 +224,7 @@
     <Compile Include="Quests.cs" />
     <Compile Include="Repairyard.cs" />
     <Compile Include="IKanColleClientSettings.cs" />
-    <Compile Include="ResourceLogManager.cs" />
     <Compile Include="TimerNotifier.cs" />
-    <Compile Include="Translations.cs" />
-    <Compile Include="Updater.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -281,9 +233,7 @@
       <LastGenOutput>KanColleProxy.Endpoints.cs</LastGenOutput>
     </None>
     <None Include="KanColleWrapper.nuspec" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

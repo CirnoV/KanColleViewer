@@ -1,6 +1,6 @@
-﻿━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 제독업무도 바빠！ (KanColleViewer)
-                                             version 4.2.6  2016/06/20
+                                             version 4.5.0  2018/08/22
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
@@ -30,20 +30,17 @@
 ・Windows 8
 ・Windows 7
 
-개발자는 Windows 10 Pro 에서만 동작 확인을 하고 있습니다.
+개발자는 Windows 10 Enterprise 에서만 동작 확인을 하고 있습니다.
 Windows 7 에서는, 원정이나 건조가 완료될 때의 토스트 알림 메시지가 작동하지 않습니다. (대신 알림 영역에서 풍선 알림이 표시됩니다.)
 Windows 8 이상에서의 사용을 권장합니다.
 
 ・.NET Framework 4.6
 
-Windows 8 또는 그 이전 버전에서 사용할 때에는, .NET Framework 4.6의 설치가 필요합니다.
+Windows 8 또는 그 이전 버전에서 사용할 때에는, .NET Framework 4.6.1의 설치가 필요합니다.
 Windows 10 에서는 시스템에 기본적으로 설치되어 있습니다.
 
-IE 컴포넌트를 사용하고 있으며, 브라우저 부분은 Internet Explorer의 설정에 따라 달라집니다.
-칸코레 본체의 업데이트 후와 같은 때에 스크립트 에러가 발생하는 경우에는, IE 의 캐시를 삭제해주시기 바랍니다.
-또, 게임이 정확하게 표시되지 않는 등의 현상이 발생한 경우에는, IE의 설정이나, IE에서 Flash를 볼 수 있는지 여부를 확인하시기 바랍니다.
-
-또, 칸코레 게임부분의 사이즈 (1200 x 720)과 Internet Explorer(WebBrowser 컨트롤)의 사이즈를 딱 맞게 표시하고 있을 뿐이며, Flash 추출 등의 행위도 하지 않습니다.
+현재, 칸코레 본체의 제2기 이행에 의해, Chromium 엔진으로 잠정 대응하고 있습니다.
+검증되지 않은 통신 내용이 많아, 의도하지 않은 동작을 할 가능성이 있으니 주의해주시기 바랍니다.
 
 
 ■사용 조건
@@ -157,6 +154,24 @@ Desktop Toast
     ・라이센스 : The MIT License (MIT)
     ・라이센스전문 : Licenses/NETCoreAudioAPIs.txt
 
+CefSharp.Wpf
+(http://cefsharp.github.io/)
+
+    ・용도 : 내장 Web 브라우저
+    ・라이센스 : The 3-Clause BSD License
+    ・라이센스 전문 : Licenses/CefSharp.txt
+
+Application Insights
+(https://azure.microsoft.com/ja-jp/services/application-insights/)
+
+    The MIT License (MIT)
+    
+    Copyright (c) Microsoft Corporation
+
+    ・용도 : 프로그램 충돌 로그 수집
+    ・라이센스 : The MIT License (MIT)
+    ・라이센스 전문 : Licenses/Application Insights.txt
+
 
 ■면책조항
 
@@ -167,8 +182,8 @@ Desktop Toast
 
 ■업데이트 내역
 
+2018/08/17 - version 4.5 릴리즈
 2016/06/20 - version 4.2.6 릴리즈
- (잊었습니다)
 2016/02/12 - version 4.2.1 릴리즈
 2016/02/08 - version 4.2 릴리즈
 2015/11/10 - version 4.1.6 릴리즈
@@ -201,6 +216,7 @@ Desktop Toast
 2013/12/29 - version 1.2 릴리즈
 2013/12/27 - version 1.1 릴리즈
 2013/12/22 - version 1.0 릴리즈
+
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Product name: 제독업무도 바빠！    

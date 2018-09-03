@@ -17,8 +17,7 @@
 
 ### 이 프로젝트에 대해
 
-IE 컴포넌트(WPF의 WebBrowser컨트롤) 위에서 칸코레를 표시하고, [Nekoxy](https://github.com/veigr/Nekoxy)로 통신내용을 캡쳐하고 있습니다.
-칸코레의 동작은, Internet Explorer에서 작동하는 것과 동일합니다.
+Chromium 베이스 내장 Web 브라우저 ([CefSharp.Wpf](http://cefsharp.github.io/))상에서 칸코레를 표시하고, [Nekoxy](https://github.com/veigr/Nekoxy) 로 통신 내용을 캡쳐하고 있습니다.
 **당연하지만, 통신내용의 변경이나, DMM/칸코레의 서버에 대한 정보의 전송 등은(매크로/치트행위) 일체 제공하지 않습니다.**
 
 
@@ -39,26 +38,25 @@ IE 컴포넌트(WPF의 WebBrowser컨트롤) 위에서 칸코레를 표시하고,
 
 ### 동작환경
 
-* Windows 8 이상
+* Windows 10
+* Windows 8.1
 * Windows 7
 
-개발자([@Grabacr07](https://twitter.com/Grabacr07))는 Windows 8.1 Pro 에서만 동작 확인을 하고 있습니다.
+개발자([@Grabacr07](https://twitter.com/Grabacr07))는 Windows 10 Enterprise 에서만 동작 확인을 하고 있습니다.
 Windows 7 에서는, 원정이나 건조가 완료될 때의 토스트 알림 메시지가 작동하지 않습니다. (대신 알림 영역에서 풍선 알림이 표시됩니다.) Windows 8 이상에서의 사용을 권장합니다.
 
-* [.NET Framework 4.5](http://www.microsoft.com/ja-jp/download/details.aspx?id=30653)
+* [.NET Framework 4.6](http://www.microsoft.com/ja-jp/download/details.aspx?id=30653)
 
-Windows 7 에서 사용할 때에는, .NET Framework 4.5의 설치가 필요합니다.
-Windows 8 이상에서는 시스템에 기본적으로 설치되어 있습니다.
+Windows 8 또는 그 이전 버전에서 사용할 때에는, .NET Framework 4.6의 설치가 필요합니다.
+Windows 10의 경우에는 시스템에 기본적으로 설치되어 있습니다.
 
-IE 컴포넌트를 사용하고 있으며, 브라우저 부분은 Internet Explorer의 설정에 따라 달라집니다. 또, 게임이 정확하게 표시되지 않는 등의 현상이 발생한 경우에는, IE의 설정이나, IE에서 Flash를 볼 수 있는지 여부를 확인하시기 바랍니다.
-
-또, 칸코레 게임부분의 사이즈 (800 x 480)과 Internet Explorer(WebBrowser 컨트롤)의 사이즈를 딱 맞게 표시하고 있을 뿐이며, Flash 추출 등의 행위도 하지 않습니다.
-
+현재, 칸코레 본체의 제2기 이행에 의해, Chromium 엔진으로 잠정 대응하고 있습니다.
+검증되지 않은 통신 내용이 많아, 의도하지 않은 동작을 할 가능성이 있으니 주의해주시기 바랍니다.
 
 
 ### 개발환경/언어
 
-C# + WPF로 개발하고 있습니다. 개발환경은 Windows 8.1 Pro + Visual Studio Enterprise 2015 입니다.
+C# + WPF로 개발하고 있습니다. 개발환경은 Windows 10 Enterprise + Visual Studio 2017 입니다.
 
 ### 라이센스
 
@@ -154,12 +152,19 @@ MIT 라이센스 하에 공개하는 오픈소스/프리소프트웨어입니다
 * **라이센스 :** The MIT License (MIT)
 * **라이센스 전문 :** [licenses/NETCoreAudioAPIs.txt](licenses/NETCoreAudioAPIs.txt)
 
-#### [ModernNotify](https://github.com/WolfgangKurz/ModernNotify/)
+### [CefSharp.Wpf](http://cefsharp.github.io/)
+
+* **용도 :** 내장 Web 브라우저
+* **라이센스 :** The 3-Clause BSD License
+* **라이센스 전문 :** [licenses/CefSharp.txt](licenses/CefSharp.txt)
+
+### [Application Insights](https://azure.microsoft.com/ja-jp/services/application-insights/)
 
 > The MIT License (MIT)
->
-> Copyright (c) 2016 WolfgangKurz
+> 
+> Copyright (c) Microsoft Corporation
 
-* **용도 :** 토스트 비호환 플랫폼 토스트 알림
+* **용도 :** 프로그램 충돌 로그 수집
 * **라이센스 :** The MIT License (MIT)
-* **라이센스 전문 :** [licenses/ModernNotify.txt](licenses/ModernNotify.txt)
+* **라이센스 전문 :** [licenses/Application Insights.txt](licenses/Application Insights.txt)
+>>>>>>> 82f18fd513c03450da4db623ce159630b5334bb6

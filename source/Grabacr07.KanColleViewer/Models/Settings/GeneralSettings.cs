@@ -69,6 +69,12 @@ namespace Grabacr07.KanColleViewer.Models.Settings
 		public static SerializableProperty<string> KcaQSync_Password { get; }
 			= new SerializableProperty<string>(GetKey(), Providers.Viewer, "") { AutoSave = true };
 
+		/// <summary>
+		/// 다음 기동시에 브라우저 캐시를 삭제할지 여부를 설정합니다.
+		/// </summary>
+		public static SerializableProperty<bool> ClearCacheOnNextStartup { get; }
+			= new SerializableProperty<bool>(GetKey(), Providers.Local) { AutoSave = true, };
+
 		private static string GetKey([CallerMemberName] string propertyName = "")
 		{
 			return nameof(GeneralSettings) + "." + propertyName;

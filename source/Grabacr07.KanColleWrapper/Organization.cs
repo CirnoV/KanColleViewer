@@ -298,17 +298,17 @@ namespace Grabacr07.KanColleWrapper
 				var fleet = this.Fleets[int.Parse(data.Request["api_id"])];
 
 				var index = int.Parse(data.Request["api_ship_idx"]);
-				var shipid = int.Parse(data.Request["api_ship_id"]);
-				var ship = this.Ships[shipid];
-
-				if (shipid == -2)
+				var shipId = int.Parse(data.Request["api_ship_id"]);
+				if (index == 0 && shipId == -2)
 				{
 					// 旗艦以外をすべて外すケース
 					fleet.UnsetAll();
 					fleet.RaiseShipsUpdated();
 					return;
 				}
-				else if (ship == null)
+
+				var ship = this.Ships[int.Parse(data.Request["api_ship_id"])];
+				if (ship == null)
 				{
 					// 艦を外すケース
 					fleet.Unset(index);
@@ -455,21 +455,18 @@ namespace Grabacr07.KanColleWrapper
 			try
 			{
 				var ships = svd.Request["api_ship_id"]
-					.Split(',')
-					.Select(x => int.Parse(x));
+					.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+					.Select(x => int.Parse(x))
+					.Select(x => this.Ships[x]);
 
 				var slot_dest = svd.Request["api_slot_dest_flag"] != "0";
 
-				foreach (var ship_idx in ships)
+				foreach (var ship in ships)
 				{
-					var ship = this.Ships[ship_idx];
-					if (ship != null)
-					{
-						if (slot_dest)
-							this.homeport.Itemyard.RemoveFromShip(ship);
+					if (slot_dest)
+						this.homeport.Itemyard.RemoveFromShip(ship);
 
-						this.Ships.Remove(ship);
-					}
+					this.Ships.Remove(ship);
 				}
 				this.RaiseShipsChanged();
 			}
@@ -504,6 +501,7 @@ namespace Grabacr07.KanColleWrapper
 					var ships = this.Fleets.Where(f => f.Value.IsInSortie).SelectMany(f => f.Value.Ships).ToArray();
 					evacuationOfferedShipIds = x.api_escape.api_escape_idx.Select(idx => ships[idx - 1].Id).ToArray();
 				});
+
 			proxy.api_req_combined_battle_battleresult
 				.TryParse<kcsapi_battle_result>()
 				.Where(x => x.Data.api_escape != null)
@@ -515,6 +513,7 @@ namespace Grabacr07.KanColleWrapper
 					evacuationOfferedShipIds = x.api_escape.api_escape_idx.Select(idx => ships[idx - 1].Id).ToArray();
 					towOfferedShipIds = x.api_escape.api_tow_idx.Select(idx => ships[idx - 1].Id).ToArray();
 				});
+
 			proxy.api_req_combined_battle_goback_port
 				.Subscribe(_ =>
 				{
@@ -528,6 +527,7 @@ namespace Grabacr07.KanColleWrapper
 						this.towShipIds.Add(towOfferedShipIds[0]);
 					}
 				});
+
 			proxy.api_req_sortie_goback_port
 				.Subscribe(_ =>
 				{
@@ -538,6 +538,7 @@ namespace Grabacr07.KanColleWrapper
 						this.evacuatedShipsIds.Add(evacuationOfferedShipIds[0]);
 					}
 				});
+
 			proxy.api_get_member_ship_deck
 				.Subscribe(_ =>
 				{

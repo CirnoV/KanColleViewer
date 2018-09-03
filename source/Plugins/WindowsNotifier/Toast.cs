@@ -66,8 +66,7 @@ namespace Grabacr07.KanColleViewer.Plugins
 
             if (KanColleViewer.Models.Settings.KanColleSettings.NotifyMuteOnMute)
             {
-                //if (KanColleViewer.Models.Volume.GetInstance().IsMute)
-				if(KanColleViewer.ViewModels.VolumeViewModel.IsMuted())
+                if (KanColleViewer.Models.Volume.GetInstance().IsMute)
                 {
                     // 칸코레 뷰어가 음소거 상태라면 알람도 음소거
                     this.request.ToastAudio = ToastAudio.Silent;

@@ -7,20 +7,22 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Navigation;
+using CefSharp;
+using CefSharp.Wpf;
 using Grabacr07.KanColleViewer.Models;
 using Grabacr07.KanColleViewer.ViewModels;
 using MetroRadiance.Interop;
 using MetroTrilithon.UI.Controls;
 using mshtml;
 using SHDocVw;
+using Grabacr07.KanColleWrapper;
 using IViewObject = Grabacr07.KanColleViewer.Win32.IViewObject;
 using IServiceProvider = Grabacr07.KanColleViewer.Win32.IServiceProvider;
-using WebBrowser = System.Windows.Controls.WebBrowser;
-using KanColleSettings = Grabacr07.KanColleViewer.Models.Settings.KanColleSettings;
+//using WebBrowser = System.Windows.Controls.WebBrowser;
 
 namespace Grabacr07.KanColleViewer.Views.Controls
 {
-	[ContentProperty(nameof(WebBrowser))]
+	[ContentProperty(nameof(CWebBrowser))]
 	[TemplatePart(Name = PART_ContentHost, Type = typeof(ScrollViewer))]
 	public class KanColleHost : Control
 	{
@@ -31,6 +33,13 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 
 		static KanColleHost()
 		{
+			CefSettings cefSettings = new CefSettings();
+			cefSettings.CefCommandLineArgs.Add("proxy-server", "http=127.0.0.1:" + KanColleClient.Current.Proxy.ListeningPort.ToString());
+			cefSettings.BrowserSubprocessPath = @"lib\CefSharp.BrowserSubprocess.exe";
+			cefSettings.CachePath = @"BrowserCache";
+			cefSettings.Locale = "ko-KR";
+			Cef.Initialize(cefSettings, performDependencyCheck: false, browserProcessHandler: null);
+
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(KanColleHost), new FrameworkPropertyMetadata(typeof(KanColleHost)));
 		}
 
@@ -39,42 +48,37 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 		private Dpi? systemDpi;
 		private bool firstLoaded;
 
-		#region WebBrowser 依存関係プロパティ
+		#region CWebBrowser 依存関係プロパティ
 
-		public WebBrowser WebBrowser
+		public ChromiumWebBrowserEx CWebBrowser
 		{
-			get { return (WebBrowser)this.GetValue(WebBrowserProperty); }
-			set { this.SetValue(WebBrowserProperty, value); }
+			get { return (ChromiumWebBrowserEx)this.GetValue(CWebBrowserProperty); }
+			set { this.SetValue(CWebBrowserProperty, value); }
 		}
 
-		public static readonly DependencyProperty WebBrowserProperty =
-			DependencyProperty.Register(nameof(WebBrowser), typeof(WebBrowser), typeof(KanColleHost), new UIPropertyMetadata(null, WebBrowserPropertyChangedCallback));
+		public static readonly DependencyProperty CWebBrowserProperty =
+			DependencyProperty.Register(nameof(CWebBrowser), typeof(ChromiumWebBrowserEx), typeof(KanColleHost), new UIPropertyMetadata(null, CWebBrowserPropertyChangedCallback));
 
-		private static void WebBrowserPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		private static void CWebBrowserPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			var instance = (KanColleHost)d;
-			var newBrowser = (WebBrowser)e.NewValue;
-			var oldBrowser = (WebBrowser)e.OldValue;
+			var newBrowser = (ChromiumWebBrowserEx)e.NewValue;
+			var oldBrowser = (ChromiumWebBrowserEx)e.OldValue;
 
 			if (oldBrowser != null)
 			{
-				oldBrowser.Navigated -= instance.HandleNavigated;
-				oldBrowser.LoadCompleted -= instance.HandleLoadCompleted;
+				oldBrowser.LoadingStateChanged -= instance.HandleLoadingStateChanged;
 			}
 			if (newBrowser != null)
 			{
-				newBrowser.Navigated += instance.HandleNavigated;
-				newBrowser.LoadCompleted += instance.HandleLoadCompleted;
-
-				var events = WebBrowserHelper.GetAxWebbrowser2(newBrowser) as DWebBrowserEvents_Event;
-				if (events != null) events.NewWindow += instance.HandleWebBrowserNewWindow;
+				newBrowser.LoadingStateChanged += instance.HandleLoadingStateChanged;
+				//var events = WebBrowserHelper.GetAxWebbrowser2(newBrowser) as DWebBrowserEvents_Event;
+				//if (events != null) events.NewWindow += instance.HandleWebBrowserNewWindow;
 			}
 			if (instance.scrollViewer != null)
 			{
 				instance.scrollViewer.Content = newBrowser;
-			}
-
-			WebBrowserHelper.SetAllowWebBrowserDrop(newBrowser, false);
+			}			
 		}
 
 		#endregion
@@ -145,13 +149,13 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			this.scrollViewer = this.GetTemplateChild(PART_ContentHost) as ScrollViewer;
 			if (this.scrollViewer != null)
 			{
-				this.scrollViewer.Content = this.WebBrowser;
+				this.scrollViewer.Content = this.CWebBrowser;
 			}
 		}
 
 		public void Update()
 		{
-			if (this.WebBrowser == null) return;
+			if (this.CWebBrowser == null) return;
 
 			var dpi = this.systemDpi ?? (this.systemDpi = this.GetSystemDpi()) ?? Dpi.Default;
 			var zoomFactor = dpi.ScaleX + (this.ZoomFactor - 1.0);
@@ -163,8 +167,8 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			size = new Size(
 				(size.Width * (zoomFactor / dpi.ScaleX)) / dpi.ScaleX,
 				(size.Height * (zoomFactor / dpi.ScaleY)) / dpi.ScaleY);
-			this.WebBrowser.Width = size.Width;
-			this.WebBrowser.Height = size.Height;
+			this.CWebBrowser.Width = size.Width;
+			this.CWebBrowser.Height = size.Height;
 
 			this.OwnerSizeChangeRequested?.Invoke(this, size);
 		}
@@ -181,6 +185,13 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 
 			try
 			{
+				if (zoomFactor == 100)
+					target.CWebBrowser.GetBrowser().SetZoomLevel(0); // reset
+				else
+					target.CWebBrowser.GetBrowser().SetZoomLevel(
+						5.46149645 * Math.Log(zoomFactor) - 25.12
+					);
+				/*
 				var provider = target.WebBrowser.Document as IServiceProvider;
 				if (provider == null) return;
 
@@ -191,6 +202,7 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 
 				object pvaIn = zoomFactor;
 				webBrowser.ExecWB(OLECMDID.OLECMDID_OPTICAL_ZOOM, OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT, ref pvaIn);
+				*/
 			}
 			catch (Exception) when (Application.Instance.State == ApplicationState.Startup)
 			{
@@ -203,26 +215,23 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			}
 		}
 
-		private void HandleNavigated(object sender, NavigationEventArgs e)
+		private void HandleLoadingStateChanged(object sender, LoadingStateChangedEventArgs e)
 		{
-			WebBrowserHelper.SetScriptErrorsSuppressed(this.WebBrowser, true);
-
-			if (e.Uri.AbsoluteUri == KanColleViewer.Properties.Settings.Default.KanColleUrl.AbsoluteUri)
+			if (e.IsLoading == false)
 			{
-				this.firstLoaded = true;
-
-				this.ApplyStyleSheet();
-				this.ApplyPromisePolyfill();
-				this.Update();
+				Dispatcher.Invoke(() => {
+					ApplyStyleSheet();
+					firstLoaded = true;
+					Update();
+				});
 			}
 		}
-		private void HandleLoadCompleted(object sender, NavigationEventArgs e)
+
+		private void HandleLoadCompleted(object sender, RoutedEventArgs e)
 		{
-			WebBrowserHelper.SetScriptErrorsSuppressed(this.WebBrowser, true);
+			this.ApplyStyleSheet();
+			//WebBrowserHelper.SetScriptErrorsSuppressed(this.WebBrowser, true);
 
-			this.ApplyPromisePolyfill();
-
-			this.ApplyStyleSheet(1);
 			this.Update();
 		}
 
@@ -235,54 +244,36 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 			window.WebBrowser.Navigate(url);
 		}
 
-		private void ApplyStyleSheet(int step = 0)
+		private void ApplyStyleSheet()
 		{
 			if (!this.firstLoaded) return;
 
 			try
 			{
-				if (step == 0)
+				var frame = this.CWebBrowser.GetBrowser().MainFrame;
+				if (frame == null) return;
+
+				var css = this.UserStyleSheet.Replace("'", "\\'").Replace("\r", "").Replace("\n", "\\n");
+				frame.ExecuteJavaScriptAsync("var css = document.createElement('style');css.type='text/css';css.innerHTML='" + css + "';document.body.appendChild(css);");
+				this.styleSheetApplied = true;
+				/*
+				var document = this.WebBrowser.Document as HTMLDocument;
+				if (document == null) return;
+				var gameFrame = document.getElementById("game_frame");
+				if (gameFrame == null)
 				{
-					var script = string.Format(
-						@"document.addEventListener('DOMContentLoaded', function(){{
-							var x = document.createElement('style');
-							x.type = 'text/css';
-							x.innerHTML = '{0}';
-							document.body.appendChild(x);
-							setInterval(function(){
-								var iframes = document.getElementsByTagName('iframe');
-								for(var i=0; i<iframes.length; i++){
-									if(iframes[i].src.indexOf('/ifr?')<0)
-										iframes[i].parentNode.removeChild(iframes[i]);
-								}
-							}, 1000);
-						}});",
-						this.UserStyleSheet.Replace("'", "\\'").Replace("\r\n", "\\n")
-					);
-					WebBrowser.InvokeScript("eval", new object[] { script });
+					if (document.url.Contains(".swf?"))
+					{
+						gameFrame = document.body;
+					}
+				}
+				var target = gameFrame?.document as HTMLDocument;
+				if (target != null)
+				{
+					target.createStyleSheet().cssText = this.UserStyleSheet;
 					this.styleSheetApplied = true;
 				}
-				else
-				{
-					var document = this.WebBrowser.Document as HTMLDocument;
-					if (document == null) return;
-
-					var gameFrame = document.getElementById("game_frame");
-					if (gameFrame == null)
-					{
-						if (document.url.Contains(".swf?"))
-						{
-							gameFrame = document.body;
-						}
-					}
-
-					var target = gameFrame?.document as HTMLDocument;
-					if (target != null)
-					{
-						target.createStyleSheet().cssText = this.UserStyleSheet;
-						this.styleSheetApplied = true;
-					}
-				}
+				*/
 			}
 			catch (Exception) when (Application.Instance.State == ApplicationState.Startup)
 			{
@@ -293,52 +284,6 @@ namespace Grabacr07.KanColleViewer.Views.Controls
 				Debug.WriteLine(ex);
 				StatusService.Current.Notify("failed to apply css: " + ex.Message);
 			}
-		}
-		private void ApplyPromisePolyfill()
-		{
-			var patch = new Action<IWebBrowser2>(browser =>
-			{
-				var script =
-					@"var inject = function(src){
-						var el = document.createElement('script');
-						el.setAttribute('src',src);
-						document.body.appendChild(el);
-					};
-					inject('https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js');
-					inject('https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js');
-
-					var communicator = document.createElement('div');
-					communicator.style.display = 'none';
-					communicator.id = 'communicator';
-					document.body.appendChild(communicator);
-
-					var timer = setInterval(function(){
-						if(!window.Promise) return;
-						clearInterval(timer);
-
-						var els = document.querySelectorAll('canvas');
-						for(var i=0; i<els.length; i++) els[i].parentNode.removeChild(els[i]);
-
-						PIXI.settings.RENDER_OPTIONS.preserveDrawingBuffer = true;
-						KCS.init();
-					}, 100);
-
-					window.takeScreenshot = function(mimetype){
-						var canvas = document.querySelector('canvas');
-						communicator.innerHTML = canvas.toDataURL(mimetype);
-					};
-				";
-				browser.Navigate("javascript:void(function(){" + script.Replace("\r", "").Replace("\n", "").Replace("\t", "") + "}())");
-			});
-
-			try
-			{
-				var subBrowser = Helper.GetGameFrame(this.WebBrowser);
-				if (subBrowser == null) return;
-
-				patch(subBrowser);
-			}
-			catch { }
 		}
 	}
 }

@@ -243,13 +243,9 @@ namespace Grabacr07.KanColleViewer.ViewModels
 
 		public void TakeScreenshot(bool defaultPath)
 		{
-			var format = ScreenshotSettings.Format.Value;
-			var path = Helper.CreateScreenshotFilePath(format, defaultPath);
-			var message = new ScreenshotMessage("Screenshot.Save")
-			{
-				Path = path,
-				Format = format,
-			};
+			var path = Helper.CreateScreenshotFilePath(defaultPath);
+			var message = new ScreenshotMessage("Screenshot.Save") { Path = path, };
+
 			this.Messenger.Raise(message);
 
 			if (message.Response.IsSuccess)

@@ -1,19 +1,18 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Grabacr07.KanColleViewer.Models;
 using Livet;
 using Livet.EventListeners;
-using NAudio.CoreAudioApi;
-using NAudio.CoreAudioApi.Interfaces;
 
 namespace Grabacr07.KanColleViewer.ViewModels
 {
 	public class VolumeViewModel : ViewModel
 	{
+		private Volume volume;
+
 		#region IsMute 変更通知プロパティ
 
 		private bool _IsMute;
@@ -36,55 +35,46 @@ namespace Grabacr07.KanColleViewer.ViewModels
 
 		public VolumeViewModel()
 		{
-			this.IsMute = IsMuted();
+			this.CreateVolumeInstanceIfNull();
 		}
 
 		public void ToggleMute()
 		{
-			var newValue = !IsMuted();
-			try
+			if (this.CreateVolumeInstanceIfNull())
 			{
-				var MMDE = new MMDeviceEnumerator();
-				var dev = MMDE.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-				var sessions = dev.AudioSessionManager.Sessions;
-				var count = sessions.Count;
-				for(var i=0; i<count; i++)
-				{
-					var sess = sessions[i];
-					if (sess.GetProcessID != Process.GetCurrentProcess().Id) continue;
-					sess.SimpleAudioVolume.Mute = newValue;
-				}
-				this.IsMute = dev.AudioSessionManager.SimpleAudioVolume.Mute;
+				this.volume.ToggleMute();
 			}
-			catch
-			{
-			}
-		}
-		public static bool IsMuted()
-		{
-			try
-			{
-				var MMDE = new MMDeviceEnumerator();
-				var dev = MMDE.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-				return dev.AudioSessionManager.SimpleAudioVolume.Mute;
-			}
-			catch
-			{
-			}
-			return false;
 		}
 		public bool IsExistSoundDevice()
 		{
-			try
+			if (this.CreateVolumeInstanceIfNull())
 			{
-				MMDeviceEnumerator MMDE = new MMDeviceEnumerator();
-				MMDeviceCollection DevCol = MMDE.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active);
-				return DevCol.Count > 0;
+				return true;
 			}
-			catch
+			else return false;
+		}
+
+		private bool CreateVolumeInstanceIfNull()
+		{
+			if (this.volume == null)
 			{
+				try
+				{
+					this.volume = Volume.GetInstance();
+					this.CompositeDisposable.Add(new PropertyChangedEventListener(this.volume)
+					{
+						{ nameof(this.volume.IsMute), (sender, args) => this.IsMute = this.volume.IsMute },
+					});
+					this.IsMute = this.volume.IsMute;
+				}
+				catch (Exception ex)
+				{
+					Debug.WriteLine(ex);
+					return false;
+				}
 			}
-			return false;
+
+			return true;
 		}
 	}
 }

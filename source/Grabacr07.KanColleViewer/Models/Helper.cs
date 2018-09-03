@@ -16,13 +16,6 @@ using Grabacr07.KanColleViewer.Win32;
 using Microsoft.Win32;
 using Nekoxy;
 
-using mshtml;
-using SHDocVw;
-using IViewObject = Grabacr07.KanColleViewer.Win32.IViewObject;
-using IServiceProvider = Grabacr07.KanColleViewer.Win32.IServiceProvider;
-using WebBrowser = System.Windows.Controls.WebBrowser;
-
-
 namespace Grabacr07.KanColleViewer.Models
 {
 	internal static class Helper
@@ -45,7 +38,7 @@ namespace Grabacr07.KanColleViewer.Models
 		public static bool IsInDesignMode => DesignerProperties.GetIsInDesignMode(new DependencyObject());
 
 
-		public static string CreateScreenshotFilePath(SupportedImageFormat format, bool defaultPath = false)
+		public static string CreateScreenshotFilePath(bool defaultPath = false)
 		{
 			var directory = "";
 
@@ -59,7 +52,10 @@ namespace Grabacr07.KanColleViewer.Models
 				$"KanColle-{DateTimeOffset.Now.LocalDateTime.ToString("yyMMdd-HHmmssff")}"
 			);
 
-			filePath = Path.ChangeExtension(filePath, format.ToExtension());
+			filePath = Path.ChangeExtension(
+				filePath,
+				Settings.ScreenshotSettings.Format == SupportedImageFormat.Png ? ".png" : ".jpg"
+			);
 
 			return filePath;
 		}
@@ -72,7 +68,6 @@ namespace Grabacr07.KanColleViewer.Models
 		public static void SetRegistryFeatureBrowserEmulation()
 		{
 			const string key = @"HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION";
-			const string NInputkey = @"HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_NINPUT_LEGACYMODE";
 			const string GPUkey = @"HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_GPU_RENDERING";
 
 			int GPUSettingValue = 0;
@@ -83,7 +78,6 @@ namespace Grabacr07.KanColleViewer.Models
 			{
 				var valueName = Process.GetCurrentProcess().ProcessName + ".exe";
 				Registry.SetValue(key, valueName, Properties.Settings.Default.FeatureBrowserEmulation, RegistryValueKind.DWord);
-				Registry.SetValue(NInputkey, valueName, 0, RegistryValueKind.DWord);
 
 				if (Registry.GetValue(GPUkey, valueName, null) == null)
 				{
@@ -121,6 +115,16 @@ namespace Grabacr07.KanColleViewer.Models
 
 		private static bool DeleteInternetCacheCore()
 		{
+			try
+			{
+				Directory.Delete(@"BrowserCache\Cache", true);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+			/*
 			// ReSharper disable InconsistentNaming
 			const int CACHEGROUP_SEARCH_ALL = 0x0;
 			const int ERROR_NO_MORE_ITEMS = 259;
@@ -174,6 +178,7 @@ namespace Grabacr07.KanColleViewer.Models
 			Marshal.FreeHGlobal(cacheEntryInfoBuffer);
 
 			return true;
+		*/
 		}
 
 
@@ -234,61 +239,6 @@ namespace Grabacr07.KanColleViewer.Models
 				default:
 					return new HttpClientHandler();
 			}
-		}
-
-		private static IWebBrowser2 LatestGameFrame;
-		public static IWebBrowser2 GetGameFrame(WebBrowser BrowserControl)
-		{
-			try
-			{
-				var document = BrowserControl.Document as HTMLDocument;
-				if (document == null) return null;
-
-				if(document.body?.getAttribute("cached") as string == "1")
-					return LatestGameFrame;
-
-				var frames = document.frames;
-				for (var i = 0; i < frames.length; i++)
-				{
-					var item = frames.item(i);
-					var provider = item as IServiceProvider;
-					if (provider == null) continue;
-
-					object ppvObject;
-					provider.QueryService(typeof(IWebBrowserApp).GUID, typeof(IWebBrowser2).GUID, out ppvObject);
-					var webBrowser = ppvObject as IWebBrowser2;
-
-					var iframeDocument = webBrowser?.Document as HTMLDocument;
-					if (iframeDocument == null) continue;
-
-					if (iframeDocument.getElementById("htmlWrap") != null)
-					{
-						var subframes = iframeDocument.frames;
-						for (var j = 0; j < subframes.length; j++)
-						{
-							var subitem = subframes.item(j);
-							var subprovider = subitem as IServiceProvider;
-							if (subprovider == null) continue;
-
-							object subppvObject;
-							subprovider.QueryService(typeof(IWebBrowserApp).GUID, typeof(IWebBrowser2).GUID, out subppvObject);
-							var subBrowser = subppvObject as IWebBrowser2;
-
-							var subiframeDocument = subBrowser?.Document as HTMLDocument;
-							if (subiframeDocument == null) continue;
-
-							if (subiframeDocument.url.Contains("/kcs2/"))
-							{
-								document.body.setAttribute("cached", "1");
-								LatestGameFrame = subBrowser;
-								return subBrowser;
-							}
-						}
-					}
-				}
-			}
-			catch { }
-			return null;
 		}
 	}
 }

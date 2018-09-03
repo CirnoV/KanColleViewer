@@ -7,20 +7,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using Grabacr07.KanColleViewer.ViewModels.Messages;
 using Grabacr07.KanColleViewer.Win32;
-using Grabacr07.KanColleViewer.Models;
 using Livet.Behaviors.Messaging;
 using Livet.Messaging;
 using mshtml;
 using SHDocVw;
+using CefSharp;
+using CefSharp.Wpf;
 using IServiceProvider = Grabacr07.KanColleViewer.Win32.IServiceProvider;
-using WebBrowser = System.Windows.Controls.WebBrowser;
+//using WebBrowser = System.Windows.Controls.WebBrowser;
 
 namespace Grabacr07.KanColleViewer.Views.Behaviors
 {
 	/// <summary>
 	/// 艦これの Flash 部分を画像として保存する機能を提供します。
 	/// </summary>
-	internal class ScreenshotAction : InteractionMessageAction<WebBrowser>
+	internal class ScreenshotAction : InteractionMessageAction<ChromiumWebBrowserEx>
 	{
 		protected override void InvokeAction(InteractionMessage message)
 		{
@@ -32,7 +33,7 @@ namespace Grabacr07.KanColleViewer.Views.Behaviors
 
 			try
 			{
-				this.SaveCore(screenshotMessage.Path, screenshotMessage.Format);
+				this.SaveCore(screenshotMessage.Path);
 				screenshotMessage.Response = new Processing();
 			}
 			catch (Exception ex)
@@ -50,36 +51,34 @@ namespace Grabacr07.KanColleViewer.Views.Behaviors
 		/// ありがとうございました。
 		/// </remarks>
 		/// <param name="path"></param>
-		private void SaveCore(string path, SupportedImageFormat format)
+		private async void SaveCore(string path)
 		{
-			const string notFoundMessage = "칸코레 Canvas를 찾을 수 없습니다.";
+			const string notFoundMessage = "칸코레를 찾을 수 없습니다.";
 
-			var browser = Helper.GetGameFrame(this.AssociatedObject);
+			var browser = this.AssociatedObject.GetBrowser();
 			if (browser == null) throw new Exception(notFoundMessage);
 
-			var document = browser?.Document as HTMLDocument;
-			if (document == null) throw new Exception(notFoundMessage);
+			var frame = browser.MainFrame;
+			if (frame == null) throw new Exception(notFoundMessage);
 
-			var mimetype = format.ToMimeType();
+			var frame_exists = (bool)(await frame.EvaluateScriptAsync("document.getElementById('game_frame')!=null")).Result;
+			if (!frame_exists) throw new Exception(notFoundMessage);
 
-			var rawResult = document.parentWindow.execScript($"takeScreenshot('{mimetype}');", "JavaScript");
+			var width = (int)(await frame.EvaluateScriptAsync("document.getElementById('game_frame').clientWidth")).Result;
+			var height = (int)(await frame.EvaluateScriptAsync("document.getElementById('game_frame').clientHeight")).Result;
 
-			var communicator = document.getElementById("communicator");
-			if (communicator == null) throw new Exception("커뮤니케이터를 찾는데 실패했습니다.");
+			TakeScreenshot((int)width, (int)height, this.AssociatedObject, path);
+		}
 
-			var dataUrl = communicator.innerHTML;
-			communicator.innerHTML = "";
+		private static void TakeScreenshot(int width, int height, ChromiumWebBrowserEx browser, string path)
+		{
+			var image = browser.ScreenshotOrNull();
 
-			var array = dataUrl.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-			if (array.Length != 2) throw new Exception($"無効な形式: {dataUrl}");
+			var format = Path.GetExtension(path) == ".jpg"
+				? ImageFormat.Jpeg 
+				: ImageFormat.Png;
 
-			var base64 = array[1];
-			var bytes = Convert.FromBase64String(base64);
-			using (var ms = new MemoryStream(bytes))
-			{
-				var image = System.Drawing.Image.FromStream(ms);
-				image.Save(path, ImageFormat.Png);
-			}
+			image.Save(path, format);
 		}
 	}
 }

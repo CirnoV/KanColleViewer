@@ -5,8 +5,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows;
+using CefSharp;
 using Grabacr07.KanColleViewer.Composition;
 using Grabacr07.KanColleViewer.Models;
 using Grabacr07.KanColleViewer.Models.Settings;
@@ -45,22 +45,18 @@ namespace Grabacr07.KanColleViewer
 
 	sealed partial class Application : INotifyPropertyChanged, IDisposableHolder
 	{
-		private static string CurrentDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 		private GCWorker bgGCWorker { get; set; } // 백그라운드 메모리 정리 워커
 
 		private readonly LivetCompositeDisposable compositeDisposable = new LivetCompositeDisposable();
 		private event PropertyChangedEventHandler propertyChangedInternal;
 
-		static Application()
-		{
-			AppDomain.CurrentDomain.UnhandledException += (sender, args)
-				=> ReportException(sender, args.ExceptionObject as Exception);
-		}
-
-		/// <summary>
-		/// 현재 <see cref="AppDomain"/>의 <see cref="Application"/> 객체를 반환합니다.
-		/// </summary>
-		public static Application Instance => Current as Application;
+		public DirectoryInfo LocalAppData = new DirectoryInfo(
+			Path.Combine(
+				Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+				ProductInfo.Company,
+				ProductInfo.Product
+			)
+		);
 
 		/// <summary>
 		/// 어플리케이션의 현재 상태를 가리키는 식별자를 반환합니다.
@@ -81,7 +77,7 @@ namespace Grabacr07.KanColleViewer
 				// 미처리 예외
 				this.DispatcherUnhandledException += (sender, args) =>
 				{
-					ReportException(sender, args.Exception);
+					ReportException("Dispatcher", sender, args.Exception);
 					args.Handled = true;
 				};
 
@@ -99,7 +95,7 @@ namespace Grabacr07.KanColleViewer
 				}
 				catch(Exception ex)
 				{
-					ReportException(this, ex);
+					ReportException("Culture", this, ex);
 
 					// 무언가 오류가 발생...
 					try
@@ -109,7 +105,7 @@ namespace Grabacr07.KanColleViewer
 					}
 					catch (Exception ex2)
 					{
-						ReportException(this, ex2);
+						ReportException("File.Delete", this, ex2);
 					}
 
 					MessageBox.Show(
@@ -145,13 +141,14 @@ namespace Grabacr07.KanColleViewer
 				NotifyService.Current.AddTo(this).Initialize();
 
 				GCWorker.Current.AddTo(this).Startup();
+				Helper.SetMMCSSTask();
+				Helper.DeleteCacheIfRequested();
+
+				CefInitialize();
 
 				// WebBrowser 컨트롤 IE 버전 레지스트리 패치, MMCSS 설정
-				Helper.SetRegistryFeatureBrowserEmulation();
+				// Helper.SetRegistryFeatureBrowserEmulation();
 				if (GeneralSettings.MMCSSEnabled) Helper.SetMMCSSTask();
-
-				// CEF 제거 마이그레이션
-				Models.Migration.cef_Migration.Migration();
 
 				// 번역 여부
 				KanColleClient.Current.Translations.EnableTranslations = KanColleSettings.EnableTranslations;
@@ -287,6 +284,8 @@ namespace Grabacr07.KanColleViewer
 			// 전과 저장
 			ViewModels.Contents.AdmiralViewModel.Record?.Save();
 
+			Cef.Shutdown();
+
 			this.ChangeState(ApplicationState.Terminate);
 			base.OnExit(e);
 
@@ -313,60 +312,6 @@ namespace Grabacr07.KanColleViewer
 		{
 			// 지금은 할 일이 없다.
 			Debug.WriteLine("다중 실행 감지: " + args.ToString(" "));
-		}
-
-		/// <summary>
-		/// <see cref="ProxyBootstrapper"/> 를 사용하여, <see cref="KanColleProxy"/> 의 기동을 시도합니다.
-		/// 필요에 따라 유저에게 작업을 요구하는 다이얼로그를 표시합니다.
-		/// </summary>
-		/// <returns><see cref="KanColleProxy"/> 의 기동에 성공했을 때에는 True, 그 외에는 False를 반환합니다.</returns>
-		private static bool BootstrapProxy()
-		{
-			var bootstrapper = new ProxyBootstrapper();
-			bootstrapper.Try();
-
-			if (bootstrapper.Result == ProxyBootstrapResult.Success)
-				return true;
-
-			var vmodel = new ProxyBootstrapperViewModel(bootstrapper) { Title = ProductInfo.Title, };
-			var window = new Views.Settings.ProxyBootstrapper { DataContext = vmodel, };
-			window.ShowDialog();
-
-			return vmodel.DialogResult;
-		}
-
-		/// <summary>
-		/// 처리되지 않은 예외를 처리합니다.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="exception"></param>
-		private static void ReportException(object sender, Exception exception)
-		{
-			#region const
-
-			const string MessageFormat = @"
-===========================================================
-ERROR, date = {0}, sender = {1},
-{2}
-";
-			const string Path = "error.log";
-
-			#endregion
-
-			try
-			{
-				var message = string.Format(MessageFormat, DateTimeOffset.Now, sender, exception);
-				Debug.WriteLine(message);
-				File.AppendAllText(Path, message);
-			}
-			catch (Exception ex)
-			{
-				Debug.WriteLine(ex);
-			}
-
-			// 일단 종료시키는 수 밖에 없다.
-			// 복구시킬 수 있다면 좋겠지만, 모릅니다.
-			Current.Shutdown();
 		}
 
 		#region INotifyPropertyChanged 멤버

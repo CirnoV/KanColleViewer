@@ -21,11 +21,12 @@
 				   xmlns:contents="clr-namespace:Grabacr07.KanColleViewer.Views.Contents"
 				   xmlns:settings="clr-namespace:Grabacr07.KanColleViewer.Models.Settings"
 				   xmlns:ms="clr-namespace:Grabacr07.KanColleViewer.Models.Settings"
+				   xmlns:cef="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
 				   mc:Ignorable="d"
 				   d:DataContext="{d:DesignInstance viewModels:KanColleWindowViewModel}"
 				   Title="{Binding Title}"
 				   Width="960"
-				   Height="945"
+				   Height="600"
 				   FontSize="12"
 				   Topmost="{Binding Settings.TopMost.Value, Mode=TwoWay}"
 				   WindowState="{Binding WindowState, Mode=OneWayToSource}"
@@ -300,14 +301,15 @@
 									   DockPanel.Dock="{Binding BrowserDock2}"
 									   ZoomFactor="{Binding ZoomFactor.Current}"
 									   UserStyleSheet="{Binding Source={x:Static settings:GeneralSettings.UserStyleSheet}, Path=Value}"
-									   OwnerSizeChangeRequested="HandleKanColleHostSizeChangeRequested">
+									   OwnerSizeChangeRequested="HandleKanColleHostSizeChangeRequested"
+									   Panel.ZIndex="1">
 					<i:Interaction.Triggers>
 						<livet:InteractionMessageTrigger Messenger="{Binding Messenger}"
 														 MessageKey="WebBrowser.Zoom">
 							<behaviors:ZoomAction />
 						</livet:InteractionMessageTrigger>
 					</i:Interaction.Triggers>
-					<WebBrowser Source="about:blank">
+					<cef:ChromiumWebBrowser>
 						<i:Interaction.Behaviors>
 							<behaviors:NavigatorBehavior Navigator="{Binding Navigator}" />
 							<mtti:TaskbarThumbnailBehavior />
@@ -318,7 +320,7 @@
 								<behaviors:ScreenshotAction />
 							</livet:InteractionMessageTrigger>
 						</i:Interaction.Triggers>
-					</WebBrowser>
+					</cef:ChromiumWebBrowser>
 				</controls:KanColleHost>
 				<DockPanel x:Name="BottomToolbarArea"
 						   DockPanel.Dock="Bottom"

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -48,30 +48,33 @@ namespace Grabacr07.KanColleViewer.Views
 				if (this.previousDock == Dock.Top || this.previousDock == Dock.Bottom) // 정보 영역 위 혹은 아래
 				{
 					var diffW = this.previousBrowserSize.Value.Width - browserSize.Width;
-					if (Math.Abs(diffW) > 0.00001) this.Width -= diffW;
+					if (Math.Abs(diffW) > 0.00001 && this.Width - diffW > 0) this.Width -= diffW;
 				}
 				else if (this.previousDock == Dock.Left || this.previousDock == Dock.Right) // 정보영역 왼쪽 혹은 오른쪽
 				{
 					var diffH = this.previousBrowserSize.Value.Height - browserSize.Height;
-					if (Math.Abs(diffH) > 0.00001) this.Height -= diffH;
+					if (Math.Abs(diffH) > 0.00001 && this.Height - diffH > 0) this.Height -= diffH;
 				}
 			}
 			else
 			{
-				if (this.previousDock == Dock.Top || this.previousDock == Dock.Bottom)
+				if (this.previousBrowserSize != browserSize)
 				{
-					this.Height += browserSize.Height;
-				}
-				else if (this.previousDock == Dock.Left || this.previousDock == Dock.Right)
-				{
-					this.Width += browserSize.Width;
+					this.previousBrowserSize = browserSize;
+
+					if (this.previousDock == Dock.Top || this.previousDock == Dock.Bottom)
+					{
+						this.Height += browserSize.Height;
+					}
+					else if (this.previousDock == Dock.Left || this.previousDock == Dock.Right)
+					{
+						this.Width += browserSize.Width;
+					}
 				}
 			}
 
 			this.MinWidth = browserSize.Width + this.BorderThickness.Left + this.BorderThickness.Right;
-			this.MinHeight = browserSize.Height + this.TopToolbarArea.ActualHeight + this.BottomToolbarArea.ActualHeight + this.captionBar.ActualHeight + this.statusBar.ActualHeight;
-
-			this.previousBrowserSize = browserSize;
+			this.MinHeight = browserSize.Height + this.TopToolbarArea.ActualHeight + this.captionBar.ActualHeight + this.statusBar.ActualHeight;
 		}
 
 		// 정보 영역 변경에 의한 윈도우 크기 재계산
@@ -116,6 +119,8 @@ namespace Grabacr07.KanColleViewer.Views
 		{
 			base.OnClosed(e);
 			((IDisposable)this).Dispose();
+
+			Application.Instance.Shutdown();
 		}
 	}
 }

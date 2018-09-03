@@ -76,7 +76,7 @@
 							Grid.Column="1"
 							Grid.ColumnSpan="3"
 							Orientation="Horizontal">
-					<RadioButton Content="PNG"
+					<RadioButton Content="PNG (권장)"
 								 IsChecked="{Binding Source={x:Static ms:ScreenshotSettings.Format}, Path=Value, Mode=TwoWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Png}" />
 					<RadioButton Content="JPG"
 								 Margin="16,0,0,0"
@@ -231,8 +231,7 @@
 				</TextBlock.ToolTip>
 			</TextBlock>
 
-			<Grid DataContext="{Binding ScreenshotSettings}"
-				  Margin="20,0,0,0">
+			<Grid Margin="20,0,0,0">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
 					<RowDefinition Height="Auto" />
@@ -297,9 +296,8 @@
 											 Content="적용"
 											 IsEnabled="{Binding IsEditing}" />
 				</DockPanel>
+				<Rectangle Style="{DynamicResource SeparatorStyleKey}" />
 			</StackPanel>
-
-			<Rectangle Style="{DynamicResource SeparatorStyleKey}" />
 		</StackPanel>
 	</ScrollViewer>
 </UserControl>

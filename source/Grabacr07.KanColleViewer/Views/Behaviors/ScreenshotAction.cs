@@ -1,84 +1,72 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Threading.Tasks;
-using Grabacr07.KanColleViewer.ViewModels.Messages;
-using Grabacr07.KanColleViewer.Win32;
-using Livet.Behaviors.Messaging;
-using Livet.Messaging;
-using mshtml;
-using SHDocVw;
 using CefSharp;
 using CefSharp.Wpf;
-using IServiceProvider = Grabacr07.KanColleViewer.Win32.IServiceProvider;
-//using WebBrowser = System.Windows.Controls.WebBrowser;
+using Grabacr07.KanColleViewer.Models;
+using Grabacr07.KanColleViewer.Models.Cef;
+using Grabacr07.KanColleViewer.Properties;
+using Grabacr07.KanColleViewer.ViewModels.Messages;
+using Livet.Behaviors.Messaging;
+using Livet.Messaging;
 
 namespace Grabacr07.KanColleViewer.Views.Behaviors
 {
 	/// <summary>
-	/// 艦これの Flash 部分を画像として保存する機能を提供します。
+	/// 艦これのゲーム部分を画像として保存する機能を提供します。
 	/// </summary>
-	internal class ScreenshotAction : InteractionMessageAction<ChromiumWebBrowserEx>
+	internal class ScreenshotAction : InteractionMessageAction<ChromiumWebBrowser>
 	{
-		protected override void InvokeAction(InteractionMessage message)
-		{
-			var screenshotMessage = message as ScreenshotMessage;
-			if (screenshotMessage == null)
-			{
-				return;
-			}
+		private IFrame targetCanvas;
 
-			try
+		protected override async void InvokeAction(InteractionMessage message)
+		{
+			if (message is ScreenshotMessage screenshotMessage)
 			{
-				this.SaveCore(screenshotMessage.Path);
-				screenshotMessage.Response = new Processing();
-			}
-			catch (Exception ex)
-			{
-				screenshotMessage.Response = new Processing(ex);
+				try
+				{
+					await this.TakeScreenshot(screenshotMessage.Path, screenshotMessage.Format);
+					StatusService.Current.Notify(Resources.Screenshot_Saved + Path.GetFileName(screenshotMessage.Path));
+				}
+				catch (Exception ex)
+				{
+					StatusService.Current.Notify(Resources.Screenshot_Failed + ex.Message);
+					Application.TelemetryClient.TrackException(ex);
+				}
 			}
 		}
 
-
-		/// <summary>
-		/// <see cref="WebBrowser.Document"/> (<see cref="HTMLDocument"/>) から艦これの Flash 要素を特定し、指定したパスにスクリーンショットを保存します。
-		/// </summary>
-		/// <remarks>
-		/// 本スクリーンショット機能は、「艦これ 司令部室」開発者の @haxe さんより多大なご協力を頂き実装できました。
-		/// ありがとうございました。
-		/// </remarks>
-		/// <param name="path"></param>
-		private async void SaveCore(string path)
+		private Task TakeScreenshot(string path, SupportedImageFormat format)
 		{
-			const string notFoundMessage = "칸코레를 찾을 수 없습니다.";
+			var source = new TaskCompletionSource<Unit>();
 
-			var browser = this.AssociatedObject.GetBrowser();
-			if (browser == null) throw new Exception(notFoundMessage);
+			if (this.targetCanvas == null && !this.AssociatedObject.TryGetKanColleCanvas(out this.targetCanvas))
+			{
+				source.SetException(new Exception("艦これの Canvas 要素が見つかりません。"));
+				return source.Task;
+			}
 
-			var frame = browser.MainFrame;
-			if (frame == null) throw new Exception(notFoundMessage);
+			var request = new ScreenshotRequest(path, source);
+			var script = $@"
+(async function()
+{{
+	await CefSharp.BindObjectAsync('{request.Id}');
 
-			var frame_exists = (bool)(await frame.EvaluateScriptAsync("document.getElementById('game_frame')!=null")).Result;
-			if (!frame_exists) throw new Exception(notFoundMessage);
+	var canvas = document.querySelector('canvas');
+	requestAnimationFrame(() =>
+	{{
+		var dataUrl = canvas.toDataURL('{format.ToMimeType()}');
+		{request.Id}.complete(dataUrl);
+	}});
+}})();
+";
+			this.AssociatedObject.JavascriptObjectRepository.Register(request.Id, request, true);
+			this.targetCanvas.ExecuteJavaScriptAsync(script);
 
-			var width = (int)(await frame.EvaluateScriptAsync("document.getElementById('game_frame').clientWidth")).Result;
-			var height = (int)(await frame.EvaluateScriptAsync("document.getElementById('game_frame').clientHeight")).Result;
-
-			TakeScreenshot((int)width, (int)height, this.AssociatedObject, path);
-		}
-
-		private static void TakeScreenshot(int width, int height, ChromiumWebBrowserEx browser, string path)
-		{
-			var image = browser.ScreenshotOrNull();
-
-			var format = Path.GetExtension(path) == ".jpg"
-				? ImageFormat.Jpeg 
-				: ImageFormat.Png;
-
-			image.Save(path, format);
+			return source.Task;
 		}
 	}
 }

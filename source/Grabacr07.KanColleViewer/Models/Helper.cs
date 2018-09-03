@@ -1,19 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Grabacr07.KanColleViewer.Models.Cef;
+using Grabacr07.KanColleViewer.Models.Settings;
 using Grabacr07.KanColleViewer.Win32;
-using Microsoft.Win32;
 using Nekoxy;
 
 namespace Grabacr07.KanColleViewer.Models
@@ -38,14 +35,14 @@ namespace Grabacr07.KanColleViewer.Models
 		public static bool IsInDesignMode => DesignerProperties.GetIsInDesignMode(new DependencyObject());
 
 
-		public static string CreateScreenshotFilePath(bool defaultPath = false)
+		public static string CreateScreenshotFilePath(SupportedImageFormat format, bool defaultPath = false)
 		{
 			var directory = "";
 
 			if (!defaultPath)
 				directory = Settings.ScreenshotSettings.Destination;
 			else
-				directory= Environment.GetFolderPath(Environment.SpecialFolder.MyPictures); ;
+				directory= Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 
 			var filePath = Path.Combine(
 				directory,
@@ -57,44 +54,7 @@ namespace Grabacr07.KanColleViewer.Models
 				Settings.ScreenshotSettings.Format == SupportedImageFormat.Png ? ".png" : ".jpg"
 			);
 
-			return filePath;
-		}
-
-
-		/// <summary>
-		/// HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION
-		/// に WebBrowser コントロールの動作バージョンを設定します。
-		/// </summary>
-		public static void SetRegistryFeatureBrowserEmulation()
-		{
-			const string key = @"HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION";
-			const string GPUkey = @"HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_GPU_RENDERING";
-
-			int GPUSettingValue = 0;
-
-			if (Settings.KanColleSettings.GPURenderEnable) GPUSettingValue = 1;
-
-			try
-			{
-				var valueName = Process.GetCurrentProcess().ProcessName + ".exe";
-				Registry.SetValue(key, valueName, Properties.Settings.Default.FeatureBrowserEmulation, RegistryValueKind.DWord);
-
-				if (Registry.GetValue(GPUkey, valueName, null) == null)
-				{
-					Registry.SetValue(GPUkey, valueName, GPUSettingValue, RegistryValueKind.DWord);
-				}
-				else
-				{
-					var rgv = Convert.ToInt32(Registry.GetValue(GPUkey, valueName, null));
-
-					if (rgv == GPUSettingValue) return;
-					else Registry.SetValue(GPUkey, valueName, GPUSettingValue, RegistryValueKind.DWord);
-				}
-			}
-			catch (Exception ex)
-			{
-				Debug.WriteLine(ex);
-			}
+			return Path.ChangeExtension(filePath, format.ToExtension());
 		}
 
 		public static void SetMMCSSTask()
@@ -103,82 +63,20 @@ namespace Grabacr07.KanColleViewer.Models
 			NativeMethods.AvSetMmThreadCharacteristics("Games", ref index);
 		}
 
-
-		/// <summary>
-		/// キャッシュを削除します。
-		/// </summary>
-		/// <seealso cref="http://support.microsoft.com/kb/326201/ja"/>
-		public static Task<bool> DeleteInternetCache()
+		public static void DeleteCacheIfRequested()
 		{
-			return Task.Run(() => DeleteInternetCacheCore());
-		}
-
-		private static bool DeleteInternetCacheCore()
-		{
-			try
+			if (GeneralSettings.ClearCacheOnNextStartup)
 			{
-				Directory.Delete(@"BrowserCache\Cache", true);
-				return true;
-			}
-			catch
-			{
-				return false;
-			}
-			/*
-			// ReSharper disable InconsistentNaming
-			const int CACHEGROUP_SEARCH_ALL = 0x0;
-			const int ERROR_NO_MORE_ITEMS = 259;
-			const uint CacheEntryType_Cookie = 1048577;
-			const uint CacheEntryType_History = 2097153;
-			// ReSharper restore InconsistentNaming
-
-			long groupId = 0;
-			var cacheEntryInfoBufferSizeInitial = 0;
-
-			var enumHandle = WinInet.FindFirstUrlCacheGroup(0, CACHEGROUP_SEARCH_ALL, IntPtr.Zero, 0, ref groupId, IntPtr.Zero);
-			if (enumHandle != IntPtr.Zero && ERROR_NO_MORE_ITEMS == Marshal.GetLastWin32Error()) return false;
-
-			enumHandle = WinInet.FindFirstUrlCacheEntry(null, IntPtr.Zero, ref cacheEntryInfoBufferSizeInitial);
-			if (enumHandle != IntPtr.Zero && ERROR_NO_MORE_ITEMS == Marshal.GetLastWin32Error()) return false;
-
-			var cacheEntryInfoBufferSize = cacheEntryInfoBufferSizeInitial;
-			var cacheEntryInfoBuffer = Marshal.AllocHGlobal(cacheEntryInfoBufferSize);
-			enumHandle = WinInet.FindFirstUrlCacheEntry(null, cacheEntryInfoBuffer, ref cacheEntryInfoBufferSizeInitial);
-
-			while (true)
-			{
-				var internetCacheEntry = (INTERNET_CACHE_ENTRY_INFOA)Marshal.PtrToStructure(
-					cacheEntryInfoBuffer, typeof(INTERNET_CACHE_ENTRY_INFOA));
-				cacheEntryInfoBufferSizeInitial = cacheEntryInfoBufferSize;
-
-				var type = internetCacheEntry.CacheEntryType;
-				var result = false;
-
-				if (type != CacheEntryType_Cookie && type != CacheEntryType_History)
+				try
 				{
-					result = WinInet.DeleteUrlCacheEntry(internetCacheEntry.lpszSourceUrlName);
+					Directory.Delete(CefBridge.CachePath, true);
+					GeneralSettings.ClearCacheOnNextStartup.Value = false;
 				}
-
-				if (!result)
+				catch (Exception ex)
 				{
-					result = WinInet.FindNextUrlCacheEntry(enumHandle, cacheEntryInfoBuffer, ref cacheEntryInfoBufferSizeInitial);
-				}
-				if (!result && ERROR_NO_MORE_ITEMS == Marshal.GetLastWin32Error())
-				{
-					break;
-				}
-				if (!result && cacheEntryInfoBufferSizeInitial > cacheEntryInfoBufferSize)
-				{
-					cacheEntryInfoBufferSize = cacheEntryInfoBufferSizeInitial;
-					cacheEntryInfoBuffer = Marshal.ReAllocHGlobal(cacheEntryInfoBuffer, (IntPtr)cacheEntryInfoBufferSize);
-					WinInet.FindNextUrlCacheEntry(enumHandle, cacheEntryInfoBuffer, ref cacheEntryInfoBufferSizeInitial);
+					Application.TelemetryClient.TrackException(ex);
 				}
 			}
-
-			Marshal.FreeHGlobal(cacheEntryInfoBuffer);
-
-			return true;
-		*/
 		}
 
 

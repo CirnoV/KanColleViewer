@@ -83,9 +83,12 @@ namespace Grabacr07.KanColleViewer
 			{
 				var now = DateTimeOffset.Now;
 				var path = Path.Combine(
+					/*
 					Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
 					ProductInfo.Company,
 					ProductInfo.Product,
+					*/
+					//CurrentDirectory,
 					"ErrorReports",
 					$"ErrorReport-{now:yyyyMMdd-HHmmss}-{now.Millisecond:000}.log");
 

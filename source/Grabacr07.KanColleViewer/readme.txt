@@ -36,7 +36,7 @@ Windows 8 이상에서의 사용을 권장합니다.
 
 ・.NET Framework 4.6
 
-Windows 8 또는 그 이전 버전에서 사용할 때에는, .NET Framework 4.6의 설치가 필요합니다.
+Windows 8 또는 그 이전 버전에서 사용할 때에는, .NET Framework 4.6.1의 설치가 필요합니다.
 Windows 10 에서는 시스템에 기본적으로 설치되어 있습니다.
 
 현재, 칸코레 본체의 제2기 이행에 의해, Chromium 엔진으로 잠정 대응하고 있습니다.

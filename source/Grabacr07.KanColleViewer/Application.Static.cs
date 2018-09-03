@@ -46,6 +46,8 @@ namespace Grabacr07.KanColleViewer
 				CachePath = CefBridge.CachePath,
 			};
 			cefSettings.CefCommandLineArgs.Add("proxy-server", Models.Settings.NetworkSettings.LocalProxySettingsString);
+			cefSettings.BrowserSubprocessPath = @"lib\CefSharp.BrowserSubprocess.exe";
+			cefSettings.Locale = "ko-KR";
 			//cefSettings.CefCommandLineArgs.Add("disable-webgl", "1");
 			CefSharpSettings.SubprocessExitIfParentProcessClosed = true;
 

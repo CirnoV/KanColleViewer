@@ -29,10 +29,12 @@ namespace Grabacr07.KanColleViewer.Views.Behaviors
 				try
 				{
 					await this.TakeScreenshot(screenshotMessage.Path, screenshotMessage.Format);
+					screenshotMessage.Response = new Processing();
 					StatusService.Current.Notify(Resources.Screenshot_Saved + Path.GetFileName(screenshotMessage.Path));
 				}
 				catch (Exception ex)
 				{
+					screenshotMessage.Response = new Processing(ex);
 					StatusService.Current.Notify(Resources.Screenshot_Failed + ex.Message);
 					Application.TelemetryClient.TrackException(ex);
 				}

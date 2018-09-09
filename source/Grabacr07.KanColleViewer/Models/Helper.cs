@@ -35,14 +35,9 @@ namespace Grabacr07.KanColleViewer.Models
 		public static bool IsInDesignMode => DesignerProperties.GetIsInDesignMode(new DependencyObject());
 
 
-		public static string CreateScreenshotFilePath(SupportedImageFormat format, bool defaultPath = false)
+		public static string CreateScreenshotFilePath(SupportedImageFormat format)
 		{
-			var directory = "";
-
-			if (!defaultPath)
-				directory = Settings.ScreenshotSettings.Destination;
-			else
-				directory= Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+			var directory = Settings.ScreenshotSettings.Destination;
 
 			var filePath = Path.Combine(
 				directory,

@@ -29,15 +29,31 @@ namespace Grabacr07.KanColleViewer.Views.Behaviors
 				try
 				{
 					await this.TakeScreenshot(screenshotMessage.Path, screenshotMessage.Format);
-					screenshotMessage.Response = new Processing();
 					StatusService.Current.Notify(Resources.Screenshot_Saved + Path.GetFileName(screenshotMessage.Path));
 				}
 				catch (Exception ex)
 				{
-					screenshotMessage.Response = new Processing(ex);
 					StatusService.Current.Notify(Resources.Screenshot_Failed + ex.Message);
 					Application.TelemetryClient.TrackException(ex);
+
+					try
+					{
+						var dir = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+						var path = Path.Combine(
+							dir,
+							Path.GetFileName(screenshotMessage.Path)
+						);
+
+						await this.TakeScreenshot(path, screenshotMessage.Format);
+						StatusService.Current.Notify(Resources.Screenshot_Saved + Path.GetFileName(screenshotMessage.Path));
+					}
+					catch (Exception ex2)
+					{
+						StatusService.Current.Notify(Resources.Screenshot_Failed + ex2.Message);
+						Application.TelemetryClient.TrackException(ex2);
+					}
 				}
+				message = screenshotMessage as InteractionMessage;
 			}
 		}
 

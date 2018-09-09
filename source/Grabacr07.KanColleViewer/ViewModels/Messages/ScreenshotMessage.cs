@@ -8,7 +8,7 @@ using Livet.Messaging;
 
 namespace Grabacr07.KanColleViewer.ViewModels.Messages
 {
-	internal class ScreenshotMessage : ResponsiveInteractionMessage<Processing>
+	internal class ScreenshotMessage : InteractionMessage
 	{
 		public ScreenshotMessage() { }
 		public ScreenshotMessage(string messageKey) : base(messageKey) { }
@@ -24,7 +24,6 @@ namespace Grabacr07.KanColleViewer.ViewModels.Messages
 				MessageKey = this.MessageKey,
 				Path = this.Path,
 				Format = this.Format,
-				Response = this.Response,
 			};
 		}
 	}

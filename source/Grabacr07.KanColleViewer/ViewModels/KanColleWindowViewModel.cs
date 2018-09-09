@@ -238,11 +238,6 @@ namespace Grabacr07.KanColleViewer.ViewModels
 
 		public void TakeScreenshot()
 		{
-			TakeScreenshot(false);
-		}
-
-		public void TakeScreenshot(bool defaultPath)
-		{
 			var format = ScreenshotSettings.Format.Value;
 			var path = Helper.CreateScreenshotFilePath(format);
 
@@ -252,24 +247,6 @@ namespace Grabacr07.KanColleViewer.ViewModels
 				Format = format,
 			};
 			this.Messenger.Raise(message);
-
-			if (message.Response.IsSuccess)
-			{
-				// Succeeded
-				var notify = Resources.Screenshot_Saved + Path.GetFileName(path);
-				StatusService.Current.Notify(notify);
-			}
-			else if (!defaultPath)
-			{
-				// Retry with default directory (MyPictures)
-				TakeScreenshot(true);
-			}
-			else
-			{
-				// Failed even with default directory
-				var notify = Resources.Screenshot_Failed + message.Response.Exception.Message;
-				StatusService.Current.Notify(notify);
-			}
 		}
 
 

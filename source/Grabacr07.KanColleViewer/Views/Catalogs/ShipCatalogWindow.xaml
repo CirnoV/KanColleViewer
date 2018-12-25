@@ -92,6 +92,7 @@
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
 				<RowDefinition />
 			</Grid.RowDefinitions>
 
@@ -656,6 +657,47 @@
 			</Expander>
 
 			<Border Grid.Row="2"
+					BorderThickness=".99"
+					BorderBrush="{DynamicResource BorderBrushKey}"
+					Padding="5"
+					Margin="8">
+
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+
+					<TextBlock Grid.Column="0"
+							   Margin="0,0,5,0"
+							   VerticalAlignment="Center"
+							   Text="함대표시 코드:" />
+					<metro:PromptTextBox Grid.Column="1"
+										 VerticalAlignment="Center"
+										 IsReadOnly="True"
+										 Prompt="함대표시 코드"
+										 Text="{Binding FleetDisplayData, Mode=OneWay}" />
+
+					<TextBlock Grid.Row="1"
+							   Grid.ColumnSpan="2"
+							   Margin="0,2,0,0"
+							   FontSize="11"
+							   Opacity="0.66">
+					<Run Text="* 함대표시 코드는 보유중인 함선 목록을 각종 사이트/프로그램에 사용할 수 있도록 가공한 형태입니다." />
+					<LineBreak/>
+					<Run Text="* 이벤트에 사용되는 함선 목록 정보:" />
+					<metro2:HyperlinkEx Uri="https://flatisjustice.moe/eventlist">
+						<Run Text="https://flatisjustice.moe/eventlist" />
+					</metro2:HyperlinkEx>
+					</TextBlock>
+				</Grid>
+			</Border>
+
+			<Border Grid.Row="3"
 					BorderBrush="{DynamicResource BorderBrushKey}"
 					BorderThickness=".99"
 					Margin="8">
@@ -2451,7 +2493,7 @@
 				</ListView>
 			</Border>
 
-			<Border Grid.Row="2"
+			<Border Grid.Row="3"
 					Background="{DynamicResource ThemeBrushKey}"
 					BorderBrush="{DynamicResource BorderBrushKey}"
 					BorderThickness=".99"

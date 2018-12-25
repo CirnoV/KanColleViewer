@@ -12,7 +12,7 @@ using System.Xml.Linq;
 
 namespace Grabacr07.KanColleWrapper
 {
-	public class Translations
+	public partial class Translations
 	{
 		private XDocument ShipsXML;//0
 		private XDocument ShipTypesXML;//1
@@ -119,11 +119,14 @@ namespace Grabacr07.KanColleWrapper
 			if (QuestsXML != null)
 				if (QuestsXML.Root.Attribute("Version") != null) QuestsVersion = QuestsXML.Root.Attribute("Version").Value;
 				else QuestsVersion = "알 수 없음";
+			else
+				QuestsVersion = "없음";
+
 			if (ExpeditionXML != null)
 				if (ExpeditionXML.Root.Attribute("Version") != null) ExpeditionsVersion = ExpeditionXML.Root.Attribute("Version").Value;
 				else ExpeditionsVersion = "알 수 없음";
 			else
-				QuestsVersion = "없음";
+				ExpeditionsVersion = "없음";
 
 			if (RemodelXml != null)
 				if (RemodelXml.Root.Attribute("Version") != null) RemodelSlotsVersion = RemodelXml.Root.Attribute("Version").Value;
@@ -142,6 +145,16 @@ namespace Grabacr07.KanColleWrapper
 				else UseitemsVersion = "알 수 없음";
 			else
 				UseitemsVersion = "없음";
+		}
+
+		public void Reload()
+		{
+			try
+			{
+				LoadXmls();
+				GetVersions();
+			}
+			catch { }
 		}
 
 		private IEnumerable<XElement> GetTranslationList(TranslationType Type)
@@ -385,6 +398,7 @@ namespace Grabacr07.KanColleWrapper
 							new XElement("JP-Name", ShipData.api_name),
 							new XElement("TR-Name", KanColleClient.Current.WebTranslator.RawTranslate(ShipData.api_name))
 						));
+						RequestTranslation(Type, ShipData.api_name);
 
 						SaveXmls(0);
 						break;
@@ -405,7 +419,8 @@ namespace Grabacr07.KanColleWrapper
 							new XElement("ID", TypeData.api_id),
 							new XElement("JP-Name", TypeData.api_name),
 							new XElement("TR-Name", KanColleClient.Current.WebTranslator.RawTranslate(TypeData.api_name))
-							));
+						));
+						RequestTranslation(Type, TypeData.api_name);
 
 						SaveXmls(1);
 						break;
@@ -425,31 +440,33 @@ namespace Grabacr07.KanColleWrapper
 						EquipmentXML.Root.Add(new XElement("Item",
 							new XElement("JP-Name", EqiupData.api_name),
 							new XElement("TR-Name", KanColleClient.Current.WebTranslator.RawTranslate(EqiupData.api_name))
-							));
+						));
+						RequestTranslation(Type, EqiupData.api_name);
 
 						SaveXmls(2);
 						break;
-                    case TranslationType.EquipmentTypes:
-                        if (EquipmentTypesXML == null)
-                        {
-                            EquipmentTypesXML = new XDocument();
-                            EquipmentTypesXML.Add(new XElement("EquipmentTypes"));
-                        }
+					case TranslationType.EquipmentTypes:
+						if (EquipmentTypesXML == null)
+						{
+							EquipmentTypesXML = new XDocument();
+							EquipmentTypesXML.Add(new XElement("EquipmentTypes"));
+						}
 
-                        kcsapi_mst_slotitem_equiptype EqiupTypeData = RawData as kcsapi_mst_slotitem_equiptype;
+						kcsapi_mst_slotitem_equiptype EqiupTypeData = RawData as kcsapi_mst_slotitem_equiptype;
 
-                        if (EqiupTypeData == null)
-                            return;
+						if (EqiupTypeData == null)
+							return;
 
-                        EquipmentTypesXML.Root.Add(new XElement("Item",
-                            new XElement("JP-Name", EqiupTypeData.api_name),
-                            new XElement("TR-Name", KanColleClient.Current.WebTranslator.RawTranslate(EqiupTypeData.api_name))
-                            ));
+						EquipmentTypesXML.Root.Add(new XElement("Item",
+							new XElement("JP-Name", EqiupTypeData.api_name),
+							new XElement("TR-Name", KanColleClient.Current.WebTranslator.RawTranslate(EqiupTypeData.api_name))
+						));
+						RequestTranslation(Type, EqiupTypeData.api_name);
 
-                        SaveXmls(7);
-                        break;
+						SaveXmls(7);
+						break;
 
-                    case TranslationType.OperationMaps:
+					case TranslationType.OperationMaps:
 					case TranslationType.OperationSortie:
 						if (OperationsXML == null)
 						{
@@ -467,14 +484,16 @@ namespace Grabacr07.KanColleWrapper
 							OperationsXML.Root.Add(new XElement("Map",
 								new XElement("JP-Name", OperationsData.api_quest_name),
 								new XElement("TR-Name", KanColleClient.Current.WebTranslator.RawTranslate(OperationsData.api_quest_name))
-								));
+							));
+							RequestTranslation(Type, OperationsData.api_quest_name);
 						}
 						else
 						{
 							OperationsXML.Root.Add(new XElement("Sortie",
 								new XElement("JP-Name", OperationsData.api_enemy_info.api_deck_name),
 								new XElement("TR-Name", KanColleClient.Current.WebTranslator.RawTranslate(OperationsData.api_enemy_info.api_deck_name))
-								));
+							));
+							RequestTranslation(Type, OperationsData.api_enemy_info.api_deck_name);
 						}
 
 						SaveXmls(3);
@@ -511,7 +530,8 @@ namespace Grabacr07.KanColleWrapper
 								new XElement("TR-Name", "[" + QuestData.api_no.ToString() + "]" + KanColleClient.Current.WebTranslator.RawTranslate(QuestData.api_title)),
 								new XElement("JP-Detail", QuestData.api_detail),
 								new XElement("TR-Detail", "[" + QuestData.api_no.ToString() + "]" + KanColleClient.Current.WebTranslator.RawTranslate(QuestData.api_detail))
-								));
+							));
+							RequestTranslation(Type, $"{QuestData.api_no}::{QuestData.api_title}::{QuestData.api_detail}");
 						}
 
 						SaveXmls(4);
@@ -541,12 +561,13 @@ namespace Grabacr07.KanColleWrapper
 						{
 							// The quest doesn't exist at all. Add it.
 							ExpeditionXML.Root.Add(new XElement("Expedition",
-							new XElement("ID", MissionData.api_id),
-							new XElement("JP-Name", MissionData.api_name),
-							new XElement("TR-Name", "[" + MissionData.api_id.ToString() + "]" + KanColleClient.Current.WebTranslator.RawTranslate(MissionData.api_name)),
-							new XElement("JP-Detail", MissionData.api_details),
-							new XElement("TR-Detail", "[" + MissionData.api_id.ToString() + "]" + KanColleClient.Current.WebTranslator.RawTranslate(MissionData.api_details))
+								new XElement("ID", MissionData.api_id),
+								new XElement("JP-Name", MissionData.api_name),
+								new XElement("TR-Name", "[" + MissionData.api_id.ToString() + "]" + KanColleClient.Current.WebTranslator.RawTranslate(MissionData.api_name)),
+								new XElement("JP-Detail", MissionData.api_details),
+								new XElement("TR-Detail", "[" + MissionData.api_id.ToString() + "]" + KanColleClient.Current.WebTranslator.RawTranslate(MissionData.api_details))
 							));
+							RequestTranslation(Type, $"{MissionData.api_id}::{MissionData.api_name}::{MissionData.api_details}");
 						}
 
 						SaveXmls(5);
@@ -555,6 +576,5 @@ namespace Grabacr07.KanColleWrapper
 			}
 			catch { }
 		}
-
 	}
 }

@@ -48,11 +48,16 @@ namespace Grabacr07.KanColleViewer
 			cefSettings.CefCommandLineArgs.Add("proxy-server", Models.Settings.NetworkSettings.LocalProxySettingsString);
 			cefSettings.BrowserSubprocessPath = @"lib\CefSharp.BrowserSubprocess.exe";
 			cefSettings.Locale = "ko-KR";
-			//cefSettings.CefCommandLineArgs.Add("disable-webgl", "1");
+			// cefSettings.LogSeverity = LogSeverity.Verbose;
+			// cefSettings.CefCommandLineArgs.Add("disable-webgl", "1");
+			// cefSettings.CefCommandLineArgs.Add("disable-gpu", "1");
+			// cefSettings.CefCommandLineArgs.Add("disable-gpu-vsync", "1");
+			// cefSettings.CefCommandLineArgs.Add("disable-gpu-compositing", "1");
+			// cefSettings.SetOffScreenRenderingBestPerformanceArgs();
 			CefSharpSettings.SubprocessExitIfParentProcessClosed = true;
 
 			Cef.EnableHighDPISupport();
-			Cef.Initialize(cefSettings);
+			Cef.Initialize(cefSettings, performDependencyCheck: false, browserProcessHandler: null);
 		}
 
 		/// <summary>

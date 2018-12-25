@@ -5,6 +5,8 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
+using System.IO;
+using System.Text;
 using Grabacr07.KanColleViewer.Models;
 using Grabacr07.KanColleViewer.Models.Settings;
 using Grabacr07.KanColleWrapper;
@@ -36,6 +38,20 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 		public ShipExSlotFilter ShipExSlotFilter { get; }
 		public ShipFleetFilter ShipFleetFilter { get; }
 		public DaihatsueFilter DaihatsueFilter { get; }
+
+		private string _FleetDisplayData { get; set; }
+		public string FleetDisplayData
+		{
+			get { return this._FleetDisplayData; }
+			private set
+			{
+				if(value != this._FleetDisplayData)
+				{
+					this._FleetDisplayData = value;
+					this.RaisePropertyChanged();
+				}
+			}
+		}
 
 		public bool CheckAllShipTypes
 		{
@@ -132,7 +148,7 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 			this.SortWorker = new ShipCatalogSortWorker();
 
 			this.ShipTypes = KanColleClient.Current.Master.ShipTypes
-				.Where(kvp => !(kvp.Value.Id == 15 && kvp.Value.Name == "보급함")) // おそらく敵艦用と思われる補給艦を除外
+				.Where(kvp => !(kvp.Value.Id == 15 && kvp.Value.RawData.api_name == "補給艦")) // おそらく敵艦用と思われる補給艦を除外
 				.Select(kvp => new ShipTypeViewModel(kvp.Value)
 				{
 					IsSelected = true,
@@ -173,6 +189,8 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 
 			this.RaisePropertyChanged(nameof(this.CheckAllShipTypes));
 			this.updateSource.OnNext(Unit.Default);
+
+			this.FleetDisplayData = this.FleetDisplayCode();
 		}
 
 		private IObservable<Unit> UpdateAsync(SallyArea[] areas)
@@ -225,6 +243,50 @@ namespace Grabacr07.KanColleViewer.ViewModels.Catalogs
 		{
 			foreach (var type in this.ShipTypes) type.Set(ids.Any(id => type.Id == id));
 			this.Update();
+		}
+
+		public string FleetDisplayCode()
+		{
+			var output = new StringBuilder(".2");
+
+			var temp = this.homeport.Organization.Ships.Values.ToArray();
+			var trees = new List<int[]>();
+			while (temp.Length > 0)
+			{
+				var tree = new List<int>();
+				var ship = temp.First();
+
+				// Find root
+				var master = KanColleClient.Current.Master;
+				var root = ship.Info;
+
+				while (master.Ships.Any(x => x.Value.RawData.api_aftershipid == root.Id.ToString()))
+					root = master.Ships.FirstOrDefault(x => x.Value.RawData.api_aftershipid == root.Id.ToString()).Value;
+
+				do
+				{
+					tree.Add(root.Id);
+					root = master.Ships.FirstOrDefault(x => x.Value.Id.ToString() == root.RawData.api_aftershipid).Value;
+				} while (root != null && !tree.Contains(root.Id));
+
+				trees.Add(tree.ToArray());
+				temp = temp.Where(x => !tree.Contains(x.Info.Id)).ToArray();
+			}
+
+			temp = this.homeport.Organization.Ships.Values.ToArray();
+			var groups = temp.GroupBy(x => trees.FindIndex(y => y.Contains(x.Info.Id)));
+			foreach (var group in groups)
+			{
+				var tree = trees[group.Key];
+				var ships = new List<string>();
+
+				foreach (var ship in group)
+					ships.Add($"{ship.Level}.{Array.IndexOf(tree, ship.Info.Id) + 1}");
+
+				output.AppendFormat("|{0}:", tree.First());
+				output.Append(string.Join(",", ships));
+			}
+			return output.ToString();
 		}
 
 		public void Sort(SortableColumn column)

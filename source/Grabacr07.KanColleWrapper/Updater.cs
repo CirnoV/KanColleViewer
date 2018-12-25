@@ -181,7 +181,6 @@ namespace Grabacr07.KanColleWrapper
 						Client.DownloadFile(BaseTranslationURL + "Useitems.xml", Path.Combine(MainFolder, "Translations", "tmp", "Useitems.xml"));
 						ReturnValue = XmlFileWizard(MainFolder, "Useitems.xml", TranslationType.Useitems);
 					}
-
 				}
 				catch
 				{
@@ -190,6 +189,8 @@ namespace Grabacr07.KanColleWrapper
 				}
 				if (Directory.Exists(Path.Combine(MainFolder, "Translations", "tmp")))
 					Directory.Delete(Path.Combine(MainFolder, "Translations", "tmp"), true);
+
+				KanColleClient.Current.Translations.Reload();
 
 				return ReturnValue;
 			}
@@ -255,7 +256,7 @@ namespace Grabacr07.KanColleWrapper
 			IEnumerable<XElement> Versions = VersionXML.Root.Descendants("Item");
 			string ElementName = "Version";
 			if (LocalVersionString == "알 수 없음") return false;
-			else if (LocalVersionString == "없음") return false;
+			else if (LocalVersionString == "없음") return true;
 			Version LocalVersion = new Version(LocalVersionString);
 
 

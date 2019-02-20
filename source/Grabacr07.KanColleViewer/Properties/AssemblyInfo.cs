@@ -15,5 +15,5 @@ using System.Windows;
 	ResourceDictionaryLocation.None,
 	ResourceDictionaryLocation.SourceAssembly)]
 
-[assembly: AssemblyVersion("4.5.0.3")]
+[assembly: AssemblyVersion("4.5.0.4")]
 // CefSharp needs https://www.microsoft.com/en-us/download/details.aspx?id=48145
